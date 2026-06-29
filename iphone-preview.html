@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>iPhone 预览 - H&H</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    /* iPhone 15 Pro frame */
+    .iphone {
+      width: 393px;
+      height: 852px;
+      background: #0a0a0a;
+      border-radius: 50px;
+      padding: 14px;
+      box-shadow: 0 0 0 3px #1f1f1f, 0 0 0 7px #0a0a0a, 0 40px 80px rgba(0,0,0,0.5);
+      position: relative;
+    }
+    .iphone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 38px;
+      overflow: hidden;
+      background: #fff;
+      position: relative;
+    }
+    .iphone-screen iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    /* Dynamic Island */
+    .dynamic-island {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 126px;
+      height: 35px;
+      background: #0a0a0a;
+      border-radius: 20px;
+      z-index: 10;
+    }
+    /* Controls */
+    .controls {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 8px;
+      z-index: 100;
+    }
+    .controls button, .controls a {
+      padding: 10px 18px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      color: #ccc;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      backdrop-filter: blur(10px);
+    }
+    .controls button:hover, .controls a:hover {
+      background: rgba(233, 72, 26, 0.6);
+      border-color: rgba(233, 72, 26, 0.8);
+      color: #fff;
+    }
+    .controls button.active {
+      background: rgba(233, 72, 26, 0.8);
+      border-color: var(--orange);
+      color: #fff;
+    }
+    .url-bar {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 20px;
+      background: rgba(0,0,0,0.7);
+      border-radius: 20px;
+      color: #888;
+      font-size: 12px;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <button onclick="switchPage('index.html')" id="btn-en" class="active">English</button>
+    <button onclick="switchPage('index-zh.html')" id="btn-zh">中文</button>
+  </div>
+  <div class="iphone">
+    <div class="iphone-screen">
+      <iframe id="preview-frame" src="http://localhost:7777/index.html"></iframe>
+    </div>
+    <div class="dynamic-island"></div>
+  </div>
+  <div class="url-bar">iPhone 15 Pro — 393 × 852</div>
+
+  <script>
+    function switchPage(page) {
+      document.getElementById('preview-frame').src = 'http://localhost:7777/' + page;
+      document.getElementById('btn-en').classList.toggle('active', page === 'index.html');
+      document.getElementById('btn-zh').classList.toggle('active', page === 'index-zh.html');
+    }
+  </script>
+</body>
+</html>
