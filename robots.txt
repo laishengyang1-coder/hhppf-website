@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hhppf.com/sitemap.xml
+
+# Disallow development files
+Disallow: /README.md
+Disallow: /README-Workbuddy.txt
+Disallow: /iphone-preview.html
+Disallow: /.gitignore
+Disallow: /.git/
