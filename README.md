@@ -15,5 +15,8 @@ Official website for H&H Automotive Films brand.
 
 ## Deployment
 - Domain: hhppf.com
-- Hosting: GitHub Pages + Cloudflare DNS
+- Current GitHub deployment: GitHub Pages + Cloudflare DNS
+- Cloudflare Pages project: `hhppf-website`
+- Cloudflare preview URL: https://hhppf-website.pages.dev/
+- Manual Cloudflare deploy: `npm run deploy:cloudflare`
 - Future warranty system target: warranty.hhppf.com

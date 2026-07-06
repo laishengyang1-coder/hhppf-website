@@ -1108,12 +1108,7 @@
             .join("")}
         </nav>
         <div class="header-actions">
-          <label class="hidden" for="language-select">${t("language")}</label>
-          <select class="language-select" id="language-select" data-action="language">
-            <option value="en" ${lang() === "en" ? "selected" : ""}>EN</option>
-            <option value="zh" ${lang() === "zh" ? "selected" : ""}>中文</option>
-            <option value="ru" ${lang() === "ru" ? "selected" : ""}>RU</option>
-          </select>
+          ${renderLanguageSelect("language-select")}
           <a class="home-link" href="../index.html">${escapeHtml(t("back"))}</a>
         </div>
       </header>
@@ -1131,6 +1126,71 @@
 
   function renderPage(content) {
     return `<main class="page"><div class="page-inner">${content}</div></main>`;
+  }
+
+  function renderLanguageSelect(id) {
+    return `
+      <label class="hidden" for="${id}">${t("language")}</label>
+      <select class="language-select" id="${id}" data-action="language">
+        <option value="en" ${lang() === "en" ? "selected" : ""}>EN</option>
+        <option value="zh" ${lang() === "zh" ? "selected" : ""}>中文</option>
+        <option value="ru" ${lang() === "ru" ? "selected" : ""}>RU</option>
+      </select>
+    `;
+  }
+
+  function isWorkspaceRoute(route) {
+    return (
+      (isRoute(route, "dealer") && route !== AUTH.dealer.loginRoute && isAuthenticated("dealer")) ||
+      (isRoute(route, "admin") && route !== AUTH.admin.loginRoute && isAuthenticated("admin"))
+    );
+  }
+
+  function renderWorkspaceShell({ active, content, items, lead, logoutAction, title, kicker }) {
+    return `
+      <main class="workspace-page">
+        <aside class="workspace-sidebar">
+          <a class="workspace-brand" href="${href("home")}" aria-label="H&H Warranty home">
+            <img src="../assets/hh-logo.png" alt="H&H Automotive Films" />
+            <div>
+              <strong>H&amp;H</strong>
+              <span>Warranty OS V1</span>
+            </div>
+          </a>
+          <nav class="workspace-nav" aria-label="${escapeHtml(kicker)} navigation">
+            ${items
+              .map(
+                ([route, label]) => `
+                  <a class="${active === route ? "is-active" : ""}" href="${href(route)}">
+                    <span class="workspace-nav-mark" aria-hidden="true"></span>
+                    ${label}
+                  </a>
+                `,
+              )
+              .join("")}
+          </nav>
+          <div class="workspace-sidebar-footer">
+            <a href="../index.html">${escapeHtml(t("back"))}</a>
+            <button data-action="${logoutAction}" type="button">Log out</button>
+          </div>
+        </aside>
+        <section class="workspace-main">
+          <header class="workspace-topbar">
+            <div>
+              <p class="section-kicker">${kicker}</p>
+              <h1>${title}</h1>
+              <p>${lead}</p>
+            </div>
+            <div class="workspace-actions">
+              ${renderLanguageSelect("workspace-language-select")}
+            </div>
+          </header>
+          <div class="workspace-content">
+            ${content}
+          </div>
+        </section>
+      </main>
+    `;
   }
 
   function renderHome() {
@@ -1398,18 +1458,15 @@
       ["dealer/points", "My Points"],
       ["dealer/rewards", "Rewards Center"],
     ];
-    return renderPage(`
-      <section>
-        <p class="section-kicker">Dealer Portal</p>
-        <h1>Moscow Auto Studio</h1>
-        <p class="lead">Demo dealer workspace for warranty registration, record tracking, points, and material redemption.</p>
-        <nav class="subnav" aria-label="Dealer navigation">
-          ${items.map(([route, label]) => `<a class="${active === route ? "is-active" : ""}" href="${href(route)}">${label}</a>`).join("")}
-          <button class="subnav-action" data-action="dealer-logout" type="button">Log out</button>
-        </nav>
-      </section>
-      ${content}
-    `);
+    return renderWorkspaceShell({
+      active,
+      content,
+      items,
+      kicker: "Dealer Portal",
+      title: "Moscow Auto Studio",
+      lead: "Demo dealer workspace for warranty registration, record tracking, points, and material redemption.",
+      logoutAction: "dealer-logout",
+    });
   }
 
   function renderDealerDashboard() {
@@ -1617,18 +1674,15 @@
       ["admin/redemptions", "Redemptions"],
       ["admin/export", "Export"],
     ];
-    return renderPage(`
-      <section>
-        <p class="section-kicker">HQ Admin Console</p>
-        <h1>Warranty Operations</h1>
-        <p class="lead">Central control for product setup, dealer setup, code import, allocation, review, points, reward inventory, and exports.</p>
-        <nav class="subnav" aria-label="Admin navigation">
-          ${items.map(([route, label]) => `<a class="${active === route ? "is-active" : ""}" href="${href(route)}">${label}</a>`).join("")}
-          <button class="subnav-action" data-action="admin-logout" type="button">Log out</button>
-        </nav>
-      </section>
-      ${content}
-    `);
+    return renderWorkspaceShell({
+      active,
+      content,
+      items,
+      kicker: "HQ Admin Console",
+      title: "Warranty Operations",
+      lead: "Central control for product setup, dealer setup, code import, allocation, review, points, reward inventory, and exports.",
+      logoutAction: "admin-logout",
+    });
   }
 
   function renderAdminDashboard() {
@@ -2156,12 +2210,13 @@
 
   function render() {
     const route = getRoute();
+    const workspace = isWorkspaceRoute(route);
     document.documentElement.lang = lang();
     app.innerHTML = `
-      <div class="portal-shell">
-        ${renderHeader(route)}
+      <div class="portal-shell ${workspace ? "is-workspace-shell" : ""}">
+        ${workspace ? "" : renderHeader(route)}
         ${routeContent(route)}
-        ${renderFooter()}
+        ${workspace ? "" : renderFooter()}
         ${ui.toast ? `<div class="toast">${escapeHtml(ui.toast)}</div>` : ""}
       </div>
     `;
