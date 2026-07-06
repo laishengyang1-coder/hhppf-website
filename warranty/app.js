@@ -3,6 +3,22 @@
 
   const STORAGE_KEY = "hhWarrantyPortalV1";
   const VERSION = 1;
+  const AUTH = {
+    dealer: {
+      email: "dealer@hhppf.com",
+      password: "dealer123",
+      sessionKey: "hhDealerAuthed",
+      dashboardRoute: "dealer/dashboard",
+      loginRoute: "dealer/login",
+    },
+    admin: {
+      email: "admin@hhppf.com",
+      password: "admin123",
+      sessionKey: "hhAdminAuthed",
+      dashboardRoute: "admin/dashboard",
+      loginRoute: "admin/login",
+    },
+  };
 
   const copy = {
     en: {
@@ -90,6 +106,9 @@
       "Production design stores image paths in D1 and image files in Cloudflare R2.": "生产环境设计为 D1 保存图片路径，Cloudflare R2 保存图片文件。",
       "Points Loop": "积分闭环",
       "Points are awarded only after HQ approval, then used for reward requests.": "积分只在总部审核通过后发放，并用于物料兑换申请。",
+      "Invalid dealer account or password.": "经销商账号或密码不正确。",
+      "Invalid admin account or password.": "总部账号或密码不正确。",
+      "Log out": "退出登录",
       "Enter a VIN to view active H&H warranty records and certificate details. Web pages mask the VIN; printable certificates show the full VIN.": "输入 VIN 查看有效的 H&H 质保记录和证书详情。网页端会脱敏显示 VIN，打印证书显示完整 VIN。",
       "No active H&H warranty record found": "未找到有效的 H&H 质保记录",
       "Please check the VIN or contact the authorized dealer that installed the film.": "请检查 VIN，或联系为车辆施工的授权经销商。",
@@ -106,6 +125,9 @@
       "Warranty Certificate": "质保证书",
       "Customer Name": "车主姓名",
       "Vehicle": "车辆",
+      "Vehicle Make": "车辆品牌",
+      "Vehicle Model": "车型",
+      "Vehicle Year": "年份",
       "Installation Date": "安装日期",
       "Warranty Expiry Date": "质保到期日",
       "Authorized Dealer": "授权经销商",
@@ -310,6 +332,9 @@
       "Production design stores image paths in D1 and image files in Cloudflare R2.": "В продакшене D1 хранит пути к изображениям, а файлы изображений хранятся в Cloudflare R2.",
       "Points Loop": "Цикл баллов",
       "Points are awarded only after HQ approval, then used for reward requests.": "Баллы начисляются только после одобрения HQ и затем используются для заявок на материалы.",
+      "Invalid dealer account or password.": "Неверный аккаунт или пароль дилера.",
+      "Invalid admin account or password.": "Неверный аккаунт или пароль администратора.",
+      "Log out": "Выйти",
       "Enter a VIN to view active H&H warranty records and certificate details. Web pages mask the VIN; printable certificates show the full VIN.": "Введите VIN, чтобы увидеть активные гарантии H&H и детали сертификата. На сайте VIN маскируется; в печатном сертификате показан полный VIN.",
       "No active H&H warranty record found": "Активная гарантия H&H не найдена",
       "Please check the VIN or contact the authorized dealer that installed the film.": "Проверьте VIN или свяжитесь с авторизованным дилером, который выполнял установку.",
@@ -326,6 +351,9 @@
       "Warranty Certificate": "Гарантийный сертификат",
       "Customer Name": "Имя клиента",
       "Vehicle": "Автомобиль",
+      "Vehicle Make": "Марка автомобиля",
+      "Vehicle Model": "Модель автомобиля",
+      "Vehicle Year": "Год автомобиля",
       "Installation Date": "Дата установки",
       "Warranty Expiry Date": "Дата окончания гарантии",
       "Authorized Dealer": "Авторизованный дилер",
@@ -870,6 +898,29 @@
     return (copy[lang()] && copy[lang()][key]) || copy.en[key] || key;
   }
 
+  function isAuthenticated(role) {
+    return sessionStorage.getItem(AUTH[role].sessionKey) === "true";
+  }
+
+  function authenticate(role, form) {
+    const formData = new FormData(form);
+    const email = String(formData.get("email") || "").trim().toLowerCase();
+    const password = String(formData.get("password") || "");
+    const account = AUTH[role];
+    if (email !== account.email || password !== account.password) {
+      showToast(role === "dealer" ? "Invalid dealer account or password." : "Invalid admin account or password.");
+      return;
+    }
+    sessionStorage.setItem(account.sessionKey, "true");
+    setRoute(account.dashboardRoute);
+  }
+
+  function signOut(role) {
+    const account = AUTH[role];
+    sessionStorage.removeItem(account.sessionKey);
+    setRoute(account.loginRoute);
+  }
+
   function translateValue(value) {
     const currentLang = lang();
     if (currentLang === "en") return value;
@@ -1033,11 +1084,10 @@
 
   function renderHeader(route) {
     const nav = [
-      ["home", t("home")],
       ["verify", t("verify")],
       ["terms", t("terms")],
-      ["dealer/dashboard", t("dealer")],
-      ["admin/dashboard", t("admin")],
+      [isAuthenticated("dealer") ? AUTH.dealer.dashboardRoute : AUTH.dealer.loginRoute, t("dealer")],
+      [isAuthenticated("admin") ? AUTH.admin.dashboardRoute : AUTH.admin.loginRoute, t("admin")],
     ];
     return `
       <header class="portal-header">
@@ -1050,8 +1100,8 @@
           ${nav
             .map(([navRoute, label]) => {
               const active =
-                navRoute === "home"
-                  ? route === "home"
+                navRoute === "verify"
+                  ? route === "home" || route === "verify"
                   : isRoute(route, navRoute.split("/")[0]);
               return `<a class="${active ? "is-active" : ""}" href="${href(navRoute)}">${escapeHtml(label)}</a>`;
             })
@@ -1084,19 +1134,19 @@
   }
 
   function renderHome() {
+    return renderVerify();
+  }
+
+  function renderSystemOverview() {
     const activeCount = data.warrantyRecords.filter((record) => record.status === "Active").length;
     const pendingCount = data.warrantyRecords.filter((record) => record.status === "Pending Review").length;
-    return renderPage(`
-      <section class="hero">
-        <div class="hero-copy">
+    return `
+      <section class="panel workflow-panel">
+        <div class="two-column">
+          <div>
           <p class="eyebrow">Warranty Registration &amp; Verification</p>
-          <h1>${escapeHtml(t("heroTitle"))}</h1>
+            <h2>${escapeHtml(t("heroTitle"))}</h2>
           <p class="lead">${escapeHtml(t("heroLead"))}</p>
-          <div class="hero-actions">
-            <a class="button" href="${href("verify")}">${escapeHtml(t("ownerQuery"))}</a>
-            <a class="ghost-button" href="${href("dealer/login")}">${escapeHtml(t("dealerLogin"))}</a>
-            <a class="ghost-button" href="${href("admin/login")}">${escapeHtml(t("adminLogin"))}</a>
-          </div>
           <div class="tag-list" style="margin-top: 22px;">
             <span>English default</span>
             <span>Chinese support</span>
@@ -1104,35 +1154,8 @@
             <span>Cloudflare D1 / R2 ready</span>
           </div>
         </div>
-        <aside class="system-card">
-          <header>
-            <div>
-              <p class="section-kicker">Owner Portal</p>
-              <h2>Verify H&amp;H warranty by VIN.</h2>
-            </div>
-            <span>V1</span>
-          </header>
-          <form class="form-grid" data-form="verify">
-            <label class="full">
-              VIN / Vehicle Identification Number
-              <input name="vin" placeholder="Example: XTA210990R1234567" required />
-            </label>
-            <div class="form-actions full">
-              <button class="button" type="submit">Search Warranty</button>
-              <button class="ghost-button" type="button" data-action="sample-vin">Use Sample VIN</button>
-            </div>
-          </form>
-          <p class="small" style="margin-top: 14px;">One VIN can return multiple approved H&amp;H warranty records across PPF, window film, color film, and partial warranty cases.</p>
-        </aside>
-      </section>
-
-      <section class="panel">
-        <div class="two-column">
-          <div>
-            <p class="section-kicker">V1 Business Flow</p>
-            <h2>From factory code to active certificate.</h2>
-          </div>
           <div class="workflow">
+            <p class="section-kicker">V1 Business Flow</p>
             ${[
               "HQ imports factory warranty codes and allocates them to authorized dealers.",
               "Dealer registers VIN, vehicle, installation category, and delivery photos.",
@@ -1184,7 +1207,7 @@
         <article class="panel"><h3>Photo Storage</h3><p>Production design stores image paths in D1 and image files in Cloudflare R2.</p></article>
         <article class="panel"><h3>Points Loop</h3><p>Points are awarded only after HQ approval, then used for reward requests.</p></article>
       </section>
-    `);
+    `;
   }
 
   function renderVerify() {
@@ -1382,6 +1405,7 @@
         <p class="lead">Demo dealer workspace for warranty registration, record tracking, points, and material redemption.</p>
         <nav class="subnav" aria-label="Dealer navigation">
           ${items.map(([route, label]) => `<a class="${active === route ? "is-active" : ""}" href="${href(route)}">${label}</a>`).join("")}
+          <button class="subnav-action" data-action="dealer-logout" type="button">Log out</button>
         </nav>
       </section>
       ${content}
@@ -1600,6 +1624,7 @@
         <p class="lead">Central control for product setup, dealer setup, code import, allocation, review, points, reward inventory, and exports.</p>
         <nav class="subnav" aria-label="Admin navigation">
           ${items.map(([route, label]) => `<a class="${active === route ? "is-active" : ""}" href="${href(route)}">${label}</a>`).join("")}
+          <button class="subnav-action" data-action="admin-logout" type="button">Log out</button>
         </nav>
       </section>
       ${content}
@@ -1618,7 +1643,8 @@
           <article class="metric-card"><strong>${issuedPoints}</strong><span>Points issued</span></article>
           <article class="metric-card"><strong>${data.redemptions.length}</strong><span>Redemption requests</span></article>
         </section>
-        <section class="two-column" style="margin-top: 18px;">
+        ${renderSystemOverview()}
+        <section class="two-column">
           <article class="panel"><h3>Dealer Ranking</h3>${dealerRankingTable()}</article>
           <article class="panel"><h3>Product Type Split</h3>${productSplitTable()}</article>
         </section>
@@ -2098,6 +2124,12 @@
   }
 
   function routeContent(route) {
+    if (isRoute(route, "dealer") && route !== AUTH.dealer.loginRoute && !isAuthenticated("dealer")) {
+      return renderDealerLogin();
+    }
+    if (isRoute(route, "admin") && route !== AUTH.admin.loginRoute && !isAuthenticated("admin")) {
+      return renderAdminLogin();
+    }
     if (route === "home") return renderHome();
     if (route === "verify") return renderVerify();
     if (route === "terms") return renderTerms();
@@ -2146,7 +2178,12 @@
   }
 
   function setRoute(route) {
-    window.location.hash = `#/${route}`;
+    const nextHash = `#/${route}`;
+    if (window.location.hash === nextHash) {
+      render();
+      return;
+    }
+    window.location.hash = nextHash;
   }
 
   document.addEventListener("change", (event) => {
@@ -2169,8 +2206,8 @@
     if (!formType) return;
     event.preventDefault();
     if (formType === "verify") handleVerify(form);
-    if (formType === "dealer-login") setRoute("dealer/dashboard");
-    if (formType === "admin-login") setRoute("admin/dashboard");
+    if (formType === "dealer-login") authenticate("dealer", form);
+    if (formType === "admin-login") authenticate("admin", form);
     if (formType === "register-warranty") handleRegisterWarranty(form);
     if (formType === "allocate-code") handleAllocateCode(form);
     if (formType === "points-settings") handlePointsSettings(form);
@@ -2208,6 +2245,8 @@
     if (action === "export-warranties") exportWarranties();
     if (action === "export-points") exportPoints();
     if (action === "export-redemptions") exportRedemptions();
+    if (action === "dealer-logout") signOut("dealer");
+    if (action === "admin-logout") signOut("admin");
   });
 
   function handleVerify(form) {
