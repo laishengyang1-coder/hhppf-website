@@ -2202,6 +2202,7 @@
     window.scrollTo(0, 0);
     window.requestAnimationFrame(() => window.scrollTo(0, 0));
     window.setTimeout(() => window.scrollTo(0, 0), 0);
+    window.setTimeout(() => window.scrollTo(0, 0), 160);
   }
 
   function showToast(message) {
