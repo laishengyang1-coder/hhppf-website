@@ -111,6 +111,11 @@ a {
   color: #ffffff !important;
 }
 
+.lang-switch.is-active {
+  background: var(--orange);
+  color: #ffffff !important;
+}
+
 .hero {
   position: relative;
   min-height: 94vh;
