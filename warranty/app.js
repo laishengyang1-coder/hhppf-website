@@ -1,6 +1,10 @@
 (function () {
   "use strict";
 
+  if ("scrollRestoration" in window.history) {
+    window.history.scrollRestoration = "manual";
+  }
+
   const STORAGE_KEY = "hhWarrantyPortalV1";
   const VERSION = 1;
   const AUTH = {
@@ -871,6 +875,7 @@
     selectedRecordId: "",
     toast: "",
   };
+  let lastRenderedRoute = "";
 
   function loadData() {
     try {
@@ -1092,9 +1097,11 @@
     return `
       <header class="portal-header">
         <a class="portal-brand" href="${href("home")}" aria-label="H&H Warranty home">
-          <img src="../assets/hh-logo.png" alt="H&H Automotive Films" />
-          <span>Warranty System</span>
-          <strong>H&amp;H</strong>
+          <span class="portal-brand-mark" aria-hidden="true">H&amp;H</span>
+          <span class="portal-brand-copy">
+            <span>Warranty System</span>
+            <strong>H&amp;H</strong>
+          </span>
         </a>
         <nav class="portal-nav" aria-label="Warranty navigation">
           ${nav
@@ -1151,11 +1158,8 @@
       <main class="workspace-page">
         <aside class="workspace-sidebar">
           <a class="workspace-brand" href="${href("home")}" aria-label="H&H Warranty home">
-            <img src="../assets/hh-logo.png" alt="H&H Automotive Films" />
-            <div>
-              <strong>H&amp;H</strong>
-              <span>Warranty OS V1</span>
-            </div>
+            <strong>H&amp;H</strong>
+            <span>Warranty OS V1</span>
           </a>
           <nav class="workspace-nav" aria-label="${escapeHtml(kicker)} navigation">
             ${items
@@ -1198,22 +1202,20 @@
   }
 
   function renderSystemOverview() {
-    const activeCount = data.warrantyRecords.filter((record) => record.status === "Active").length;
-    const pendingCount = data.warrantyRecords.filter((record) => record.status === "Pending Review").length;
     return `
-      <section class="panel workflow-panel">
-        <div class="two-column">
-          <div>
+      <section class="workspace-overview">
+        <article class="panel system-brief">
           <p class="eyebrow">Warranty Registration &amp; Verification</p>
-            <h2>${escapeHtml(t("heroTitle"))}</h2>
-          <p class="lead">${escapeHtml(t("heroLead"))}</p>
-          <div class="tag-list" style="margin-top: 22px;">
+          <h2>${escapeHtml(t("heroTitle"))}</h2>
+          <p>${escapeHtml(t("heroLead"))}</p>
+          <div class="tag-list">
             <span>English default</span>
             <span>Chinese support</span>
             <span>Russian support</span>
             <span>Cloudflare D1 / R2 ready</span>
           </div>
-        </div>
+        </article>
+        <article class="panel workflow-card">
           <div class="workflow">
             <p class="section-kicker">V1 Business Flow</p>
             ${[
@@ -1233,39 +1235,7 @@
               )
               .join("")}
           </div>
-        </div>
-      </section>
-
-      <section class="metric-grid" aria-label="Portal metrics">
-        <article class="metric-card"><strong>${data.warrantyCodes.length}</strong><span>Warranty codes in system</span></article>
-        <article class="metric-card"><strong>${activeCount}</strong><span>Active warranty records</span></article>
-        <article class="metric-card"><strong>${pendingCount}</strong><span>Pending HQ reviews</span></article>
-        <article class="metric-card"><strong>${data.rewards.length}</strong><span>Reward items configured</span></article>
-      </section>
-
-      <section class="home-grid">
-        <article class="panel">
-          <h3>Owner Verification</h3>
-          <p>Owners search by VIN. One vehicle can return multiple H&amp;H warranty records, such as PPF, window film, and color film.</p>
-          <a class="text-button" href="${href("verify")}">Try VIN XTA210990R1234567</a>
         </article>
-        <article class="panel">
-          <h3>Dealer Operations</h3>
-          <p>Dealers can register warranties, upload photos, view records, review points, and request H&amp;H materials.</p>
-          <a class="text-button" href="${href("dealer/dashboard")}">Open dealer portal</a>
-        </article>
-        <article class="panel">
-          <h3>HQ Control</h3>
-          <p>HQ manages products, dealers, warranty code import and allocation, reviews, points, rewards, and exports.</p>
-          <a class="text-button" href="${href("admin/dashboard")}">Open admin console</a>
-        </article>
-      </section>
-
-      <section class="feature-grid" style="margin-top: 18px;">
-        <article class="panel"><h3>Warranty Code Rule</h3><p>Factory warranty code equals system warranty code and certificate number.</p></article>
-        <article class="panel"><h3>Window Film Usage</h3><p>Multi-use codes support usage limit, used count, and remaining count.</p></article>
-        <article class="panel"><h3>Photo Storage</h3><p>Production design stores image paths in D1 and image files in Cloudflare R2.</p></article>
-        <article class="panel"><h3>Points Loop</h3><p>Points are awarded only after HQ approval, then used for reward requests.</p></article>
       </section>
     `;
   }
@@ -2211,6 +2181,7 @@
   function render() {
     const route = getRoute();
     const workspace = isWorkspaceRoute(route);
+    const shouldResetScroll = route !== lastRenderedRoute;
     document.documentElement.lang = lang();
     app.innerHTML = `
       <div class="portal-shell ${workspace ? "is-workspace-shell" : ""}">
@@ -2221,6 +2192,16 @@
       </div>
     `;
     localizeRenderedPage();
+    if (shouldResetScroll) {
+      resetPageScroll();
+    }
+    lastRenderedRoute = route;
+  }
+
+  function resetPageScroll() {
+    window.scrollTo(0, 0);
+    window.requestAnimationFrame(() => window.scrollTo(0, 0));
+    window.setTimeout(() => window.scrollTo(0, 0), 0);
   }
 
   function showToast(message) {
