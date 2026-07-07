@@ -402,6 +402,15 @@
       "Only 4 columns are required: warranty code, batch number, product type, and product model. The system automatically fills in warranty years, usage type, usage limit, and leaves dealer/shipment fields blank for later allocation.": "仅需 4 列：质保号、批次号、产品类型、产品型号。系统会自动补全质保年限、使用类型、使用次数，并留空经销商/发货信息供后续划拨。",
       "(warrantyYears, usageType, usageLimit auto-filled)": "（自动填充质保年限、使用类型、使用次数）",
       "Product model": "产品型号",
+      /* ── Allocation page ── */
+      "Allocate to Dealer": "划拨给经销商",
+      "Allocate Selected Codes": "划拨选中质保码",
+      "Unallocated Codes": "未划拨质保码",
+      "Allocated Codes": "已划拨质保码",
+      "No unallocated codes. All codes have been allocated.": "没有未划拨的质保码，所有质保码已划拨。",
+      "No allocated codes yet.": "暂无已划拨质保码。",
+      "Please select a dealer.": "请选择经销商。",
+      "Select warranty codes from the list below, then choose a dealer to allocate. Only unallocated codes can be allocated.": "从下方列表中勾选质保码，然后选择经销商进行划拨。只有未划拨的质保码可以划拨。",
     },
     ru: {
       "Warranty System": "Система гарантии",
@@ -729,6 +738,15 @@
       "Only 4 columns are required: warranty code, batch number, product type, and product model. The system automatically fills in warranty years, usage type, usage limit, and leaves dealer/shipment fields blank for later allocation.": "Требуется только 4 столбца: гарантийный код, номер партии, тип продукта и модель. Система автоматически заполняет срок гарантии, тип и лимит использования, а поля дилера и отгрузки оставляет пустыми для последующего распределения.",
       "(warrantyYears, usageType, usageLimit auto-filled)": "(срок, тип и лимит использования заполняются автоматически)",
       "Product model": "Модель продукта",
+      /* ── Allocation page ── */
+      "Allocate to Dealer": "Распределить дилеру",
+      "Allocate Selected Codes": "Распределить выбранные коды",
+      "Unallocated Codes": "Нераспределенные коды",
+      "Allocated Codes": "Распределенные коды",
+      "No unallocated codes. All codes have been allocated.": "Нет нераспределенных кодов. Все коды распределены.",
+      "No allocated codes yet.": "Нет распределенных кодов.",
+      "Please select a dealer.": "Выберите дилера.",
+      "Select warranty codes from the list below, then choose a dealer to allocate. Only unallocated codes can be allocated.": "Выберите гарантийные коды из списка ниже, затем выберите дилера для распределения. Только нераспределенные коды можно распределить.",
     },
   };
 
@@ -749,6 +767,10 @@
       "Current points:": "当前积分：",
       "Frozen points:": "冻结积分：",
       "points": "积分",
+      /* ── Allocation dynamic phrases ── */
+      "code(s) selected": "个质保码已选中",
+      "code(s) to": "个质保码给",
+      "Allocated ": "已划拨 ",
     },
     ru: {
       "active records found for": "активных записей найдено для",
@@ -781,6 +803,10 @@
       "Years:": "Лет:",
       "Points:": "Баллы:",
       "Status:": "Статус:",
+      /* ── Allocation dynamic phrases ── */
+      "code(s) selected": "код(ов) выбрано",
+      "code(s) to": "код(ов) →",
+      "Allocated ": "Распределено ",
     },
   };
 
@@ -3127,32 +3153,78 @@
   }
 
   function renderAdminAllocation() {
-    const unallocated = data.warrantyCodes.filter((code) => code.status === "Unallocated");
+    const allCodes = data.warrantyCodes;
+    const unallocated = allCodes.filter((code) => code.status === "Unallocated");
+    const allocated = allCodes.filter((code) => code.status === "Allocated" || code.status === "Active");
     return adminShell(
       "admin/allocation",
       `
         <section class="panel">
           <h2>Warranty Code Allocation</h2>
-          <p>Allocate by import batch, shipment batch, product type, code range, or selected warranty codes. This preview supports selected unallocated codes.</p>
-          <form class="form-grid" data-form="allocate-code">
-            <label>
-              Warranty Code
-              <select name="warrantyCode" required>
-                ${unallocated.map((code) => `<option value="${code.code}">${code.code} - ${productLabel(code.productType)}</option>`).join("")}
-              </select>
-            </label>
+          <p>Select warranty codes from the list below, then choose a dealer to allocate. Only unallocated codes can be allocated.</p>
+        </section>
+        <section class="panel">
+          <h3>Allocate to Dealer</h3>
+          <div class="form-grid">
             <label>
               Dealer
-              <select name="dealerCode" required>
-                ${data.dealers.map((dealer) => `<option value="${dealer.code}">${dealer.code} - ${dealer.name}</option>`).join("")}
+              <select id="alloc-dealer" required>
+                ${data.dealers.map((dealer) => `<option value="${dealer.code}">${dealer.code} - ${escapeHtml(dealer.name)}</option>`).join("")}
               </select>
             </label>
-            <div class="form-actions full">
-              <button class="button" type="submit" ${unallocated.length ? "" : "disabled"}>Allocate Selected Code</button>
+          </div>
+          <div class="inline-actions" style="margin-top:14px;">
+            <button class="button" data-action="allocate-selected">Allocate Selected Codes</button>
+            <span class="small" id="alloc-count">0 codes selected</span>
+          </div>
+        </section>
+        <section class="panel">
+          <h3>Unallocated Codes (${unallocated.length})</h3>
+          ${unallocated.length ? `
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th style="width:40px;"><input type="checkbox" id="alloc-select-all" data-action="alloc-select-all" /></th><th>Warranty Code</th><th>Product</th><th>Batch</th><th>Usage</th><th>Remaining</th></tr></thead>
+                <tbody>
+                  ${unallocated.map((code) => {
+                    const remaining = Number(code.usageLimit) - Number(code.usedCount);
+                    return `
+                      <tr>
+                        <td><input type="checkbox" class="alloc-checkbox" data-code="${escapeHtml(code.code)}" data-action="alloc-check" /></td>
+                        <td><strong>${escapeHtml(code.code)}</strong></td>
+                        <td>${productLabel(code.productType)}<br><span class="small">${escapeHtml(code.productName)}</span></td>
+                        <td>${escapeHtml(code.batchNo || "-")}</td>
+                        <td>${escapeHtml(code.usageType)} / ${escapeHtml(code.usageLimit)}</td>
+                        <td>${remaining}</td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+              </table>
             </div>
-          </form>
-          <div class="divider"></div>
-          ${warrantyCodesTable(unallocated)}
+          ` : `<p class="notice">No unallocated codes. All codes have been allocated.</p>`}
+        </section>
+        <section class="panel">
+          <h3>Allocated Codes (${allocated.length})</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Warranty Code</th><th>Product</th><th>Dealer</th><th>Usage</th><th>Remaining</th><th>Status</th></tr></thead>
+              <tbody>
+                ${allocated.length ? allocated.map((code) => {
+                  const remaining = Number(code.usageLimit) - Number(code.usedCount);
+                  return `
+                    <tr>
+                      <td><strong>${escapeHtml(code.code)}</strong></td>
+                      <td>${productLabel(code.productType)}<br><span class="small">${escapeHtml(code.productName)}</span></td>
+                      <td>${escapeHtml(code.dealerCode || "-")}</td>
+                      <td>${escapeHtml(code.usageType)} / ${escapeHtml(code.usageLimit)}</td>
+                      <td>${remaining}</td>
+                      <td>${statusBadge(code.status)}</td>
+                    </tr>
+                  `;
+                }).join("") : `<tr><td colspan="6" style="text-align:center;color:var(--soft);">No allocated codes yet.</td></tr>`}
+              </tbody>
+            </table>
+          </div>
         </section>
       `,
     );
@@ -3586,6 +3658,7 @@
       if (summary && code) summary.innerHTML = renderCodeSummary(code);
     }
     if (target.id === "wc-product") syncWcProductFields();
+    if (target.classList.contains("alloc-checkbox")) updateAllocCount();
   });
 
   /* ── Warranty Code Combobox (manual input + fuzzy search) ── */
@@ -3710,7 +3783,6 @@
     if (formType === "dealer-login") authenticate("dealer", form);
     if (formType === "admin-login") authenticate("admin", form);
     if (formType === "register-warranty") handleRegisterWarranty(form);
-    if (formType === "allocate-code") handleAllocateCode(form);
     if (formType === "points-settings") handlePointsSettings(form);
     if (formType === "manual-points") handleManualPoints(form);
     if (formType === "redemption-request") handleRedemptionRequest(form);
@@ -3760,6 +3832,8 @@
     if (action === "admin-wc-create") handleAdminWcCreate();
     if (action === "admin-wc-reset") handleAdminWcReset();
     if (action === "admin-wc-delete") handleAdminWcDelete(parseInt(target.getAttribute("data-idx"), 10));
+    if (action === "allocate-selected") handleAllocateSelected();
+    if (action === "alloc-select-all") toggleAllocSelectAll();
   });
 
   function handleVerify(form) {
@@ -3818,15 +3892,50 @@
     setRoute("dealer/warranty-records");
   }
 
-  function handleAllocateCode(form) {
-    const formData = new FormData(form);
-    const code = codeByValue(formData.get("warrantyCode"));
-    const dealer = dealerByCode(formData.get("dealerCode"));
-    if (!code || !dealer) return;
-    code.dealerCode = dealer.code;
-    code.status = "Allocated";
+  function handleAllocateSelected() {
+    const dealerSelect = document.getElementById("alloc-dealer");
+    if (!dealerSelect || !dealerSelect.value) {
+      showToast("Please select a dealer.");
+      return;
+    }
+    const dealer = dealerByCode(dealerSelect.value);
+    if (!dealer) return;
+    const checkboxes = document.querySelectorAll(".alloc-checkbox:checked");
+    if (checkboxes.length === 0) {
+      showToast("Please select at least one warranty code.");
+      return;
+    }
+    let count = 0;
+    checkboxes.forEach((cb) => {
+      const code = codeByValue(cb.dataset.code);
+      if (code && code.status === "Unallocated") {
+        code.dealerCode = dealer.code;
+        code.status = "Allocated";
+        count++;
+      }
+    });
     saveData();
-    showToast(`Allocated ${code.code} to ${dealer.name}.`);
+    showToast(`Allocated ${count} code(s) to ${dealer.name}.`);
+    renderPage("admin/allocation");
+  }
+
+  function updateAllocCount() {
+    const checked = document.querySelectorAll(".alloc-checkbox:checked").length;
+    const countEl = document.getElementById("alloc-count");
+    if (countEl) countEl.textContent = translateValue(`${checked} code(s) selected`);
+    const selectAll = document.getElementById("alloc-select-all");
+    const allBoxes = document.querySelectorAll(".alloc-checkbox");
+    if (selectAll && allBoxes.length > 0) {
+      selectAll.checked = checked === allBoxes.length;
+    }
+  }
+
+  function toggleAllocSelectAll() {
+    const selectAll = document.getElementById("alloc-select-all");
+    document.querySelectorAll(".alloc-checkbox").forEach((cb) => {
+      cb.checked = selectAll.checked;
+    });
+    updateAllocCount();
   }
 
   function handlePointsSettings(form) {
