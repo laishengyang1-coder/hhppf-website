@@ -446,40 +446,6 @@ a {
   color: #786f67;
 }
 
-.workspace-overview {
-  display: grid;
-  grid-template-columns: minmax(0, 1.12fr) minmax(360px, 0.88fr);
-  gap: 22px;
-  align-items: stretch;
-}
-
-.workspace-overview > * {
-  min-width: 0;
-}
-
-.system-brief {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.system-brief h2 {
-  max-width: 760px;
-  margin-bottom: 14px;
-}
-
-.system-brief p:not(.eyebrow) {
-  max-width: 780px;
-  margin-bottom: 20px;
-  color: #6f675f;
-  font-size: 17px;
-  line-height: 1.65;
-}
-
-.workflow-card .workflow {
-  gap: 15px;
-}
-
 .hero {
   display: grid;
   grid-template-columns: minmax(540px, 1.16fr) minmax(340px, 0.84fr);
@@ -856,6 +822,14 @@ textarea:focus {
   background: rgba(255, 255, 255, 0.72);
 }
 
+.compact-table {
+  overflow-x: visible;
+}
+
+.compact-table table {
+  min-width: 0;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -1155,7 +1129,6 @@ tr:last-child td {
   .login-wrap,
   .admin-grid,
   .two-column,
-  .workspace-overview,
   .workflow-panel .two-column {
     grid-template-columns: 1fr;
   }

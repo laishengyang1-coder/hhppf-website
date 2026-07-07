@@ -1201,45 +1201,6 @@
     return renderVerify();
   }
 
-  function renderSystemOverview() {
-    return `
-      <section class="workspace-overview">
-        <article class="panel system-brief">
-          <p class="eyebrow">Warranty Registration &amp; Verification</p>
-          <h2>${escapeHtml(t("heroTitle"))}</h2>
-          <p>${escapeHtml(t("heroLead"))}</p>
-          <div class="tag-list">
-            <span>English default</span>
-            <span>Chinese support</span>
-            <span>Russian support</span>
-            <span>Cloudflare D1 / R2 ready</span>
-          </div>
-        </article>
-        <article class="panel workflow-card">
-          <div class="workflow">
-            <p class="section-kicker">V1 Business Flow</p>
-            ${[
-              "HQ imports factory warranty codes and allocates them to authorized dealers.",
-              "Dealer registers VIN, vehicle, installation category, and delivery photos.",
-              "HQ reviews the submission, activates warranty, generates certificate, and awards points.",
-              "Owner verifies by VIN and downloads the warranty certificate.",
-              "Dealer spends partner points in the Rewards Center.",
-            ]
-              .map(
-                (step, index) => `
-                  <div class="workflow-step">
-                    <strong>${index + 1}</strong>
-                    <p>${step}</p>
-                  </div>
-                `,
-              )
-              .join("")}
-          </div>
-        </article>
-      </section>
-    `;
-  }
-
   function renderVerify() {
     const query = sessionStorage.getItem("hhVerifyVin") || "";
     const normalized = query.trim().toUpperCase();
@@ -1667,11 +1628,8 @@
           <article class="metric-card"><strong>${issuedPoints}</strong><span>Points issued</span></article>
           <article class="metric-card"><strong>${data.redemptions.length}</strong><span>Redemption requests</span></article>
         </section>
-        ${renderSystemOverview()}
-        <section class="two-column">
-          <article class="panel"><h3>Dealer Ranking</h3>${dealerRankingTable()}</article>
-          <article class="panel"><h3>Product Type Split</h3>${productSplitTable()}</article>
-        </section>
+        <section class="panel"><h3>Dealer Ranking</h3>${dealerRankingTable()}</section>
+        <section class="panel"><h3>Product Type Split</h3>${productSplitTable()}</section>
       `,
     );
   }
@@ -2116,7 +2074,7 @@
       }))
       .sort((a, b) => b.count - a.count);
     return `
-      <div class="table-wrap">
+      <div class="table-wrap compact-table">
         <table>
           <thead><tr><th>Dealer</th><th>Country</th><th>Records</th><th>Points</th></tr></thead>
           <tbody>${rows
@@ -2138,7 +2096,7 @@
     }, {});
     const rows = Object.keys(counts);
     return `
-      <div class="table-wrap">
+      <div class="table-wrap compact-table">
         <table>
           <thead><tr><th>Product Type</th><th>Records</th></tr></thead>
           <tbody>${rows.map((type) => `<tr><td>${productLabel(type)}</td><td>${counts[type]}</td></tr>`).join("")}</tbody>
