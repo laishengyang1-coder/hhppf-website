@@ -187,6 +187,32 @@
       "Points Ledger": "积分流水",
       "Inventory quantity is managed by HQ but not shown to dealers.": "库存数量由总部管理，但不在经销商端显示。",
       "Request Redemption": "申请兑换",
+      "Available materials": "可兑换物料清单",
+      "Current catalog. HQ manages inventory quantity; dealer only sees exchange status and point cost.": "当前可申请物料清单。总部管理库存数量，经销商端只显示兑换状态和所需积分。",
+      "Select materials for this request": "选择本次申请物料",
+      "Enter quantities below. The system will calculate line totals and submit the whole request to HQ for review.": "在下方填写数量，系统会自动计算每项小计，并将整单提交给总部审核。",
+      "Material": "物料",
+      "Unit points": "单件积分",
+      "Quantity": "数量",
+      "Line total": "小计积分",
+      "Request summary": "申请汇总",
+      "No materials selected yet.": "暂未选择物料。",
+      "Select materials and quantities to calculate points.": "选择物料和数量后会自动计算积分。",
+      "Ready to submit for HQ review.": "可以提交给总部审核。",
+      "Selected total exceeds available points.": "已选总积分超过可用积分。",
+      "Submit Redemption Request": "提交兑换申请",
+      "Redemption history": "兑换申请历史",
+      "Track HQ review progress and previous material requests.": "查看总部审核进展，以及历史申请的物料明细。",
+      "Materials": "物料明细",
+      "Qty": "数量",
+      "Status": "状态",
+      "Action": "操作",
+      "Frozen points:": "冻结积分：",
+      "No redemption requests yet.": "暂无兑换申请。",
+      "Please select at least one material before submitting.": "请先至少选择一种物料。",
+      "Selected materials exceed available points.": "已选物料超过可用积分。",
+      "Redemption request submitted to HQ for review.": "兑换申请已提交给总部审核。",
+      "Pending HQ review. Points are frozen until review.": "等待总部审核。积分将在审核期间冻结。",
       "HQ Admin": "总部管理员",
       "Admin Login": "总部登录",
       "Enter Admin Console": "进入总部后台",
@@ -227,6 +253,7 @@
       "Approval activates the warranty, calculates expiry date, generates the certificate, awards dealer points, and updates window-film usage count.": "审核通过会激活质保、计算到期日、生成证书、发放经销商积分，并更新窗膜使用次数。",
       "Approve": "通过",
       "Reject": "驳回",
+      "Ship": "标记发货",
       "No pending reviews right now.": "当前没有待审核记录。",
       "Points Settings": "积分设置",
       "Default Warranty Approval Points": "默认质保审核积分",
@@ -278,6 +305,7 @@
       "Out of Stock": "暂不可兑换",
       "Coming Soon": "即将上线",
       "Active": "有效",
+      "Pending Review": "待审核",
       "Allocated": "已划拨",
       "Unallocated": "未划拨",
       "Rejected": "已驳回",
@@ -413,6 +441,32 @@
       "Points Ledger": "Журнал баллов",
       "Inventory quantity is managed by HQ but not shown to dealers.": "Количество на складе управляется HQ, но не показывается дилерам.",
       "Request Redemption": "Запросить обмен",
+      "Available materials": "Доступные материалы",
+      "Current catalog. HQ manages inventory quantity; dealer only sees exchange status and point cost.": "Текущий каталог. HQ управляет складским количеством; дилер видит только статус обмена и стоимость в баллах.",
+      "Select materials for this request": "Выберите материалы для заявки",
+      "Enter quantities below. The system will calculate line totals and submit the whole request to HQ for review.": "Введите количество ниже. Система рассчитает строки и отправит всю заявку на проверку HQ.",
+      "Material": "Материал",
+      "Unit points": "Баллы за единицу",
+      "Quantity": "Количество",
+      "Line total": "Итого по строке",
+      "Request summary": "Сводка заявки",
+      "No materials selected yet.": "Материалы пока не выбраны.",
+      "Select materials and quantities to calculate points.": "Выберите материалы и количество для расчета баллов.",
+      "Ready to submit for HQ review.": "Готово к отправке на проверку HQ.",
+      "Selected total exceeds available points.": "Выбранная сумма превышает доступные баллы.",
+      "Submit Redemption Request": "Отправить заявку на обмен",
+      "Redemption history": "История заявок",
+      "Track HQ review progress and previous material requests.": "Отслеживайте проверку HQ и прошлые заявки на материалы.",
+      "Materials": "Материалы",
+      "Qty": "Кол-во",
+      "Status": "Статус",
+      "Action": "Действие",
+      "Frozen points:": "Замороженные баллы:",
+      "No redemption requests yet.": "Заявок на обмен пока нет.",
+      "Please select at least one material before submitting.": "Выберите хотя бы один материал перед отправкой.",
+      "Selected materials exceed available points.": "Выбранные материалы превышают доступные баллы.",
+      "Redemption request submitted to HQ for review.": "Заявка отправлена в HQ на проверку.",
+      "Pending HQ review. Points are frozen until review.": "Ожидает проверки HQ. Баллы заморожены до проверки.",
       "HQ Admin": "Админ HQ",
       "Admin Login": "Вход администратора",
       "Enter Admin Console": "Войти в админ-панель",
@@ -452,6 +506,7 @@
       "Approval activates the warranty, calculates expiry date, generates the certificate, awards dealer points, and updates window-film usage count.": "Одобрение активирует гарантию, рассчитывает дату окончания, создает сертификат, начисляет баллы дилеру и обновляет счетчик оконной пленки.",
       "Approve": "Одобрить",
       "Reject": "Отклонить",
+      "Ship": "Отметить отправку",
       "No pending reviews right now.": "Сейчас нет записей на проверке.",
       "Points Settings": "Настройки баллов",
       "Default Warranty Approval Points": "Баллы за одобрение гарантии",
@@ -503,6 +558,7 @@
       "Out of Stock": "Нет в наличии",
       "Coming Soon": "Скоро",
       "Active": "Активна",
+      "Pending Review": "На проверке",
       "Allocated": "Назначен",
       "Unallocated": "Не назначен",
       "Rejected": "Отклонена",
@@ -541,6 +597,9 @@
       "Checklist: valid code, allocated dealer, VIN filled, product match, photo uploaded, remaining uses": "检查项：质保码有效、经销商匹配、VIN 已填、产品匹配、已上传图片、剩余次数",
       "notes reviewed.": "备注已检查。",
       "Available points:": "可用积分：",
+      "Current points:": "当前积分：",
+      "Frozen points:": "冻结积分：",
+      "points": "积分",
     },
     ru: {
       "active records found for": "активных записей найдено для",
@@ -555,6 +614,9 @@
       "Checklist: valid code, allocated dealer, VIN filled, product match, photo uploaded, remaining uses": "Проверка: код действителен, дилер назначен, VIN заполнен, продукт совпадает, фото загружено, осталось использований",
       "notes reviewed.": "примечания проверены.",
       "Available points:": "Доступные баллы:",
+      "Current points:": "Текущие баллы:",
+      "Frozen points:": "Замороженные баллы:",
+      "points": "баллов",
     },
   };
 
@@ -1077,7 +1139,47 @@
   function frozenPointsForDealer(dealerCode) {
     return data.redemptions
       .filter((item) => item.dealerCode === dealerCode && item.status === "Pending Review")
-      .reduce((sum, item) => sum + item.points * item.quantity, 0);
+      .reduce((sum, item) => sum + redemptionTotalPoints(item), 0);
+  }
+
+  function redemptionItems(redemption) {
+    if (Array.isArray(redemption.items) && redemption.items.length) {
+      return redemption.items.map((item) => ({
+        rewardId: item.rewardId,
+        rewardName: item.rewardName,
+        points: Number(item.points || 0),
+        quantity: Number(item.quantity || 0),
+      }));
+    }
+    return [
+      {
+        rewardId: redemption.rewardId,
+        rewardName: redemption.rewardName,
+        points: Number(redemption.points || 0),
+        quantity: Number(redemption.quantity || 0),
+      },
+    ];
+  }
+
+  function redemptionTotalQuantity(redemption) {
+    return redemptionItems(redemption).reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+  }
+
+  function redemptionTotalPoints(redemption) {
+    return redemptionItems(redemption).reduce(
+      (sum, item) => sum + Number(item.points || 0) * Number(item.quantity || 0),
+      0,
+    );
+  }
+
+  function redemptionRewardLabel(redemption) {
+    return redemptionItems(redemption)
+      .map((item) => {
+        const quantity = Number(item.quantity || 0);
+        const points = Number(item.points || 0);
+        return `${item.rewardName} x ${quantity} (${points} x ${quantity} = ${points * quantity} points)`;
+      })
+      .join(" / ");
   }
 
   function availableCodesForDealer(dealerCode) {
@@ -2041,26 +2143,99 @@
       "dealer/rewards",
       `
         <section class="panel">
-          <h2>Rewards Center</h2>
-          <p>Available points: <strong>${available}</strong>. Inventory quantity is managed by HQ but not shown to dealers.</p>
+          <h2>Available materials</h2>
+          <p>Current catalog. HQ manages inventory quantity; dealer only sees exchange status and point cost.</p>
+          <p>
+            Current points: <strong>${dealer.points}</strong>.
+            Frozen points: <strong>${frozen}</strong>.
+            Available points: <strong>${available}</strong>.
+          </p>
           <div class="reward-grid">
             ${data.rewards
-              .map((reward) => {
-                const canRedeem = reward.status === "Available for Redemption" && available >= reward.points;
-                return `
-                  <article class="data-card">
+              .map(
+                (reward) => `
+                  <article class="data-card reward-catalog-card">
                     <span class="badge">${escapeHtml(reward.category)}</span>
                     <h3>${escapeHtml(reward.name)}</h3>
                     <p>${reward.points} points per item</p>
                     ${statusBadge(reward.status)}
-                    <div class="form-actions" style="margin-top: 14px;">
-                      <button class="button" data-action="redeem" data-id="${reward.id}" ${canRedeem ? "" : "disabled"}>Request Redemption</button>
-                    </div>
                   </article>
-                `;
-              })
+                `,
+              )
               .join("")}
           </div>
+        </section>
+
+        <section class="panel redemption-builder">
+          <h2>Select materials for this request</h2>
+          <p>Enter quantities below. The system will calculate line totals and submit the whole request to HQ for review.</p>
+          <form data-form="redemption-request">
+            <div class="redemption-layout">
+              <div class="table-wrap redemption-table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Material</th>
+                      <th>Status</th>
+                      <th>Unit points</th>
+                      <th>Quantity</th>
+                      <th>Line total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${data.rewards
+                      .map((reward) => {
+                        const isAvailable = reward.status === "Available for Redemption";
+                        return `
+                          <tr class="${isAvailable ? "" : "is-muted"}">
+                            <td>
+                              <strong>${escapeHtml(reward.name)}</strong>
+                              <span>${escapeHtml(reward.category)}</span>
+                            </td>
+                            <td>${statusBadge(reward.status)}</td>
+                            <td>${reward.points} points</td>
+                            <td>
+                              <input
+                                class="quantity-input"
+                                data-reward-qty
+                                data-reward-id="${escapeHtml(reward.id)}"
+                                name="qty-${escapeHtml(reward.id)}"
+                                type="number"
+                                min="0"
+                                max="99"
+                                step="1"
+                                value="0"
+                                ${isAvailable ? "" : "disabled"}
+                              />
+                            </td>
+                            <td><strong data-line-total="${escapeHtml(reward.id)}">0 points</strong></td>
+                          </tr>
+                        `;
+                      })
+                      .join("")}
+                  </tbody>
+                </table>
+              </div>
+              <aside class="redemption-summary" data-redemption-summary data-available="${available}">
+                <h3>Request summary</h3>
+                <ul data-redemption-lines>
+                  <li>No materials selected yet.</li>
+                </ul>
+                <div class="redemption-total">
+                  <span>Total points</span>
+                  <strong><span data-redemption-total>0</span></strong>
+                </div>
+                <p class="small" data-redemption-warning>Select materials and quantities to calculate points.</p>
+                <button class="button" data-redemption-submit type="submit" disabled>Submit Redemption Request</button>
+              </aside>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <h2>Redemption history</h2>
+          <p>Track HQ review progress and previous material requests.</p>
+          ${redemptionsTable(false, dealer.code)}
         </section>
       `,
     );
@@ -2496,22 +2671,23 @@
     `;
   }
 
-  function redemptionsTable(withActions) {
-    if (!data.redemptions.length) return `<p class="notice">No redemption requests yet.</p>`;
+  function redemptionsTable(withActions, dealerCode = "") {
+    const rows = dealerCode ? data.redemptions.filter((item) => item.dealerCode === dealerCode) : data.redemptions;
+    if (!rows.length) return `<p class="notice">No redemption requests yet.</p>`;
     return `
       <div class="table-wrap">
         <table>
-          <thead><tr><th>ID</th><th>Dealer</th><th>Reward</th><th>Qty</th><th>Points</th><th>Status</th><th>Remark</th>${withActions ? "<th>Action</th>" : ""}</tr></thead>
+          <thead><tr><th>ID</th><th>Dealer</th><th>Materials</th><th>Qty</th><th>Total points</th><th>Status</th><th>Remark</th>${withActions ? "<th>Action</th>" : ""}</tr></thead>
           <tbody>
-            ${data.redemptions
+            ${rows
               .map(
                 (item) => `
                   <tr>
                     <td>${escapeHtml(item.id)}</td>
                     <td>${escapeHtml(item.dealerName)}</td>
-                    <td>${escapeHtml(item.rewardName)}</td>
-                    <td>${escapeHtml(item.quantity)}</td>
-                    <td>${escapeHtml(item.points * item.quantity)}</td>
+                    <td>${escapeHtml(redemptionRewardLabel(item))}</td>
+                    <td>${escapeHtml(redemptionTotalQuantity(item))}</td>
+                    <td>${escapeHtml(redemptionTotalPoints(item))}</td>
                     <td>${statusBadge(item.status)}</td>
                     <td>${escapeHtml(item.remark)}</td>
                     ${
@@ -2682,10 +2858,21 @@
       render();
       return;
     }
+    if (target.matches("[data-reward-qty]")) {
+      updateRedemptionSummary();
+      return;
+    }
     if (target.id === "dealer-code-select") {
       const summary = document.getElementById("dealer-code-summary");
       const code = codeByValue(target.value);
       if (summary && code) summary.innerHTML = renderCodeSummary(code);
+    }
+  });
+
+  document.addEventListener("input", (event) => {
+    const target = event.target;
+    if (target.matches("[data-reward-qty]")) {
+      updateRedemptionSummary();
     }
   });
 
@@ -2701,6 +2888,7 @@
     if (formType === "allocate-code") handleAllocateCode(form);
     if (formType === "points-settings") handlePointsSettings(form);
     if (formType === "manual-points") handleManualPoints(form);
+    if (formType === "redemption-request") handleRedemptionRequest(form);
   });
 
   document.addEventListener("click", (event) => {
@@ -2853,6 +3041,90 @@
     showToast("Redemption request submitted. Points are frozen for review.");
   }
 
+  function selectedRedemptionItems(form) {
+    return [...form.querySelectorAll("[data-reward-qty]")]
+      .map((input) => {
+        const reward = data.rewards.find((item) => item.id === input.getAttribute("data-reward-id"));
+        const quantity = Math.max(0, Math.min(99, Math.floor(Number(input.value || 0))));
+        if (!reward || reward.status !== "Available for Redemption") return null;
+        const lineTotal = reward.points * quantity;
+        const lineTotalElement = form.querySelector(`[data-line-total="${reward.id}"]`);
+        if (lineTotalElement) lineTotalElement.textContent = `${lineTotal} ${translateValue("points")}`;
+        if (!quantity) return null;
+        return {
+          rewardId: reward.id,
+          rewardName: reward.name,
+          points: reward.points,
+          quantity,
+        };
+      })
+      .filter(Boolean);
+  }
+
+  function updateRedemptionSummary() {
+    const form = document.querySelector('[data-form="redemption-request"]');
+    if (!form) return;
+    const summary = form.querySelector("[data-redemption-summary]");
+    if (!summary) return;
+    const available = Number(summary.getAttribute("data-available") || 0);
+    const items = selectedRedemptionItems(form);
+    const total = items.reduce((sum, item) => sum + item.points * item.quantity, 0);
+    const lines = summary.querySelector("[data-redemption-lines]");
+    const totalNode = summary.querySelector("[data-redemption-total]");
+    const warning = summary.querySelector("[data-redemption-warning]");
+    const submit = summary.querySelector("[data-redemption-submit]");
+    if (lines) {
+      lines.innerHTML = items.length
+        ? items
+            .map(
+              (item) =>
+                `<li>${escapeHtml(item.rewardName)} x ${item.quantity} = ${item.points * item.quantity} ${escapeHtml(translateValue("points"))}</li>`,
+            )
+            .join("")
+        : `<li>${escapeHtml(translateValue("No materials selected yet."))}</li>`;
+    }
+    if (totalNode) totalNode.textContent = String(total);
+    const overBalance = total > available;
+    if (warning) {
+      warning.textContent = overBalance
+        ? translateValue("Selected total exceeds available points.")
+        : items.length
+          ? translateValue("Ready to submit for HQ review.")
+          : translateValue("Select materials and quantities to calculate points.");
+    }
+    if (submit) submit.disabled = !items.length || overBalance;
+  }
+
+  function handleRedemptionRequest(form) {
+    const dealer = activeDealer();
+    const available = dealer.points - frozenPointsForDealer(dealer.code);
+    const items = selectedRedemptionItems(form);
+    const total = items.reduce((sum, item) => sum + item.points * item.quantity, 0);
+    if (!items.length) {
+      showToast("Please select at least one material before submitting.");
+      return;
+    }
+    if (total > available) {
+      showToast("Selected materials exceed available points.");
+      return;
+    }
+    data.redemptions.unshift({
+      id: `RD-${new Date().getFullYear()}-${String(data.redemptions.length + 1).padStart(4, "0")}`,
+      dealerCode: dealer.code,
+      dealerName: dealer.name,
+      rewardId: items.length === 1 ? items[0].rewardId : "MULTI",
+      rewardName: items.map((item) => item.rewardName).join(" / "),
+      points: total,
+      quantity: items.reduce((sum, item) => sum + item.quantity, 0),
+      items,
+      status: "Pending Review",
+      remark: "Pending HQ review. Points are frozen until review.",
+      time: nowLabel(),
+    });
+    saveData();
+    showToast("Redemption request submitted to HQ for review.");
+  }
+
   function handleReview(recordId, approved) {
     const record = data.warrantyRecords.find((item) => item.id === recordId);
     if (!record) return;
@@ -2913,7 +3185,7 @@
     if (!redemption) return;
     const dealer = dealerByCode(redemption.dealerCode);
     if (status === "Approved, Waiting for Next Shipment" && redemption.status === "Pending Review" && dealer) {
-      dealer.points -= redemption.points * redemption.quantity;
+      dealer.points -= redemptionTotalPoints(redemption);
     }
     redemption.status = status;
     redemption.remark =
@@ -2996,7 +3268,20 @@
   }
 
   function exportRedemptions() {
-    downloadCsv("hh-redemption-requests.csv", data.redemptions);
+    downloadCsv(
+      "hh-redemption-requests.csv",
+      data.redemptions.map((item) => ({
+        id: item.id,
+        dealerCode: item.dealerCode,
+        dealerName: item.dealerName,
+        materials: redemptionRewardLabel(item),
+        quantity: redemptionTotalQuantity(item),
+        totalPoints: redemptionTotalPoints(item),
+        status: item.status,
+        remark: item.remark,
+        time: item.time,
+      })),
+    );
   }
 
   function downloadCsv(filename, rows) {

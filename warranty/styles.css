@@ -689,6 +689,105 @@ html[lang="zh"] .panel > h2 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.reward-catalog-card {
+  min-height: 176px;
+}
+
+.redemption-builder {
+  margin-top: 18px;
+}
+
+.redemption-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.34fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.redemption-table-wrap {
+  margin-top: 0;
+}
+
+.redemption-table-wrap table {
+  min-width: 860px;
+}
+
+.redemption-table-wrap td strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.redemption-table-wrap td span {
+  color: var(--soft);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.redemption-table-wrap tr.is-muted {
+  color: var(--soft);
+}
+
+.redemption-table-wrap tr.is-muted input {
+  background: rgba(18, 18, 17, 0.04);
+}
+
+.quantity-input {
+  max-width: 92px;
+  min-height: 40px;
+}
+
+.redemption-summary {
+  position: sticky;
+  top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow-soft);
+  padding: 18px;
+}
+
+.redemption-summary h3 {
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+}
+
+.redemption-summary ul {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding-left: 1.1em;
+  color: var(--soft);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.redemption-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  border-top: 1px solid rgba(18, 18, 17, 0.1);
+  padding-top: 14px;
+  margin-bottom: 12px;
+}
+
+.redemption-total span {
+  color: var(--soft);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.redemption-total strong {
+  color: var(--green);
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.redemption-summary .button {
+  width: 100%;
+  margin-top: 12px;
+}
+
 .panel,
 .metric-card,
 .data-card,
@@ -804,6 +903,14 @@ select:focus,
 textarea:focus {
   outline: 2px solid rgba(233, 72, 26, 0.18);
   border-color: var(--orange);
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.54;
 }
 
 .table-wrap {
@@ -1318,6 +1425,14 @@ tr:last-child td {
   .three-column,
   .reward-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .redemption-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .redemption-summary {
+    position: static;
   }
 }
 
