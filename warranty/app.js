@@ -6,7 +6,7 @@
   }
 
   const STORAGE_KEY = "hhWarrantyPortalV1";
-  const VERSION = 1;
+  const VERSION = 2;
   const AUTH = {
     dealer: {
       email: "dealer@hhppf.com",
@@ -627,33 +627,224 @@
       pointsValidityMonths: 12,
     },
     products: [
+      /* ── PPF / Paint Protection Film 车衣系列 ── */
       {
         type: "PPF",
-        name: "Ultra Clear PPF",
-        warrantyYears: 10,
-        usageType: "Single",
-        defaultUsageLimit: 1,
-        status: "Active",
-        remark: "Premium full-car paint protection film.",
-      },
-      {
-        type: "WINDOW_FILM",
-        name: "Ceramic Window Film",
-        warrantyYears: 7,
-        usageType: "Multi",
-        defaultUsageLimit: 24,
-        status: "Active",
-        remark: "Default 24 uses per warranty code.",
-      },
-      {
-        type: "TPU_COLOR_PPF",
-        name: "Satin TPU Color PPF",
+        name: "HEHE PPF Classic 190",
+        externalModel: "HH Classic 190",
         warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
-        remark: "One vehicle per warranty code.",
+        remark: "Entry-level, 7.5mil, flexible & easy installation. 5-year warranty.",
       },
+      {
+        type: "PPF",
+        name: "HEHE PPF Plus 190",
+        externalModel: "HH Plus 190",
+        warrantyYears: 5,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "Mid-range, 7.5mil, lotus effect coating, balanced strength & toughness. 5-year warranty.",
+      },
+      {
+        type: "PPF",
+        name: "HEHE PPF Pro 210",
+        externalModel: "HH Pro 210",
+        warrantyYears: 12,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "Mid-high, 8.5mil, high transparency & elongation, polycarbon hydrophobic coating. 12-year warranty.",
+      },
+      {
+        type: "PPF",
+        name: "HEHE PPF Ultra 240",
+        externalModel: "HH Ultra 240",
+        warrantyYears: 10,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "Premium, 9.5mil, Lubrizol particles, high gloss & anti-stain, superior hydrophobicity. 10-year warranty.",
+      },
+      {
+        type: "PPF",
+        name: "HEHE Matte PPF",
+        externalModel: "HH Matte",
+        warrantyYears: 5,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "Matte finish, 7.5mil, silky surface, excellent strength & workability. 5-year warranty.",
+      },
+      /* ── Dual Silver Window Film 双银安全系列 ── */
+      {
+        type: "WINDOW_FILM",
+        name: "HEHE Dual Silver Series DS 70",
+        externalModel: "HH DS70",
+        warrantyYears: 10,
+        usageType: "Multi",
+        defaultUsageLimit: 24,
+        status: "Active",
+        remark: "Front windshield, VLT 70%, IR rejection 95%, TSER 58%. 10-year warranty.",
+      },
+      {
+        type: "WINDOW_FILM",
+        name: "HEHE Dual Silver Series DS 20",
+        externalModel: "HH DS20",
+        warrantyYears: 10,
+        usageType: "Multi",
+        defaultUsageLimit: 24,
+        status: "Active",
+        remark: "Side/rear windows, VLT 25%, IR rejection 95%, TSER 65%. 10-year warranty.",
+      },
+      /* ── UV Shield Window Film 纳米陶瓷护肤系列 ── */
+      {
+        type: "WINDOW_FILM",
+        name: "HEHE UV Shield Series UV70",
+        externalModel: "HH UV70",
+        warrantyYears: 10,
+        usageType: "Multi",
+        defaultUsageLimit: 24,
+        status: "Active",
+        remark: "Front windshield, VLT 70%, UV block 100%, IR rejection 95%, TSER 48%. 10-year warranty.",
+      },
+      {
+        type: "WINDOW_FILM",
+        name: "HEHE UV Shield Series UV15",
+        externalModel: "HH UV15",
+        warrantyYears: 10,
+        usageType: "Multi",
+        defaultUsageLimit: 24,
+        status: "Active",
+        remark: "Side/rear windows, VLT 18%, UV block 100%, IR rejection 95%, TSER 66%. 10-year warranty.",
+      },
+      /* ── Ceramic IR Window Film 5G纳米陶瓷系列 ── */
+      {
+        type: "WINDOW_FILM",
+        name: "HEHE Ceramic IR CIR70",
+        externalModel: "HH CIR70",
+        warrantyYears: 10,
+        usageType: "Multi",
+        defaultUsageLimit: 24,
+        status: "Active",
+        remark: "Front windshield, VLT 75%, UV block ≥99%, IR rejection 92%, TSER 46%. 10-year warranty.",
+      },
+      {
+        type: "WINDOW_FILM",
+        name: "HEHE Ceramic IR CIR15",
+        externalModel: "HH CIR15",
+        warrantyYears: 10,
+        usageType: "Multi",
+        defaultUsageLimit: 24,
+        status: "Active",
+        remark: "Side/rear windows, VLT 20%, UV block ≥99%, IR rejection 94%, TSER 63%. 10-year warranty.",
+      },
+      /* ── Color Shift Window Film 千层炫彩系列 ── */
+      {
+        type: "WINDOW_FILM",
+        name: "HEHE Color Shift GQCM70",
+        externalModel: "HH GQCM70",
+        warrantyYears: 8,
+        usageType: "Multi",
+        defaultUsageLimit: 24,
+        status: "Active",
+        remark: "Color-shift film, VLT 70%, IR rejection 92%, TSER 55%, 4mil. 8-year warranty.",
+      },
+      {
+        type: "WINDOW_FILM",
+        name: "HEHE Color Shift QCM75",
+        externalModel: "HH QCM75",
+        warrantyYears: 8,
+        usageType: "Multi",
+        defaultUsageLimit: 24,
+        status: "Active",
+        remark: "Color-shift film, VLT 75%, IR rejection 92%, TSER 49%, 3mil. 8-year warranty.",
+      },
+      /* ── TPU Color PPF 改色系列 ── */
+      {
+        type: "TPU_COLOR_PPF",
+        name: "TPU Color PPF Crystal Series",
+        externalModel: "HH TPU Color Crystal",
+        warrantyYears: 5,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "Entry solid colors, 7.5mil TPU. 5-year warranty.",
+      },
+      {
+        type: "TPU_COLOR_PPF",
+        name: "TPU Color PPF Metallic Series",
+        externalModel: "HH TPU Color Metallic",
+        warrantyYears: 5,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "Mid-range pearl/metallic finish, 7.5mil TPU. 5-year warranty.",
+      },
+      {
+        type: "TPU_COLOR_PPF",
+        name: "TPU Color PPF Satin Series",
+        externalModel: "HH TPU Color Satin",
+        warrantyYears: 5,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "Premium satin matte finish, 7.5mil TPU. 5-year warranty.",
+      },
+      {
+        type: "TPU_COLOR_PPF",
+        name: "TPU Color PPF Color Shift Series",
+        externalModel: "HH TPU Color Shift",
+        warrantyYears: 5,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "Premium chameleon color-shift effect, 7.5mil TPU. 5-year warranty.",
+      },
+      /* ── Specialty Films 其他功能性膜材 ── */
+      {
+        type: "SPECIAL_FILM",
+        name: "HEHE Architectural Film",
+        externalModel: "HH Architectural Film",
+        warrantyYears: 10,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "Commercial building glass film, PET material, 1.52×30m. 10-year warranty.",
+      },
+      {
+        type: "SPECIAL_FILM",
+        name: "HEHE Interior Film",
+        externalModel: "HH Interior Film",
+        warrantyYears: 10,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "Interior decoration film, PET material, 1.52×30m. 10-year warranty.",
+      },
+      {
+        type: "SPECIAL_FILM",
+        name: "HEHE Skylight Armor",
+        externalModel: "HH Skylight Armor",
+        warrantyYears: 3,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "Sunroof protection, 6.5mil TPU, high UV/IR block. 3-year warranty.",
+      },
+      {
+        type: "SPECIAL_FILM",
+        name: "HEHE Safety Shield",
+        externalModel: "HH Safety Shield",
+        warrantyYears: 1,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "Glass protection, 6mil EPU, high strength & transparency, self-healing coating. 1-year warranty.",
+      },
+      /* ── Manual / Partial ── */
       {
         type: "MANUAL_PARTIAL",
         name: "Manual Partial Warranty",
@@ -693,7 +884,7 @@
         batchNo: "B-PPF-2026-07",
         shipmentNo: "HH-RU-2026-07-A",
         productType: "PPF",
-        productName: "Ultra Clear PPF",
+        productName: "HEHE PPF Pro 210",
         warrantyYears: 10,
         usageType: "Single",
         usageLimit: 1,
@@ -709,7 +900,7 @@
         batchNo: "B-WF-2026-07",
         shipmentNo: "HH-RU-2026-07-A",
         productType: "WINDOW_FILM",
-        productName: "Ceramic Window Film",
+        productName: "HEHE Ceramic IR CIR70",
         warrantyYears: 7,
         usageType: "Multi",
         usageLimit: 24,
@@ -725,7 +916,7 @@
         batchNo: "B-TPU-2026-07",
         shipmentNo: "HH-RU-2026-07-B",
         productType: "TPU_COLOR_PPF",
-        productName: "Satin TPU Color PPF",
+        productName: "TPU Color PPF Crystal Series",
         warrantyYears: 5,
         usageType: "Single",
         usageLimit: 1,
@@ -741,7 +932,7 @@
         batchNo: "B-PPF-2026-07",
         shipmentNo: "",
         productType: "PPF",
-        productName: "Ultra Clear PPF",
+        productName: "HEHE PPF Pro 210",
         warrantyYears: 10,
         usageType: "Single",
         usageLimit: 1,
@@ -762,7 +953,7 @@
         vehicleModel: "X5",
         vehicleYear: "2024",
         productType: "PPF",
-        productName: "Ultra Clear PPF",
+        productName: "HEHE PPF Pro 210",
         installationCategory: "FULL_CAR_PPF",
         installationDate: "2026-07-10",
         warrantyExpiryDate: "2036-07-10",
@@ -784,7 +975,7 @@
         vehicleModel: "X5",
         vehicleYear: "2024",
         productType: "WINDOW_FILM",
-        productName: "Ceramic Window Film",
+        productName: "HEHE Ceramic IR CIR70",
         installationCategory: "WINDOW_FILM",
         installationDate: "2026-07-10",
         warrantyExpiryDate: "2033-07-10",
@@ -806,7 +997,7 @@
         vehicleModel: "RAV4",
         vehicleYear: "2025",
         productType: "TPU_COLOR_PPF",
-        productName: "Satin TPU Color PPF",
+        productName: "TPU Color PPF Crystal Series",
         installationCategory: "FULL_CAR_PPF",
         installationDate: "2026-07-12",
         warrantyExpiryDate: "",
@@ -1084,6 +1275,7 @@
       PPF: "PPF",
       WINDOW_FILM: "Window Film",
       TPU_COLOR_PPF: "TPU Color PPF",
+      SPECIAL_FILM: "Specialty Film",
       MANUAL_PARTIAL: "Manual / Partial",
     };
     const map = Object.fromEntries(
@@ -1098,6 +1290,7 @@
       PARTIAL_PPF: "Partial PPF",
       WINDOW_FILM: "Window Film",
       TPU_COLOR_PPF: "TPU Color PPF",
+      SPECIAL_FILM: "Specialty Film",
       MANUAL_PARTIAL: "Manual / Partial",
     };
     const map = Object.fromEntries(
@@ -2045,6 +2238,7 @@
                 <option value="PARTIAL_PPF">Partial PPF</option>
                 <option value="WINDOW_FILM">Window Film</option>
                 <option value="TPU_COLOR_PPF">TPU Color PPF</option>
+                <option value="SPECIAL_FILM">Specialty Film</option>
                 <option value="MANUAL_PARTIAL">Manual / Partial</option>
               </select>
             </label>
@@ -2309,22 +2503,59 @@
       `
         <section class="panel">
           <h2>Product Management</h2>
-          <p>Products define default warranty years, usage type, and usage limit. Dealers cannot edit product information during warranty registration.</p>
+          <p>Products define default warranty years, usage type, and usage limit. Add, edit, or manage products that will be selectable during warranty registration.</p>
+        </section>
+        <section class="panel">
+          <h3>Add / Edit Product</h3>
+          <div class="form-grid">
+            <label>Product Type <select id="admin-product-type" data-action="admin-product-type">
+              <option value="PPF">PPF (Paint Protection Film)</option>
+              <option value="WINDOW_FILM">Window Film</option>
+              <option value="TPU_COLOR_PPF">TPU Color PPF</option>
+              <option value="SPECIAL_FILM">Specialty Film</option>
+              <option value="MANUAL_PARTIAL">Manual / Partial</option>
+            </select></label>
+            <label>Product Name <input id="admin-product-name" placeholder="e.g. HEHE PPF Classic 190" /></label>
+            <label>External Model <input id="admin-product-external" placeholder="e.g. HH Classic 190" /></label>
+            <label>Warranty Years <input id="admin-product-years" type="number" min="1" max="15" value="5" placeholder="5" /></label>
+            <label>Usage Type <select id="admin-product-usage">
+              <option value="Single">Single</option>
+              <option value="Multi">Multi</option>
+            </select></label>
+            <label>Default Usage Limit <input id="admin-product-limit" type="number" min="1" max="999" value="1" /></label>
+            <label>Status <select id="admin-product-status">
+              <option value="Active">Active</option>
+              <option value="Reserved">Reserved</option>
+            </select></label>
+            <label class="full">Remark <input id="admin-product-remark" placeholder="Brief product description" /></label>
+          </div>
+          <div class="inline-actions" style="margin-top:18px;">
+            <button class="button" data-action="admin-product-save">Save Product</button>
+            <button class="ghost-button" data-action="admin-product-reset">Reset Form</button>
+          </div>
+          <input type="hidden" id="admin-product-edit-id" />
+        </section>
+        <section class="panel">
+          <h3>Product Catalog (${data.products.length})</h3>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Type</th><th>Name</th><th>Years</th><th>Usage</th><th>Limit</th><th>Status</th><th>Remark</th></tr></thead>
+              <thead><tr><th>Type</th><th>Name</th><th>External</th><th>Years</th><th>Usage</th><th>Limit</th><th>Status</th><th>Actions</th></tr></thead>
               <tbody>
                 ${data.products
                   .map(
-                    (product) => `
+                    (product, idx) => `
                       <tr>
-                        <td>${escapeHtml(product.type)}</td>
-                        <td>${escapeHtml(product.name)}</td>
+                        <td>${escapeHtml(productLabel(product.type))}</td>
+                        <td><strong>${escapeHtml(product.name)}</strong></td>
+                        <td>${escapeHtml(product.externalModel || "-")}</td>
                         <td>${escapeHtml(product.warrantyYears)}</td>
                         <td>${escapeHtml(product.usageType)}</td>
                         <td>${escapeHtml(product.defaultUsageLimit)}</td>
                         <td>${statusBadge(product.status)}</td>
-                        <td>${escapeHtml(product.remark)}</td>
+                        <td>
+                          <button class="text-button" data-action="admin-product-edit" data-idx="${idx}">Edit</button>
+                          ${product.type !== "MANUAL_PARTIAL" ? `<button class="danger-button text-button" data-action="admin-product-delete" data-idx="${idx}" style="color:var(--red);">Delete</button>` : ""}
+                        </td>
                       </tr>
                     `,
                   )
@@ -2335,6 +2566,65 @@
         </section>
       `,
     );
+  }
+
+  function handleAdminProductSave() {
+    const idField = document.getElementById("admin-product-edit-id");
+    const editIdx = idField.value !== "" ? parseInt(idField.value, 10) : -1;
+    const product = {
+      type: document.getElementById("admin-product-type").value,
+      name: document.getElementById("admin-product-name").value.trim(),
+      externalModel: document.getElementById("admin-product-external").value.trim(),
+      warrantyYears: parseInt(document.getElementById("admin-product-years").value, 10) || 5,
+      usageType: document.getElementById("admin-product-usage").value,
+      defaultUsageLimit: parseInt(document.getElementById("admin-product-limit").value, 10) || 1,
+      status: document.getElementById("admin-product-status").value,
+      remark: document.getElementById("admin-product-remark").value.trim(),
+    };
+    if (!product.name) { alert("Product name is required."); return; }
+    if (editIdx >= 0 && editIdx < data.products.length) {
+      data.products[editIdx] = product;
+    } else {
+      data.products.push(product);
+    }
+    saveData();
+    renderPage("admin/products");
+  }
+
+  function handleAdminProductEdit(idx) {
+    const product = data.products[idx];
+    if (!product) return;
+    document.getElementById("admin-product-edit-id").value = idx;
+    document.getElementById("admin-product-type").value = product.type;
+    document.getElementById("admin-product-name").value = product.name || "";
+    document.getElementById("admin-product-external").value = product.externalModel || "";
+    document.getElementById("admin-product-years").value = product.warrantyYears;
+    document.getElementById("admin-product-usage").value = product.usageType;
+    document.getElementById("admin-product-limit").value = product.defaultUsageLimit;
+    document.getElementById("admin-product-status").value = product.status;
+    document.getElementById("admin-product-remark").value = product.remark || "";
+    const saveBtn = document.querySelector("[data-action='admin-product-save']");
+    if (saveBtn) saveBtn.textContent = "Update Product";
+  }
+
+  function handleAdminProductDelete(idx) {
+    if (!confirm("Delete this product? This cannot be undone.")) return;
+    data.products.splice(idx, 1);
+    saveData();
+    renderPage("admin/products");
+  }
+
+  function handleAdminProductReset() {
+    document.getElementById("admin-product-edit-id").value = "";
+    document.getElementById("admin-product-name").value = "";
+    document.getElementById("admin-product-external").value = "";
+    document.getElementById("admin-product-years").value = "5";
+    document.getElementById("admin-product-usage").value = "Single";
+    document.getElementById("admin-product-limit").value = "1";
+    document.getElementById("admin-product-status").value = "Active";
+    document.getElementById("admin-product-remark").value = "";
+    const saveBtn = document.querySelector("[data-action='admin-product-save']");
+    if (saveBtn) saveBtn.textContent = "Save Product";
   }
 
   function renderAdminDealers() {
@@ -2924,6 +3214,10 @@
     if (action === "export-redemptions") exportRedemptions();
     if (action === "dealer-logout") signOut("dealer");
     if (action === "admin-logout") signOut("admin");
+    if (action === "admin-product-save") handleAdminProductSave();
+    if (action === "admin-product-reset") handleAdminProductReset();
+    if (action === "admin-product-edit") handleAdminProductEdit(parseInt(target.getAttribute("data-idx"), 10));
+    if (action === "admin-product-delete") handleAdminProductDelete(parseInt(target.getAttribute("data-idx"), 10));
   });
 
   function handleVerify(form) {
@@ -3205,7 +3499,7 @@
         factoryRollNo: "FR-PPF-9001",
         batchNo: "B-PPF-2026-08",
         productType: "PPF",
-        productName: "Ultra Clear PPF",
+        productName: "HEHE PPF Pro 210",
         warrantyYears: "10",
         usageType: "Single",
         usageLimit: "1",
@@ -3237,7 +3531,7 @@
       batchNo: "B-DEMO",
       shipmentNo: "",
       productType: "PPF",
-      productName: "Ultra Clear PPF",
+      productName: "HEHE PPF Pro 210",
       warrantyYears: 10,
       usageType: "Single",
       usageLimit: 1,
