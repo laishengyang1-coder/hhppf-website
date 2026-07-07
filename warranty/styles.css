@@ -203,6 +203,7 @@ a {
   color: var(--orange);
   font-size: 12px;
   font-weight: 800;
+  white-space: nowrap;
   transition: all 0.2s ease;
 }
 
