@@ -393,6 +393,9 @@
       "Warranty code already exists.": "质保码已存在。",
       "Delete this warranty code? This cannot be undone.": "确定删除此质保码？此操作不可撤销。",
       "— Unallocated —": "— 未划拨 —",
+      "Warranty Years": "质保年限",
+      "Usage Type": "使用类型",
+      "Usage Limit": "使用次数",
     },
     ru: {
       "Warranty System": "Система гарантии",
@@ -713,6 +716,9 @@
       "Warranty code already exists.": "Гарантийный код уже существует.",
       "Delete this warranty code? This cannot be undone.": "Удалить этот гарантийный код? Это необратимо.",
       "— Unallocated —": "— Не распределен —",
+      "Warranty Years": "Лет гарантии",
+      "Usage Type": "Тип использования",
+      "Usage Limit": "Лимит использований",
     },
   };
 
