@@ -1033,6 +1033,11 @@ tr:last-child td {
   padding-top: 0;
 }
 
+.terms-block:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
 .terms-block h2 {
   margin-bottom: 10px;
   font-size: 1.28rem;
@@ -1047,6 +1052,10 @@ tr:last-child td {
   line-height: 1.78;
 }
 
+.terms-block p + p {
+  margin-top: 10px;
+}
+
 .terms-list {
   margin: 0;
   padding-left: 1.18em;
@@ -1054,6 +1063,42 @@ tr:last-child td {
 
 .terms-list li + li {
   margin-top: 8px;
+}
+
+.terms-table-wrap {
+  width: 100%;
+  margin: 18px 0 16px;
+  overflow-x: auto;
+  border: 1px solid rgba(18, 18, 17, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.terms-table {
+  width: 100%;
+  min-width: 820px;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font-size: 14px;
+}
+
+.terms-table th,
+.terms-table td {
+  border-bottom: 1px solid rgba(18, 18, 17, 0.09);
+  padding: 13px 16px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.terms-table th {
+  background: rgba(233, 72, 26, 0.06);
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.terms-table tr:last-child td {
+  border-bottom: 0;
 }
 
 .terms-note {
@@ -1073,6 +1118,10 @@ tr:last-child td {
 
 .terms-note p {
   margin-bottom: 0;
+}
+
+.terms-table-note {
+  margin: 16px 0 14px;
 }
 
 .code-pill-list,
