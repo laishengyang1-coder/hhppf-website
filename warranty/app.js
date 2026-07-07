@@ -384,6 +384,15 @@
       "Authorized dealers register warranties, upload installation photos, track review status, and redeem partner points.": "授权经销商可登记质保、上传施工照片、跟踪审核状态并兑换伙伴积分。",
       "Partner Points": "伙伴积分",
       "HQ administrators manage products, dealers, factory warranty codes, reviews, points, rewards, and export workflows.": "总部管理员负责管理产品、经销商、工厂质保码、审核、积分、兑换物料和数据导出流程。",
+      /* ── New: Warranty Code CRUD ── */
+      "Create Warranty Code": "创建质保码",
+      "Factory Roll No.": "工厂卷号",
+      "Batch No.": "批次号",
+      "Shipment No.": "发货编号",
+      "Warranty code is required.": "请输入质保码。",
+      "Warranty code already exists.": "质保码已存在。",
+      "Delete this warranty code? This cannot be undone.": "确定删除此质保码？此操作不可撤销。",
+      "— Unallocated —": "— 未划拨 —",
     },
     ru: {
       "Warranty System": "Система гарантии",
@@ -695,6 +704,15 @@
       "Authorized dealers register warranties, upload installation photos, track review status, and redeem partner points.": "Авторизованные дилеры регистрируют гарантии, загружают фото установки, отслеживают статус проверки и обменивают партнерские баллы.",
       "Partner Points": "Партнерские баллы",
       "HQ administrators manage products, dealers, factory warranty codes, reviews, points, rewards, and export workflows.": "Администраторы HQ управляют продуктами, дилерами, заводскими кодами, проверками, баллами, материалами и экспортом.",
+      /* ── New: Warranty Code CRUD ── */
+      "Create Warranty Code": "Создать гарантийный код",
+      "Factory Roll No.": "№ рулона",
+      "Batch No.": "№ партии",
+      "Shipment No.": "№ отгрузки",
+      "Warranty code is required.": "Гарантийный код обязателен.",
+      "Warranty code already exists.": "Гарантийный код уже существует.",
+      "Delete this warranty code? This cannot be undone.": "Удалить этот гарантийный код? Это необратимо.",
+      "— Unallocated —": "— Не распределен —",
     },
   };
 
@@ -2932,16 +2950,137 @@
   }
 
   function renderAdminWarrantyCodes() {
+    const productOpts = data.products
+      .filter((p) => p.status === "Active")
+      .map((p) => `<option value="${p.type}|||${p.name}|||${p.warrantyYears}|||${p.usageType}|||${p.defaultUsageLimit}">${productLabel(p.type)} — ${escapeHtml(p.name)}</option>`)
+      .join("");
     return adminShell(
       "admin/warranty-codes",
       `
         <section class="panel">
           <h2>Warranty Code Management</h2>
           <p>Factory warranty code is the system warranty code and certificate number.</p>
-          ${warrantyCodesTable(data.warrantyCodes)}
+        </section>
+        <section class="panel">
+          <h3>Create Warranty Code</h3>
+          <div class="form-grid">
+            <label>Warranty Code <input id="wc-code" placeholder="e.g. HH-PPF-2026-0001" /></label>
+            <label>Product <select id="wc-product">${productOpts}</select></label>
+            <label>Factory Roll No. <input id="wc-roll" placeholder="e.g. FR-PPF-8891" /></label>
+            <label>Batch No. <input id="wc-batch" placeholder="e.g. B-PPF-2026-07" /></label>
+            <label>Shipment No. <input id="wc-shipment" placeholder="e.g. HH-RU-2026-07-A" /></label>
+            <label>Dealer <select id="wc-dealer">
+              <option value="">— Unallocated —</option>
+              ${data.dealers.map((d) => `<option value="${d.code}">${d.code} - ${escapeHtml(d.name)}</option>`).join("")}
+            </select></label>
+            <label>Warranty Years <input id="wc-years" type="number" min="1" max="15" value="5" /></label>
+            <label>Usage Type <select id="wc-usage">
+              <option value="Single">Single</option>
+              <option value="Multi">Multi</option>
+            </select></label>
+            <label>Usage Limit <input id="wc-limit" type="number" min="1" max="999" value="1" /></label>
+            <label class="full">Remark <input id="wc-remark" placeholder="Optional note" /></label>
+          </div>
+          <div class="inline-actions" style="margin-top:18px;">
+            <button class="button" data-action="admin-wc-create">Create Warranty Code</button>
+            <button class="ghost-button" data-action="admin-wc-reset">Reset Form</button>
+          </div>
+        </section>
+        <section class="panel">
+          <h3>Warranty Codes (${data.warrantyCodes.length})</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Warranty Code</th><th>Product</th><th>Dealer</th><th>Usage</th><th>Remaining</th><th>Batch</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                ${data.warrantyCodes
+                  .map((code, idx) => {
+                    const remaining = Number(code.usageLimit) - Number(code.usedCount);
+                    return `
+                      <tr>
+                        <td><strong>${escapeHtml(code.code)}</strong></td>
+                        <td>${productLabel(code.productType)}<br><span class="small">${escapeHtml(code.productName)}</span></td>
+                        <td>${escapeHtml(code.dealerCode || "Unallocated")}</td>
+                        <td>${escapeHtml(code.usageType)} / ${escapeHtml(code.usageLimit)}</td>
+                        <td>${remaining}</td>
+                        <td>${escapeHtml(code.importBatch || "-")}</td>
+                        <td>${statusBadge(code.status)}</td>
+                        <td><button class="text-button danger-button" data-action="admin-wc-delete" data-idx="${idx}" style="color:var(--red);">Delete</button></td>
+                      </tr>
+                    `;
+                  })
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
         </section>
       `,
     );
+  }
+
+  function handleAdminWcCreate() {
+    const code = document.getElementById("wc-code").value.trim();
+    const productVal = document.getElementById("wc-product").value;
+    const [productType, productName, warrantyYears, usageType, defaultLimit] = productVal.split("|||");
+    if (!code) { alert(translateValue("Warranty code is required.")); return; }
+    if (data.warrantyCodes.some((c) => c.code === code)) {
+      alert(translateValue("Warranty code already exists."));
+      return;
+    }
+    const dealerCode = document.getElementById("wc-dealer").value;
+    const newCode = {
+      code,
+      factoryRollNo: document.getElementById("wc-roll").value.trim() || "",
+      batchNo: document.getElementById("wc-batch").value.trim() || "",
+      shipmentNo: document.getElementById("wc-shipment").value.trim() || "",
+      productType,
+      productName,
+      warrantyYears: parseInt(document.getElementById("wc-years").value, 10) || parseInt(warrantyYears, 10) || 5,
+      usageType: document.getElementById("wc-usage").value || usageType,
+      usageLimit: parseInt(document.getElementById("wc-limit").value, 10) || parseInt(defaultLimit, 10) || 1,
+      usedCount: 0,
+      dealerCode: dealerCode || "",
+      importBatch: "MANUAL",
+      status: dealerCode ? "Allocated" : "Unallocated",
+      remark: document.getElementById("wc-remark").value.trim() || "",
+    };
+    data.warrantyCodes.unshift(newCode);
+    saveData();
+    renderPage("admin/warranty-codes");
+  }
+
+  function handleAdminWcDelete(idx) {
+    const wc = data.warrantyCodes[idx];
+    if (!wc) return;
+    if (!confirm(translateValue("Delete this warranty code? This cannot be undone."))) return;
+    data.warrantyCodes.splice(idx, 1);
+    saveData();
+    renderPage("admin/warranty-codes");
+  }
+
+  function handleAdminWcReset() {
+    document.getElementById("wc-code").value = "";
+    document.getElementById("wc-roll").value = "";
+    document.getElementById("wc-batch").value = "";
+    document.getElementById("wc-shipment").value = "";
+    document.getElementById("wc-remark").value = "";
+    document.getElementById("wc-dealer").value = "";
+    document.getElementById("wc-years").value = "5";
+    document.getElementById("wc-usage").value = "Single";
+    document.getElementById("wc-limit").value = "1";
+    syncWcProductFields();
+  }
+
+  function syncWcProductFields() {
+    const select = document.getElementById("wc-product");
+    if (!select) return;
+    const parts = select.value.split("|||");
+    if (parts.length < 5) return;
+    const yearsEl = document.getElementById("wc-years");
+    const usageEl = document.getElementById("wc-usage");
+    const limitEl = document.getElementById("wc-limit");
+    if (yearsEl) yearsEl.value = parts[2];
+    if (usageEl) usageEl.value = parts[3];
+    if (limitEl) limitEl.value = parts[4];
   }
 
   function renderAdminImport() {
@@ -3381,6 +3520,7 @@
     `;
     localizeRenderedPage();
     if (route === "dealer/register-warranty") initCodeCombobox();
+    if (route === "admin/warranty-codes") syncWcProductFields();
     if (shouldResetScroll) {
       resetPageScroll();
     }
@@ -3428,6 +3568,7 @@
       const code = codeByValue(target.value);
       if (summary && code) summary.innerHTML = renderCodeSummary(code);
     }
+    if (target.id === "wc-product") syncWcProductFields();
   });
 
   /* ── Warranty Code Combobox (manual input + fuzzy search) ── */
@@ -3599,6 +3740,9 @@
     if (action === "admin-dealer-reset") handleAdminDealerReset();
     if (action === "admin-dealer-edit") handleAdminDealerEdit(parseInt(target.getAttribute("data-idx"), 10));
     if (action === "admin-dealer-delete") handleAdminDealerDelete(parseInt(target.getAttribute("data-idx"), 10));
+    if (action === "admin-wc-create") handleAdminWcCreate();
+    if (action === "admin-wc-reset") handleAdminWcReset();
+    if (action === "admin-wc-delete") handleAdminWcDelete(parseInt(target.getAttribute("data-idx"), 10));
   });
 
   function handleVerify(form) {
