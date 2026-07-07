@@ -411,6 +411,16 @@
       "No allocated codes yet.": "暂无已划拨质保码。",
       "Please select a dealer.": "请选择经销商。",
       "Select warranty codes from the list below, then choose a dealer to allocate. Only unallocated codes can be allocated.": "从下方列表中勾选质保码，然后选择经销商进行划拨。只有未划拨的质保码可以划拨。",
+      /* ── Import file upload ── */
+      "Import Warranty Codes": "导入质保码",
+      "Select CSV File": "选择 CSV 文件",
+      "Missing warranty code": "缺少质保码",
+      "Missing product type": "缺少产品类型",
+      "Missing product name": "缺少产品型号",
+      "Product not found in catalog": "产品目录中未找到",
+      "Duplicate code": "质保码重复",
+      "Imported ": "已导入 ",
+      " warranty codes.": " 个质保码。",
     },
     ru: {
       "Warranty System": "Система гарантии",
@@ -747,6 +757,16 @@
       "No allocated codes yet.": "Нет распределенных кодов.",
       "Please select a dealer.": "Выберите дилера.",
       "Select warranty codes from the list below, then choose a dealer to allocate. Only unallocated codes can be allocated.": "Выберите гарантийные коды из списка ниже, затем выберите дилера для распределения. Только нераспределенные коды можно распределить.",
+      /* ── Import file upload ── */
+      "Import Warranty Codes": "Импорт гарантийных кодов",
+      "Select CSV File": "Выбрать CSV-файл",
+      "Missing warranty code": "Нет гарантийного кода",
+      "Missing product type": "Нет типа продукта",
+      "Missing product name": "Нет названия продукта",
+      "Product not found in catalog": "Продукт не найден в каталоге",
+      "Duplicate code": "Дубликат кода",
+      "Imported ": "Импортировано ",
+      " warranty codes.": " гарантийных кодов.",
     },
   };
 
@@ -771,6 +791,11 @@
       "code(s) selected": "个质保码已选中",
       "code(s) to": "个质保码给",
       "Allocated ": "已划拨 ",
+      /* ── Import preview dynamic ── */
+      " valid,": " 有效，",
+      " invalid": " 无效",
+      " Valid Codes": " 个有效质保码",
+      " Import ": "导入 ",
     },
     ru: {
       "active records found for": "активных записей найдено для",
@@ -807,6 +832,11 @@
       "code(s) selected": "код(ов) выбрано",
       "code(s) to": "код(ов) →",
       "Allocated ": "Распределено ",
+      /* ── Import preview dynamic ── */
+      " valid,": " валидных,",
+      " invalid": " невалидных",
+      " Valid Codes": " валидных кодов",
+      " Import ": "Импорт ",
     },
   };
 
@@ -3129,27 +3159,180 @@
     return adminShell(
       "admin/import",
       `
-        <section class="two-column">
-          <article class="panel">
-            <h2>Excel Import</h2>
-            <p>Only 4 columns are required: warranty code, batch number, product type, and product model. The system automatically fills in warranty years, usage type, usage limit, and leaves dealer/shipment fields blank for later allocation.</p>
-            <div class="form-actions">
-              <button class="button" data-action="download-template">Download CSV Template</button>
-              <button class="ghost-button" data-action="run-import-demo">Run Validation Demo</button>
-            </div>
-            <div class="divider"></div>
-            <div class="tag-list">
-              <span>Warranty Code</span><span>Batch No.</span><span>Product Type</span><span>Product Name</span>
-              <span style="opacity:.7;font-weight:400;">(warrantyYears, usageType, usageLimit auto-filled)</span>
-            </div>
-          </article>
-          <article class="panel">
-            <h2>Import Batches</h2>
-            ${importBatchTable()}
-          </article>
+        <section class="panel">
+          <h2>Import Warranty Codes</h2>
+          <p>Upload a CSV file with warranty codes. Only 4 columns are required: warranty code, batch number, product type, and product name. The system automatically fills in warranty years, usage type, and usage limit from the product catalog.</p>
+          <div class="form-actions">
+            <button class="button" data-action="download-template">Download CSV Template</button>
+          </div>
+          <div class="divider"></div>
+          <label class="full upload-box" style="margin-bottom:16px;">
+            Select CSV File
+            <input type="file" id="import-file" accept=".csv,text/csv" data-action="import-file-select" />
+          </label>
+          <div id="import-preview"></div>
+        </section>
+        <section class="panel">
+          <h3>Import Batches</h3>
+          ${importBatchTable()}
         </section>
       `,
     );
+  }
+
+  function parseCsv(text) {
+    const lines = text.trim().split(/\r?\n/);
+    if (lines.length < 2) return { headers: [], rows: [] };
+    const parseLine = (line) => {
+      const result = [];
+      let current = "";
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
+          else inQuotes = !inQuotes;
+        } else if (ch === "," && !inQuotes) {
+          result.push(current);
+          current = "";
+        } else {
+          current += ch;
+        }
+      }
+      result.push(current);
+      return result.map((s) => s.trim());
+    };
+    const headers = parseLine(lines[0]);
+    const rows = lines.slice(1).map(parseLine).filter((r) => r.some((c) => c));
+    return { headers, rows };
+  }
+
+  function handleImportFileSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target.result;
+      const { headers, rows } = parseCsv(text);
+      const colMap = {};
+      headers.forEach((h, i) => {
+        const lower = h.toLowerCase().replace(/\s+/g, "");
+        if (lower.includes("warranty") && lower.includes("code")) colMap.warrantyCode = i;
+        else if (lower.includes("batch")) colMap.batchNo = i;
+        else if (lower.includes("producttype") || lower === "producttype") colMap.productType = i;
+        else if (lower.includes("productname") || lower.includes("productmodel")) colMap.productName = i;
+        else if (lower.includes("factory") && lower.includes("roll")) colMap.factoryRollNo = i;
+        else if (lower.includes("shipment")) colMap.shipmentNo = i;
+        else if (lower.includes("warranty") && lower.includes("year")) colMap.warrantyYears = i;
+        else if (lower.includes("usagetype")) colMap.usageType = i;
+        else if (lower.includes("usagelimit")) colMap.usageLimit = i;
+        else if (lower.includes("dealer")) colMap.dealerCode = i;
+        else if (lower.includes("remark")) colMap.remark = i;
+      });
+      const parsed = rows.map((r) => {
+        const row = {};
+        if (colMap.warrantyCode !== undefined) row.warrantyCode = r[colMap.warrantyCode] || "";
+        if (colMap.batchNo !== undefined) row.batchNo = r[colMap.batchNo] || "";
+        if (colMap.productType !== undefined) row.productType = r[colMap.productType] || "";
+        if (colMap.productName !== undefined) row.productName = r[colMap.productName] || "";
+        if (colMap.factoryRollNo !== undefined) row.factoryRollNo = r[colMap.factoryRollNo] || "";
+        if (colMap.shipmentNo !== undefined) row.shipmentNo = r[colMap.shipmentNo] || "";
+        if (colMap.warrantyYears !== undefined) row.warrantyYears = r[colMap.warrantyYears] || "";
+        if (colMap.usageType !== undefined) row.usageType = r[colMap.usageType] || "";
+        if (colMap.usageLimit !== undefined) row.usageLimit = r[colMap.usageLimit] || "";
+        if (colMap.dealerCode !== undefined) row.dealerCode = r[colMap.dealerCode] || "";
+        if (colMap.remark !== undefined) row.remark = r[colMap.remark] || "";
+        return row;
+      });
+      showImportPreview(parsed, file.name);
+    };
+    reader.readAsText(file);
+  }
+
+  function showImportPreview(rows, filename) {
+    const preview = document.getElementById("import-preview");
+    if (!preview) return;
+    const validated = rows.map((row) => {
+      const filled = fillWarrantyCodeFromProduct(row);
+      const errors = [];
+      if (!filled.warrantyCode) errors.push("Missing warranty code");
+      if (!filled.productType) errors.push("Missing product type");
+      if (!filled.productName) errors.push("Missing product name");
+      if (!filled.warrantyYears) errors.push("Product not found in catalog");
+      if (data.warrantyCodes.some((c) => c.code === filled.warrantyCode)) errors.push("Duplicate code");
+      return { ...filled, errors };
+    });
+    const valid = validated.filter((r) => r.errors.length === 0);
+    const invalid = validated.filter((r) => r.errors.length > 0);
+    preview.innerHTML = `
+      <div class="notice" style="margin-bottom:14px;">
+        <strong>${filename}</strong> — ${validated.length} rows: ${valid.length} valid, ${invalid.length} invalid
+      </div>
+      ${valid.length > 0 ? `
+        <div class="inline-actions" style="margin-bottom:14px;">
+          <button class="button" data-action="confirm-import">Import ${valid.length} Valid Codes</button>
+        </div>
+      ` : ""}
+      <div class="table-wrap" style="margin-bottom:14px;">
+        <table>
+          <thead><tr><th>Warranty Code</th><th>Batch</th><th>Product Type</th><th>Product Name</th><th>Years</th><th>Usage</th><th>Validation</th></tr></thead>
+          <tbody>
+            ${validated.map((r) => `
+              <tr style="${r.errors.length ? "opacity:.6;" : ""}">
+                <td><strong>${escapeHtml(r.warrantyCode || "-")}</strong></td>
+                <td>${escapeHtml(r.batchNo || "-")}</td>
+                <td>${escapeHtml(r.productType || "-")}</td>
+                <td>${escapeHtml(r.productName || "-")}</td>
+                <td>${escapeHtml(r.warrantyYears || "-")}</td>
+                <td>${escapeHtml(r.usageType || "-")} / ${escapeHtml(r.usageLimit || "-")}</td>
+                <td>${r.errors.length ? `<span style="color:var(--red);">${r.errors.join("; ")}</span>` : '<span style="color:var(--green);">OK</span>'}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+    ui.importPending = valid;
+  }
+
+  function handleConfirmImport() {
+    const rows = ui.importPending;
+    if (!rows || !rows.length) return;
+    const batchId = `IMP-${new Date().getFullYear()}-${String(data.importBatches.length + 1).padStart(4, "0")}`;
+    const productTypes = [...new Set(rows.map((r) => r.productType))];
+    rows.forEach((row) => {
+      data.warrantyCodes.unshift({
+        code: row.warrantyCode,
+        factoryRollNo: row.factoryRollNo || "",
+        batchNo: row.batchNo || "",
+        shipmentNo: row.shipmentNo || "",
+        productType: row.productType,
+        productName: row.productName,
+        warrantyYears: Number(row.warrantyYears),
+        usageType: row.usageType,
+        usageLimit: Number(row.usageLimit),
+        usedCount: 0,
+        dealerCode: row.dealerCode || "",
+        importBatch: batchId,
+        status: row.dealerCode ? "Allocated" : "Unallocated",
+        remark: row.remark || "",
+      });
+    });
+    data.importBatches.unshift({
+      id: batchId,
+      name: `Import ${rows.length} codes`,
+      time: nowLabel(),
+      operator: "HQ Admin",
+      totalCodes: rows.length,
+      productTypes: productTypes.join(", "),
+      dealer: "Unallocated",
+      status: "Imported",
+      remark: `Imported from file, ${rows.length} codes.`,
+    });
+    saveData();
+    ui.importPending = null;
+    showToast(`Imported ${rows.length} warranty codes.`);
+    renderPage("admin/import");
   }
 
   function renderAdminAllocation() {
@@ -3659,6 +3842,7 @@
     }
     if (target.id === "wc-product") syncWcProductFields();
     if (target.classList.contains("alloc-checkbox")) updateAllocCount();
+    if (target.id === "import-file") handleImportFileSelect(target);
   });
 
   /* ── Warranty Code Combobox (manual input + fuzzy search) ── */
@@ -3834,6 +4018,7 @@
     if (action === "admin-wc-delete") handleAdminWcDelete(parseInt(target.getAttribute("data-idx"), 10));
     if (action === "allocate-selected") handleAllocateSelected();
     if (action === "alloc-select-all") toggleAllocSelectAll();
+    if (action === "confirm-import") handleConfirmImport();
   });
 
   function handleVerify(form) {
