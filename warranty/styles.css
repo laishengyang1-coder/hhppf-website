@@ -81,23 +81,16 @@ a {
 .portal-brand {
   display: flex;
   align-items: center;
-  gap: 11px;
-  min-width: 190px;
+  gap: 12px;
+  min-width: 210px;
 }
 
-.portal-brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 58px;
-  height: 28px;
-  border: 2px solid rgba(233, 72, 26, 0.78);
-  border-radius: 6px;
-  background: #fffaf6;
-  color: var(--orange);
-  font-size: 15px;
-  font-weight: 950;
-  line-height: 1;
+.portal-brand-logo {
+  display: block;
+  width: 86px;
+  height: auto;
+  aspect-ratio: 433 / 207;
+  object-fit: contain;
 }
 
 .portal-brand-copy {
@@ -905,15 +898,27 @@ tr:last-child td {
 .certificate-header {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   gap: 16px;
   border-bottom: 3px solid var(--orange);
   padding-bottom: 22px;
   margin-bottom: 22px;
 }
 
-.certificate-header img {
-  width: 112px;
-  height: auto;
+.certificate-logo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  width: clamp(120px, 16vw, 176px);
+  aspect-ratio: 433 / 207;
+}
+
+.certificate-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .certificate-grid {
@@ -954,10 +959,28 @@ tr:last-child td {
   gap: clamp(28px, 6vw, 72px);
   align-items: center;
   min-height: calc(100vh - 170px);
+  max-width: 1120px;
+  margin: 0 auto;
 }
 
 .login-panel {
+  display: grid;
+  gap: 18px;
   background: #ffffff;
+}
+
+.login-panel h3,
+.login-panel p {
+  margin-bottom: 0;
+}
+
+.login-panel label {
+  gap: 10px;
+}
+
+.login-panel .button {
+  justify-self: start;
+  margin-top: 2px;
 }
 
 .demo-account {
@@ -967,6 +990,89 @@ tr:last-child td {
   color: var(--soft);
   font-size: 13px;
   line-height: 1.5;
+}
+
+.terms-hero {
+  max-width: 980px;
+}
+
+.terms-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.terms-meta span {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  border: 1px solid rgba(233, 72, 26, 0.22);
+  border-radius: 4px;
+  background: rgba(233, 72, 26, 0.06);
+  color: var(--orange-deep);
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.terms-document {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow-soft);
+  padding: clamp(24px, 4vw, 46px);
+}
+
+.terms-block {
+  padding: 22px 0;
+  border-bottom: 1px solid rgba(18, 18, 17, 0.1);
+}
+
+.terms-block:first-child {
+  padding-top: 0;
+}
+
+.terms-block h2 {
+  margin-bottom: 10px;
+  font-size: 1.28rem;
+  line-height: 1.24;
+}
+
+.terms-block p,
+.terms-list {
+  max-width: 1020px;
+  color: var(--soft);
+  font-size: 15px;
+  line-height: 1.78;
+}
+
+.terms-list {
+  margin: 0;
+  padding-left: 1.18em;
+}
+
+.terms-list li + li {
+  margin-top: 8px;
+}
+
+.terms-note {
+  margin-top: 26px;
+  border-left: 4px solid var(--orange);
+  background: rgba(233, 72, 26, 0.07);
+  padding: 18px 20px;
+  color: var(--soft);
+  line-height: 1.7;
+}
+
+.terms-note strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.terms-note p {
+  margin-bottom: 0;
 }
 
 .code-pill-list,
@@ -1184,10 +1290,8 @@ tr:last-child td {
     min-width: 0;
   }
 
-  .portal-brand-mark {
-    width: 54px;
-    height: 26px;
-    font-size: 14px;
+  .portal-brand-logo {
+    width: 68px;
   }
 
   .portal-brand-copy {
@@ -1239,5 +1343,17 @@ tr:last-child td {
   .portal-footer,
   .certificate-header {
     flex-direction: column;
+  }
+
+  .certificate-logo {
+    width: 126px;
+  }
+
+  .terms-document {
+    padding: 20px;
+  }
+
+  .login-panel .button {
+    justify-self: stretch;
   }
 }

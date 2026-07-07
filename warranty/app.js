@@ -1097,7 +1097,7 @@
     return `
       <header class="portal-header">
         <a class="portal-brand" href="${href("home")}" aria-label="H&H Warranty home">
-          <span class="portal-brand-mark" aria-hidden="true">H&amp;H</span>
+          <img class="portal-brand-logo" src="../assets/hh-logo.png" alt="H&H Automotive Films" />
           <span class="portal-brand-copy">
             <span>Warranty System</span>
             <strong>H&amp;H</strong>
@@ -1298,7 +1298,9 @@
             <h2>Warranty Certificate</h2>
             ${statusBadge(record.status)}
           </div>
-          <img src="../assets/hh-logo.png" alt="H&H Automotive Films" />
+          <span class="certificate-logo">
+            <img src="../assets/hh-logo.png" alt="H&H Automotive Films" />
+          </span>
         </div>
         <div class="certificate-grid">
           ${certificateField("Warranty Code", record.warrantyCode)}
@@ -1328,32 +1330,268 @@
   }
 
   function renderTerms() {
+    const terms = warrantyTermsByLang();
     return renderPage(`
-      <section>
-        <p class="section-kicker">Warranty Terms</p>
-        <h1>H&amp;H Warranty Terms</h1>
-        <p class="lead">This V1 terms page keeps the full legal content outside the PDF certificate and gives owners one stable online reference.</p>
+      <section class="terms-hero">
+        <p class="section-kicker">${escapeHtml(terms.kicker)}</p>
+        <h1>${escapeHtml(terms.title)}</h1>
+        <p class="lead">${escapeHtml(terms.lead)}</p>
+        <div class="terms-meta">
+          ${terms.meta.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
+        </div>
       </section>
-      <section class="two-column">
-        <article class="panel">
-          <h3>Coverage Summary</h3>
-          <p>Coverage depends on product type, product series, installation category, installation date, approved warranty code, and the authorized dealer record.</p>
-          <div class="tag-list"><span>PPF</span><span>Window Film</span><span>TPU Color PPF</span><span>Manual / Partial</span></div>
-        </article>
-        <article class="panel">
-          <h3>Verification Rule</h3>
-          <p>Factory warranty code is the only warranty code. The same code is used for factory traceability, dealer registration, HQ review, owner query, PDF certificate, and export.</p>
-        </article>
-        <article class="panel">
-          <h3>Owner Data Privacy</h3>
-          <p>The public web certificate masks VIN and contact fields. Printable PDF certificates can include the full VIN for after-sales and insurance communication.</p>
-        </article>
-        <article class="panel">
-          <h3>Limitations</h3>
-          <p>Final warranty limitations should be reviewed by H&amp;H and local legal counsel before production launch in each country.</p>
-        </article>
+      <section class="terms-document">
+        ${terms.sections
+          .map(
+            (section) => `
+              <article class="terms-block">
+                <h2>${escapeHtml(section.title)}</h2>
+                ${section.body ? `<p>${escapeHtml(section.body)}</p>` : ""}
+                ${
+                  section.items
+                    ? `<ul class="terms-list">${section.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+                    : ""
+                }
+              </article>
+            `,
+          )
+          .join("")}
+        <aside class="terms-note">
+          <strong>${escapeHtml(terms.noteTitle)}</strong>
+          <p>${escapeHtml(terms.note)}</p>
+        </aside>
       </section>
     `);
+  }
+
+  function warrantyTermsByLang() {
+    const zhTerms = {
+      kicker: "质保条款",
+      title: "H&H 汽车膜有限质保条款",
+      lead:
+        "本条款适用于由 H&H 授权经销商完成施工，并已在 H&H 电子质保系统中激活的正品汽车膜产品。具体质保项目、产品名称、安装日期和质保到期日，以车主电子质保证书记录为准。",
+      meta: ["适用于车主查询与售后沟通", "凭 VIN、质保码和电子证书核验", "质保自安装日期起计算"],
+      sections: [
+        {
+          title: "1. 适用范围",
+          body:
+            "本有限质保仅适用于 H&H 正品漆面保护膜、汽车窗膜、TPU 改色膜及经 H&H 确认适用的相关汽车膜产品。产品必须由 H&H 授权经销商按标准流程施工，并完成电子质保登记及总部审核。",
+        },
+        {
+          title: "2. 质保期限",
+          items: [
+            "质保期限以电子质保证书显示的安装日期和到期日期为准。",
+            "不同产品系列、施工部位和使用场景可能对应不同质保期限。",
+            "若纸质、口头或其他渠道信息与电子质保证书不一致，以 H&H 电子质保系统记录为准。",
+          ],
+        },
+        {
+          title: "3. 质保覆盖内容",
+          body:
+            "在正常车辆使用和合理养护条件下，若产品出现经 H&H 或授权经销商确认的材料或施工相关质量问题，可按本条款申请质保服务。",
+          items: [
+            "漆面保护膜：异常黄变、开裂、起泡、脱胶、分层或非人为造成的明显材料失效。",
+            "汽车窗膜：非人为造成的起泡、脱胶、分层、明显褪色或影响正常使用的材料缺陷。",
+            "TPU 改色膜：非人为造成的异常开裂、脱胶、分层、明显褪色或材料稳定性问题。",
+          ],
+        },
+        {
+          title: "4. 不属于质保范围",
+          items: [
+            "事故、碰撞、刮擦、石击、外力撕扯、火烧、水淹或不可抗力导致的损坏。",
+            "使用强腐蚀性清洁剂、研磨剂、高压水枪近距离冲边、抛光机不当操作或其他不当养护造成的问题。",
+            "未经授权的施工、拆除、补膜、改装或由非授权门店处理后产生的问题。",
+            "车辆原厂漆面、后喷漆、钣喷质量、锈蚀、清漆层脱落或车身基材缺陷导致的膜面异常。",
+            "正常使用磨损、轻微划痕、污渍、水渍、边缘积尘，以及不影响产品功能的外观差异。",
+          ],
+        },
+        {
+          title: "5. 质保申请流程",
+          items: [
+            "车主应保留电子质保证书，并向原施工经销商或 H&H 指定服务渠道提交 VIN、质保码、问题照片和车辆信息。",
+            "授权经销商将对车辆和膜面状态进行初步检查，必要时提交 H&H 复核。",
+            "经确认属于质保范围的，H&H 或授权经销商将提供维修、局部更换或等效处理方案。",
+          ],
+        },
+        {
+          title: "6. 车主维护义务",
+          items: [
+            "施工后应按经销商交付建议完成固化期养护，避免过早洗车、冲边或清洁剂接触边缘。",
+            "日常清洁应使用中性清洁用品和柔软工具，避免使用强溶剂、研磨剂和硬质刮擦工具。",
+            "发现边缘翘起、起泡或异常情况时，应尽快联系授权经销商处理，避免继续扩大损伤。",
+          ],
+        },
+        {
+          title: "7. 服务方式与责任限制",
+          body:
+            "质保服务通常以问题部位的检测、维修或更换为主要补救方式。除当地法律另有强制规定外，本质保不涵盖车辆停用损失、交通费用、保险费用、间接损失、附带损失或惩罚性赔偿。",
+        },
+        {
+          title: "8. 证书与数据说明",
+          body:
+            "电子质保证书是车主查询和售后沟通的重要凭证。网页端可能会对 VIN 等敏感信息进行脱敏展示；用于售后、保险或打印存档的 PDF 证书可显示完整信息。",
+        },
+        {
+          title: "9. 地区适用",
+          body:
+            "不同国家或地区的消费者保护规定可能存在差异。如本条款与当地强制性法律规定不一致，以当地强制性法律规定为准；其余部分继续有效。",
+        },
+      ],
+      noteTitle: "重要提示",
+      note:
+        "本条款用于说明 H&H 产品有限质保的基本规则。具体质保结论需结合产品型号、施工记录、车辆状态和现场检测结果确认。",
+    };
+    const enTerms = {
+      kicker: "Warranty Terms",
+      title: "H&H Automotive Film Limited Warranty",
+      lead:
+        "These terms apply to genuine H&H automotive film products installed by an authorized H&H dealer and activated in the H&H electronic warranty system. Product name, installation date, coverage and expiry date follow the electronic warranty certificate.",
+      meta: ["For owner verification and service", "Verified by VIN, warranty code and certificate", "Coverage starts from the installation date"],
+      sections: [
+        {
+          title: "1. Scope",
+          body:
+            "This limited warranty covers eligible H&H paint protection film, automotive window film, TPU color film and related automotive film products confirmed by H&H, when installed by an authorized dealer and approved in the H&H warranty system.",
+        },
+        {
+          title: "2. Warranty Period",
+          items: [
+            "The warranty period follows the installation date and expiry date shown on the electronic warranty certificate.",
+            "Different product series, installation areas and usage conditions may have different warranty periods.",
+            "If other records conflict with the electronic certificate, the H&H warranty system record prevails.",
+          ],
+        },
+        {
+          title: "3. Covered Issues",
+          items: [
+            "PPF: abnormal yellowing, cracking, bubbling, adhesive failure, delamination or confirmed material failure.",
+            "Window film: bubbling, adhesive failure, delamination, significant fading or confirmed material defect under normal use.",
+            "TPU color film: abnormal cracking, adhesive failure, delamination, significant fading or confirmed stability issue.",
+          ],
+        },
+        {
+          title: "4. Exclusions",
+          items: [
+            "Damage caused by accident, impact, scratching, stone chips, fire, flood, misuse or force majeure.",
+            "Damage caused by corrosive chemicals, abrasive cleaning, improper pressure washing or improper maintenance.",
+            "Issues caused by unauthorized installation, removal, repair, modification or third-party handling.",
+            "Paint defects, repainting defects, corrosion, clear-coat failure or vehicle substrate defects.",
+            "Normal wear, minor scratches, stains, water marks, edge dust or cosmetic differences that do not affect function.",
+          ],
+        },
+        {
+          title: "5. Claim Process",
+          items: [
+            "The owner should provide the electronic certificate, VIN, warranty code, photos and vehicle information to the installing dealer or H&H service channel.",
+            "The authorized dealer will inspect the vehicle and submit the case to H&H when required.",
+            "Approved claims may be handled by repair, partial replacement or another equivalent service solution.",
+          ],
+        },
+        {
+          title: "6. Owner Care",
+          items: [
+            "Follow the dealer's curing and maintenance instructions after installation.",
+            "Use neutral cleaners and soft tools; avoid solvents, abrasives and hard scraping tools.",
+            "Contact an authorized dealer promptly if lifting, bubbling or other abnormal conditions appear.",
+          ],
+        },
+        {
+          title: "7. Remedy and Liability",
+          body:
+            "Warranty service is generally limited to inspection, repair or replacement of the affected area. Unless required by local law, it does not cover loss of use, transportation cost, insurance cost, indirect loss or consequential damages.",
+        },
+        {
+          title: "8. Certificate and Data",
+          body:
+            "The electronic warranty certificate is the key reference for owner verification and service communication. Public pages may mask sensitive VIN information; printable PDF certificates may include complete details for service or insurance use.",
+        },
+        {
+          title: "9. Local Law",
+          body:
+            "Where mandatory local consumer protection laws differ from these terms, mandatory local law applies and the remaining terms continue to be effective.",
+        },
+      ],
+      noteTitle: "Important Notice",
+      note:
+        "Final service decisions depend on product model, installation record, vehicle condition and inspection results.",
+    };
+    const ruTerms = {
+      kicker: "Условия гарантии",
+      title: "Ограниченная гарантия H&H на автомобильные пленки",
+      lead:
+        "Настоящие условия применяются к оригинальным автомобильным пленкам H&H, установленным авторизованным дилером H&H и активированным в электронной системе гарантии H&H. Название продукта, дата установки, срок и окончание гарантии определяются электронным гарантийным сертификатом.",
+      meta: ["Для проверки владельцем и сервисного обращения", "Проверка по VIN, гарантийному коду и сертификату", "Срок гарантии считается с даты установки"],
+      sections: [
+        {
+          title: "1. Область действия",
+          body:
+            "Ограниченная гарантия распространяется на соответствующие пленки H&H для защиты кузова, автомобильные оконные пленки, TPU цветные пленки и связанные автомобильные пленочные продукты, если они установлены авторизованным дилером и одобрены в системе гарантии H&H.",
+        },
+        {
+          title: "2. Срок гарантии",
+          items: [
+            "Срок гарантии определяется датой установки и датой окончания, указанными в электронном гарантийном сертификате.",
+            "Для разных серий продуктов, зон установки и условий эксплуатации могут применяться разные сроки гарантии.",
+            "При расхождении с другими источниками преимущество имеет запись в электронной системе гарантии H&H.",
+          ],
+        },
+        {
+          title: "3. Гарантийные случаи",
+          items: [
+            "PPF: аномальное пожелтение, растрескивание, пузыри, отслоение клея, расслоение или подтвержденный дефект материала.",
+            "Оконная пленка: пузыри, отслоение клея, расслоение, значительное выцветание или подтвержденный дефект материала при нормальной эксплуатации.",
+            "TPU цветная пленка: аномальное растрескивание, отслоение клея, расслоение, значительное выцветание или подтвержденная проблема стабильности материала.",
+          ],
+        },
+        {
+          title: "4. Исключения",
+          items: [
+            "Повреждения вследствие ДТП, удара, царапин, сколов, пожара, затопления, неправильного использования или форс-мажора.",
+            "Повреждения от агрессивной химии, абразивной чистки, неправильной мойки высоким давлением или ненадлежащего ухода.",
+            "Проблемы после неавторизованной установки, снятия, ремонта, модификации или вмешательства третьих лиц.",
+            "Дефекты лакокрасочного покрытия, повторной окраски, коррозия, отслоение лака или дефекты основания автомобиля.",
+            "Нормальный износ, мелкие царапины, пятна, водные следы, пыль по краям или внешние отличия, не влияющие на функцию продукта.",
+          ],
+        },
+        {
+          title: "5. Порядок обращения",
+          items: [
+            "Владелец предоставляет электронный сертификат, VIN, гарантийный код, фотографии и данные автомобиля дилеру установки или сервисному каналу H&H.",
+            "Авторизованный дилер осматривает автомобиль и при необходимости передает случай на проверку H&H.",
+            "Подтвержденные случаи могут быть урегулированы ремонтом, частичной заменой или эквивалентным сервисным решением.",
+          ],
+        },
+        {
+          title: "6. Обязанности владельца",
+          items: [
+            "После установки соблюдать рекомендации дилера по периоду фиксации и уходу.",
+            "Использовать нейтральные чистящие средства и мягкие инструменты; избегать растворителей, абразивов и жестких скребков.",
+            "При появлении поднятия краев, пузырей или иных аномалий своевременно обратиться к авторизованному дилеру.",
+          ],
+        },
+        {
+          title: "7. Способ обслуживания и ограничение ответственности",
+          body:
+            "Гарантийное обслуживание обычно ограничивается осмотром, ремонтом или заменой затронутой зоны. Если иное не требуется местным законом, гарантия не покрывает простой автомобиля, транспортные расходы, страховые расходы, косвенные или последующие убытки.",
+        },
+        {
+          title: "8. Сертификат и данные",
+          body:
+            "Электронный гарантийный сертификат является ключевым документом для проверки и сервисного обращения. Публичные страницы могут скрывать часть VIN; печатный PDF-сертификат может содержать полные данные для сервиса или страхования.",
+        },
+        {
+          title: "9. Местное законодательство",
+          body:
+            "Если обязательные нормы местного законодательства о защите потребителей отличаются от этих условий, применяются такие обязательные нормы, а остальные положения сохраняют силу.",
+        },
+      ],
+      noteTitle: "Важное примечание",
+      note:
+        "Окончательное сервисное решение зависит от модели продукта, записи установки, состояния автомобиля и результатов осмотра.",
+    };
+    if (lang() === "zh") return zhTerms;
+    if (lang() === "ru") return ruTerms;
+    return enTerms;
   }
 
   function renderDealerLogin() {
