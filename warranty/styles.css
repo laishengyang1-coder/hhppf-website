@@ -1379,7 +1379,77 @@ tr:last-child td {
   background: var(--line);
 }
 
-/* ── Toast ── */
+/* ── Combobox for warranty code search ── */
+.code-combobox {
+  position: relative;
+}
+
+.code-combobox input {
+  width: 100%;
+}
+
+.code-combobox-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid rgba(200, 188, 181, 0.4);
+  border-top: 0;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.code-combobox-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(18, 18, 17, 0.06);
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.12s ease;
+}
+
+.code-combobox-item:last-child {
+  border-bottom: 0;
+}
+
+.code-combobox-item:hover,
+.code-combobox-item.is-active {
+  background: rgba(233, 72, 26, 0.08);
+}
+
+.code-combobox-item strong {
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.code-combobox-item span {
+  color: var(--soft);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.code-combobox-item.is-empty {
+  color: var(--soft);
+  cursor: default;
+  justify-content: center;
+}
+
+.code-combobox-item.is-empty:hover {
+  background: transparent;
+}
+
+#dealer-code-count {
+  display: block;
+  margin-top: 4px;
+}
 .toast {
   position: fixed;
   right: 18px;

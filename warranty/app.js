@@ -2379,9 +2379,12 @@
           <form class="form-grid" data-form="register-warranty">
             <label>
               Warranty Code
-              <select name="warrantyCode" id="dealer-code-select" required>
-                ${codes.map((code) => `<option value="${code.code}">${code.code} - ${productLabel(code.productType)}</option>`).join("")}
-              </select>
+              <div class="code-combobox">
+                <input name="warrantyCode" id="dealer-code-input" autocomplete="off" placeholder="Type or search warranty code..." required />
+                <input type="hidden" name="warrantyCodeValue" id="dealer-code-value" />
+                <div class="code-combobox-dropdown" id="dealer-code-dropdown" style="display:none;"></div>
+              </div>
+              <span class="small" id="dealer-code-count">${codes.length} codes available</span>
             </label>
             <label>
               Installation Category
@@ -3377,6 +3380,7 @@
       </div>
     `;
     localizeRenderedPage();
+    if (route === "dealer/register-warranty") initCodeCombobox();
     if (shouldResetScroll) {
       resetPageScroll();
     }
@@ -3425,6 +3429,112 @@
       if (summary && code) summary.innerHTML = renderCodeSummary(code);
     }
   });
+
+  /* ── Warranty Code Combobox (manual input + fuzzy search) ── */
+  function fuzzyMatchCodes(query, codes) {
+    if (!query) return codes;
+    const q = query.toLowerCase();
+    return codes
+      .map((code) => {
+        const text = (code.code + " " + productLabel(code.productType)).toLowerCase();
+        let score = 0;
+        if (text === q) score = 1000;
+        else if (text.startsWith(q)) score = 500;
+        else if (text.includes(q)) score = 200;
+        else {
+          let qi = 0;
+          for (let ti = 0; ti < text.length && qi < q.length; ti++) {
+            if (text[ti] === q[qi]) qi++;
+          }
+          if (qi === q.length) score = 50;
+        }
+        return { code, score };
+      })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map((item) => item.code);
+  }
+
+  function initCodeCombobox() {
+    const dealer = activeDealer();
+    const allCodes = availableCodesForDealer(dealer.code);
+    const input = document.getElementById("dealer-code-input");
+    const valueInput = document.getElementById("dealer-code-value");
+    const dropdown = document.getElementById("dealer-code-dropdown");
+    const summary = document.getElementById("dealer-code-summary");
+    const countEl = document.getElementById("dealer-code-count");
+    if (!input || !dropdown) return;
+
+    function showMatches(query) {
+      const matches = fuzzyMatchCodes(query, allCodes);
+      if (countEl) countEl.textContent = matches.length + " codes available";
+      if (matches.length === 0) {
+        dropdown.innerHTML = '<div class="code-combobox-item is-empty">No matching codes</div>';
+      } else {
+        dropdown.innerHTML = matches
+          .map(
+            (code, i) =>
+              `<div class="code-combobox-item${i === 0 ? " is-active" : ""}" data-code="${escapeHtml(code.code)}">
+                <strong>${escapeHtml(code.code)}</strong>
+                <span>${escapeHtml(productLabel(code.productType))}</span>
+              </div>`,
+          )
+          .join("");
+      }
+      dropdown.style.display = "block";
+    }
+
+    function selectCode(codeObj) {
+      input.value = codeObj.code;
+      if (valueInput) valueInput.value = codeObj.code;
+      dropdown.style.display = "none";
+      if (summary) summary.innerHTML = renderCodeSummary(codeObj);
+    }
+
+    input.addEventListener("input", () => showMatches(input.value.trim()));
+    input.addEventListener("focus", () => showMatches(input.value.trim()));
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { dropdown.style.display = "none"; return; }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const active = dropdown.querySelector(".is-active");
+        if (active && !active.classList.contains("is-empty")) {
+          const code = codeByValue(active.dataset.code);
+          if (code) selectCode(code);
+        }
+        dropdown.style.display = "none";
+        return;
+      }
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        const items = [...dropdown.querySelectorAll(".code-combobox-item:not(.is-empty)")];
+        if (items.length === 0) return;
+        const active = dropdown.querySelector(".is-active");
+        let idx = active ? items.indexOf(active) : -1;
+        if (e.key === "ArrowDown") idx = (idx + 1) % items.length;
+        else idx = (idx - 1 + items.length) % items.length;
+        items.forEach((i) => i.classList.remove("is-active"));
+        items[idx].classList.add("is-active");
+        items[idx].scrollIntoView({ block: "nearest" });
+      }
+    });
+
+    dropdown.addEventListener("click", (e) => {
+      const item = e.target.closest(".code-combobox-item");
+      if (!item || item.classList.contains("is-empty")) return;
+      const code = codeByValue(item.dataset.code);
+      if (code) selectCode(code);
+    });
+
+    document.addEventListener("click", function hideDropdown(e) {
+      if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.display = "none";
+      }
+    }, true);
+
+    if (allCodes.length > 0) selectCode(allCodes[0]);
+  }
 
   document.addEventListener("input", (event) => {
     const target = event.target;
