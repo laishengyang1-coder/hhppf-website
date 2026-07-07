@@ -316,6 +316,7 @@
       "PPF": "车衣 PPF",
       "Window Film": "汽车窗膜",
       "TPU Color PPF": "TPU 改色膜",
+      "Specialty Film": "特种功能膜",
       "Manual / Partial": "手动 / 局部质保",
       "Full Car PPF": "整车车衣",
       "Partial PPF": "局部车衣",
@@ -326,6 +327,59 @@
       "Example: XTA210990R1234567": "示例：XTA210990R1234567",
       "Any special note for HQ review": "给总部审核的特殊备注",
       "Campaign activity reward": "活动奖励",
+      /* ── New: Product Management ── */
+      "Add / Edit Product": "新增 / 编辑产品",
+      "Product Type": "产品类型",
+      "External Model": "外部型号",
+      "Save Product": "保存产品",
+      "Update Product": "更新产品",
+      "Reset Form": "重置表单",
+      "Product Catalog": "产品目录",
+      "External": "外部型号",
+      "Actions": "操作",
+      "Edit": "编辑",
+      "Delete": "删除",
+      "Product name is required.": "请输入产品名称。",
+      "Delete this product? This cannot be undone.": "确定删除此产品？此操作不可撤销。",
+      "PPF (Paint Protection Film)": "PPF（车衣保护膜）",
+      /* ── New: Dealer Management ── */
+      "Create / Edit Dealer": "创建 / 编辑经销商",
+      "Dealer Code": "经销商代码",
+      "Dealer Name": "经销商名称",
+      "Username": "用户名",
+      "Password": "密码",
+      "Login username": "登录用户名",
+      "Login password": "登录密码",
+      "Save Dealer": "保存经销商",
+      "Update Dealer": "更新经销商",
+      "Dealer List": "经销商列表",
+      "Country Partner": "国家级合作伙伴",
+      "Regional Dealer": "区域经销商",
+      "City Dealer": "城市经销商",
+      "Shop": "门店",
+      "HQ": "总部",
+      "Inactive": "已停用",
+      "Parent Dealer": "上级经销商",
+      "Dealer code is required.": "请输入经销商代码。",
+      "Username is required for login.": "请输入登录用户名。",
+      "Dealer name is required.": "请输入经销商名称。",
+      "Password is required for new dealer.": "新建经销商必须设置密码。",
+      "Dealer code already exists. Use a unique code.": "经销商代码已存在，请使用唯一代码。",
+      "Delete this dealer? Warranty codes and records associated with this dealer will be preserved but the account will no longer be accessible. Continue?": "确定删除此经销商？关联的质保码和记录将保留，但该账号将无法登录。是否继续？",
+      "Create and manage dealer accounts. Each dealer will use the assigned username and password to log into the Dealer Portal.": "创建并管理经销商账号。每个经销商将使用分配的用户名和密码登录经销商端。",
+      /* ── New: Auth / Login ── */
+      "Sign In": "登录",
+      "Use the account created by HQ to log in.": "请使用总部为您创建的账号登录。",
+      "Your dealer username": "您的经销商用户名",
+      "Your password": "您的密码",
+      "Your admin account": "您的总部账号",
+      "Account name": "账号",
+      "Enter Admin Console": "进入总部后台",
+      "Invalid dealer account or password, or account is not active.": "经销商账号或密码不正确，或账号已停用。",
+      "Dealer code:": "经销商代码：",
+      "Level:": "等级：",
+      "Country:": "国家：",
+      "Per code or no limit": "按质保码或无限制",
     },
     ru: {
       "Warranty System": "Система гарантии",
@@ -569,6 +623,7 @@
       "PPF": "PPF",
       "Window Film": "Оконная пленка",
       "TPU Color PPF": "TPU цветная PPF",
+      "Specialty Film": "Специальная пленка",
       "Manual / Partial": "Ручная / частичная",
       "Full Car PPF": "Полная PPF",
       "Partial PPF": "Частичная PPF",
@@ -579,6 +634,59 @@
       "Example: XTA210990R1234567": "Пример: XTA210990R1234567",
       "Any special note for HQ review": "Примечание для проверки HQ",
       "Campaign activity reward": "Бонус за активность",
+      /* ── New: Product Management ── */
+      "Add / Edit Product": "Добавить / изменить продукт",
+      "Product Type": "Тип продукта",
+      "External Model": "Внешняя модель",
+      "Save Product": "Сохранить продукт",
+      "Update Product": "Обновить продукт",
+      "Reset Form": "Сбросить форму",
+      "Product Catalog": "Каталог продуктов",
+      "External": "Внешн.",
+      "Actions": "Действия",
+      "Edit": "Изменить",
+      "Delete": "Удалить",
+      "Product name is required.": "Название продукта обязательно.",
+      "Delete this product? This cannot be undone.": "Удалить этот продукт? Это необратимо.",
+      "PPF (Paint Protection Film)": "PPF (защитная пленка)",
+      /* ── New: Dealer Management ── */
+      "Create / Edit Dealer": "Создать / изменить дилера",
+      "Dealer Code": "Код дилера",
+      "Dealer Name": "Название дилера",
+      "Username": "Логин",
+      "Password": "Пароль",
+      "Login username": "Логин",
+      "Login password": "Пароль для входа",
+      "Save Dealer": "Сохранить дилера",
+      "Update Dealer": "Обновить дилера",
+      "Dealer List": "Список дилеров",
+      "Country Partner": "Нац. партнер",
+      "Regional Dealer": "Рег. дилер",
+      "City Dealer": "Городской дилер",
+      "Shop": "Магазин",
+      "HQ": "HQ",
+      "Inactive": "Неактивен",
+      "Parent Dealer": "Родительский дилер",
+      "Dealer code is required.": "Код дилера обязателен.",
+      "Username is required for login.": "Логин обязателен.",
+      "Dealer name is required.": "Название дилера обязательно.",
+      "Password is required for new dealer.": "Пароль обязателен для нового дилера.",
+      "Dealer code already exists. Use a unique code.": "Код дилера уже существует. Используйте уникальный код.",
+      "Delete this dealer? Warranty codes and records associated with this dealer will be preserved but the account will no longer be accessible. Continue?": "Удалить дилера? Гарантийные коды и записи сохранятся, но аккаунт станет недоступен. Продолжить?",
+      "Create and manage dealer accounts. Each dealer will use the assigned username and password to log into the Dealer Portal.": "Создавайте и управляйте аккаунтами дилеров. Каждый дилер использует назначенные логин и пароль для входа в портал дилера.",
+      /* ── New: Auth / Login ── */
+      "Sign In": "Войти",
+      "Use the account created by HQ to log in.": "Используйте аккаунт, созданный HQ.",
+      "Your dealer username": "Ваш логин дилера",
+      "Your password": "Ваш пароль",
+      "Your admin account": "Ваш админ-аккаунт",
+      "Account name": "Аккаунт",
+      "Enter Admin Console": "Войти в админ-панель",
+      "Invalid dealer account or password, or account is not active.": "Неверный аккаунт дилера, пароль или аккаунт неактивен.",
+      "Dealer code:": "Код дилера:",
+      "Level:": "Уровень:",
+      "Country:": "Страна:",
+      "Per code or no limit": "На код или без лимита",
     },
   };
 
@@ -616,6 +724,21 @@
       "Current points:": "Текущие баллы:",
       "Frozen points:": "Замороженные баллы:",
       "points": "баллов",
+      /* ── New dynamic phrases ── */
+      "Allocated": "Назначен",
+      "to": "→",
+      "Help": "Помощь",
+      "Contact": "Контакты",
+      "support@hhppf.com": "support@hhppf.com",
+      "V1 Preview": "V1 Прототип",
+      "External:": "Внешняя модель:",
+      "Remark:": "Примечание:",
+      "Warranty Years:": "Лет гарантии:",
+      "Code:": "Код:",
+      "Name:": "Название:",
+      "Years:": "Лет:",
+      "Points:": "Баллы:",
+      "Status:": "Статус:",
     },
   };
 
@@ -2601,7 +2724,7 @@
       status: document.getElementById("admin-product-status").value,
       remark: document.getElementById("admin-product-remark").value.trim(),
     };
-    if (!product.name) { alert("Product name is required."); return; }
+    if (!product.name) { alert(translateValue("Product name is required.")); return; }
     if (editIdx >= 0 && editIdx < data.products.length) {
       data.products[editIdx] = product;
     } else {
@@ -2628,7 +2751,7 @@
   }
 
   function handleAdminProductDelete(idx) {
-    if (!confirm("Delete this product? This cannot be undone.")) return;
+    if (!confirm(translateValue("Delete this product? This cannot be undone."))) return;
     data.products.splice(idx, 1);
     saveData();
     renderPage("admin/products");
@@ -2727,13 +2850,13 @@
     const username = document.getElementById("admin-dealer-username").value.trim();
     const password = document.getElementById("admin-dealer-password").value.trim();
     const name = document.getElementById("admin-dealer-name").value.trim();
-    if (!code) { alert("Dealer code is required."); return; }
-    if (!username) { alert("Username is required for login."); return; }
-    if (!name) { alert("Dealer name is required."); return; }
-    if (editIdx < 0 && !password) { alert("Password is required for new dealer."); return; }
+    if (!code) { alert(translateValue("Dealer code is required.")); return; }
+    if (!username) { alert(translateValue("Username is required for login.")); return; }
+    if (!name) { alert(translateValue("Dealer name is required.")); return; }
+    if (editIdx < 0 && !password) { alert(translateValue("Password is required for new dealer.")); return; }
     const existing = data.dealers.find((d) => d.code === code);
     if (existing && (editIdx < 0 || existing !== data.dealers[editIdx])) {
-      alert("Dealer code already exists. Use a unique code.");
+      alert(translateValue("Dealer code already exists. Use a unique code."));
       return;
     }
     const dealer = {
@@ -2776,7 +2899,7 @@
   }
 
   function handleAdminDealerDelete(idx) {
-    if (!confirm("Delete this dealer? Warranty codes and records associated with this dealer will be preserved but the account will no longer be accessible. Continue?")) return;
+    if (!confirm(translateValue("Delete this dealer? Warranty codes and records associated with this dealer will be preserved but the account will no longer be accessible. Continue?"))) return;
     data.dealers.splice(idx, 1);
     saveData();
     renderPage("admin/dealers");
@@ -3260,7 +3383,7 @@
   }
 
   function showToast(message) {
-    ui.toast = message;
+    ui.toast = translateValue(message);
     render();
     window.setTimeout(() => {
       ui.toast = "";
