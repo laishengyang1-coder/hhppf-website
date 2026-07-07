@@ -396,6 +396,12 @@
       "Warranty Years": "质保年限",
       "Usage Type": "使用类型",
       "Usage Limit": "使用次数",
+      "Product Name": "产品名称",
+      "Dealer Code": "经销商代码",
+      /* ── Import page simplification ── */
+      "Only 4 columns are required: warranty code, batch number, product type, and product model. The system automatically fills in warranty years, usage type, usage limit, and leaves dealer/shipment fields blank for later allocation.": "仅需 4 列：质保号、批次号、产品类型、产品型号。系统会自动补全质保年限、使用类型、使用次数，并留空经销商/发货信息供后续划拨。",
+      "(warrantyYears, usageType, usageLimit auto-filled)": "（自动填充质保年限、使用类型、使用次数）",
+      "Product model": "产品型号",
     },
     ru: {
       "Warranty System": "Система гарантии",
@@ -719,6 +725,10 @@
       "Warranty Years": "Лет гарантии",
       "Usage Type": "Тип использования",
       "Usage Limit": "Лимит использований",
+      /* ── Import page simplification ── */
+      "Only 4 columns are required: warranty code, batch number, product type, and product model. The system automatically fills in warranty years, usage type, usage limit, and leaves dealer/shipment fields blank for later allocation.": "Требуется только 4 столбца: гарантийный код, номер партии, тип продукта и модель. Система автоматически заполняет срок гарантии, тип и лимит использования, а поля дилера и отгрузки оставляет пустыми для последующего распределения.",
+      "(warrantyYears, usageType, usageLimit auto-filled)": "(срок, тип и лимит использования заполняются автоматически)",
+      "Product model": "Модель продукта",
     },
   };
 
@@ -3096,14 +3106,15 @@
         <section class="two-column">
           <article class="panel">
             <h2>Excel Import</h2>
-            <p>V1 production should reject the whole file when any row has a duplicate code, missing required field, invalid product, invalid dealer code, or invalid usage setting.</p>
+            <p>Only 4 columns are required: warranty code, batch number, product type, and product model. The system automatically fills in warranty years, usage type, usage limit, and leaves dealer/shipment fields blank for later allocation.</p>
             <div class="form-actions">
               <button class="button" data-action="download-template">Download CSV Template</button>
               <button class="ghost-button" data-action="run-import-demo">Run Validation Demo</button>
             </div>
             <div class="divider"></div>
             <div class="tag-list">
-              <span>Warranty Code</span><span>Factory Roll No.</span><span>Batch No.</span><span>Product Type</span><span>Product Name</span><span>Warranty Years</span><span>Usage Type</span><span>Usage Limit</span><span>Dealer Code</span><span>Shipment No.</span>
+              <span>Warranty Code</span><span>Batch No.</span><span>Product Type</span><span>Product Name</span>
+              <span style="opacity:.7;font-weight:400;">(warrantyYears, usageType, usageLimit auto-filled)</span>
             </div>
           </article>
           <article class="panel">
@@ -4023,49 +4034,74 @@
     showToast(`Redemption status updated to ${status}.`);
   }
 
+  function fillWarrantyCodeFromProduct(row) {
+    const typeMatch = (p) =>
+      p.status === "Active" && (p.type === row.productType || productLabel(p.type) === row.productType);
+    const nameMatch = (p) =>
+      p.status === "Active" &&
+      (p.name === row.productName || (p.externalModel && p.externalModel === row.productName));
+    const product =
+      data.products.find((p) => typeMatch(p) && nameMatch(p)) ||
+      data.products.find(nameMatch) ||
+      data.products.find(typeMatch);
+    if (!product) return row;
+    return {
+      ...row,
+      factoryRollNo: row.factoryRollNo || "",
+      productType: product.type,
+      productName: product.name,
+      warrantyYears: row.warrantyYears || String(product.warrantyYears),
+      usageType: row.usageType || product.usageType,
+      usageLimit: row.usageLimit || String(product.defaultUsageLimit),
+      dealerCode: row.dealerCode || "",
+      shipmentNo: row.shipmentNo || "",
+      shipmentDate: row.shipmentDate || "",
+      remark: row.remark || "",
+    };
+  }
+
   function downloadTemplate() {
     const rows = [
-      {
+      fillWarrantyCodeFromProduct({
         warrantyCode: "HH-PPF-2026-0100",
-        factoryRollNo: "FR-PPF-9001",
         batchNo: "B-PPF-2026-08",
         productType: "PPF",
         productName: "HEHE PPF Pro 210",
-        warrantyYears: "10",
-        usageType: "Single",
-        usageLimit: "1",
-        dealerCode: "RU-MSK-001",
-        shipmentNo: "HH-RU-2026-08-A",
-        shipmentDate: "2026-08-01",
-        remark: "Sample row",
-      },
+      }),
     ];
     downloadCsv("hh-warranty-code-template.csv", rows);
   }
 
   function runImportDemo() {
     const id = `IMP-${new Date().getFullYear()}-${String(data.importBatches.length + 1).padStart(4, "0")}`;
+    const baseRow = {
+      warrantyCode: `HH-PPF-${new Date().getFullYear()}-${String(1000 + data.warrantyCodes.length)}`,
+      batchNo: "B-DEMO",
+      productType: "PPF",
+      productName: "HEHE PPF Pro 210",
+    };
+    const filled = fillWarrantyCodeFromProduct(baseRow);
     data.importBatches.unshift({
       id,
       name: "Validation demo import",
       time: nowLabel(),
       operator: "HQ Admin",
       totalCodes: 1,
-      productTypes: "PPF",
+      productTypes: filled.productType,
       dealer: "Unallocated",
       status: "Imported",
       remark: "All rows passed validation.",
     });
     data.warrantyCodes.unshift({
-      code: `HH-PPF-${new Date().getFullYear()}-${String(1000 + data.warrantyCodes.length)}`,
-      factoryRollNo: "FR-DEMO",
-      batchNo: "B-DEMO",
-      shipmentNo: "",
-      productType: "PPF",
-      productName: "HEHE PPF Pro 210",
-      warrantyYears: 10,
-      usageType: "Single",
-      usageLimit: 1,
+      code: filled.warrantyCode,
+      factoryRollNo: filled.factoryRollNo,
+      batchNo: filled.batchNo,
+      shipmentNo: filled.shipmentNo,
+      productType: filled.productType,
+      productName: filled.productName,
+      warrantyYears: Number(filled.warrantyYears),
+      usageType: filled.usageType,
+      usageLimit: Number(filled.usageLimit),
       usedCount: 0,
       dealerCode: "",
       importBatch: id,
