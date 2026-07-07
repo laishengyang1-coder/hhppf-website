@@ -380,6 +380,10 @@
       "Level:": "等级：",
       "Country:": "国家：",
       "Per code or no limit": "按质保码或无限制",
+      /* ── Login page lead paragraphs ── */
+      "Authorized dealers register warranties, upload installation photos, track review status, and redeem partner points.": "授权经销商可登记质保、上传施工照片、跟踪审核状态并兑换伙伴积分。",
+      "Partner Points": "伙伴积分",
+      "HQ administrators manage products, dealers, factory warranty codes, reviews, points, rewards, and export workflows.": "总部管理员负责管理产品、经销商、工厂质保码、审核、积分、兑换物料和数据导出流程。",
     },
     ru: {
       "Warranty System": "Система гарантии",
@@ -687,6 +691,10 @@
       "Level:": "Уровень:",
       "Country:": "Страна:",
       "Per code or no limit": "На код или без лимита",
+      /* ── Login page lead paragraphs ── */
+      "Authorized dealers register warranties, upload installation photos, track review status, and redeem partner points.": "Авторизованные дилеры регистрируют гарантии, загружают фото установки, отслеживают статус проверки и обменивают партнерские баллы.",
+      "Partner Points": "Партнерские баллы",
+      "HQ administrators manage products, dealers, factory warranty codes, reviews, points, rewards, and export workflows.": "Администраторы HQ управляют продуктами, дилерами, заводскими кодами, проверками, баллами, материалами и экспортом.",
     },
   };
 
@@ -2588,7 +2596,7 @@
           <p class="lead">HQ administrators manage products, dealers, factory warranty codes, reviews, points, rewards, and export workflows.</p>
         </div>
         <form class="login-panel" data-form="admin-login">
-          <h3>Demo account</h3>
+          <h3>Sign In</h3>
           <label>Account name<input name="email" placeholder="Your admin account" required /></label>
           <label>Password<input name="password" type="password" placeholder="Your password" required /></label>
           <button class="button" type="submit">Enter Admin Console</button>
