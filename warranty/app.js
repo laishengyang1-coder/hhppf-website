@@ -6,18 +6,17 @@
   }
 
   const STORAGE_KEY = "hhWarrantyPortalV1";
-  const VERSION = 2;
+  const VERSION = 3;
   const AUTH = {
     dealer: {
-      email: "dealer@hhppf.com",
-      password: "dealer123",
       sessionKey: "hhDealerAuthed",
+      codeKey: "hhDealerCode",
       dashboardRoute: "dealer/dashboard",
       loginRoute: "dealer/login",
     },
     admin: {
-      email: "admin@hhppf.com",
-      password: "admin123",
+      email: "anhuiheheppf",
+      password: "hhppf",
       sessionKey: "hhAdminAuthed",
       dashboardRoute: "admin/dashboard",
       loginRoute: "admin/login",
@@ -858,6 +857,8 @@
     dealers: [
       {
         code: "RU-MSK-001",
+        username: "moscow",
+        password: "hhppf",
         name: "Moscow Auto Studio",
         country: "Russia",
         city: "Moscow",
@@ -868,6 +869,8 @@
       },
       {
         code: "RU-SPB-002",
+        username: "spb",
+        password: "hhppf",
         name: "Saint Petersburg Detail Lab",
         country: "Russia",
         city: "Saint Petersburg",
@@ -1162,12 +1165,23 @@
 
   function authenticate(role, form) {
     const formData = new FormData(form);
-    const email = String(formData.get("email") || "").trim().toLowerCase();
+    const email = String(formData.get("email") || "").trim();
     const password = String(formData.get("password") || "");
     const account = AUTH[role];
-    if (email !== account.email || password !== account.password) {
-      showToast(role === "dealer" ? "Invalid dealer account or password." : "Invalid admin account or password.");
-      return;
+    if (role === "admin") {
+      if (email !== account.email || password !== account.password) {
+        showToast("Invalid admin account or password.");
+        return;
+      }
+    } else if (role === "dealer") {
+      const matchedDealer = data.dealers.find(
+        (d) => d.username === email && d.password === password && d.status === "Active",
+      );
+      if (!matchedDealer) {
+        showToast("Invalid dealer account or password, or account is not active.");
+        return;
+      }
+      sessionStorage.setItem(account.codeKey, matchedDealer.code);
     }
     sessionStorage.setItem(account.sessionKey, "true");
     setRoute(account.dashboardRoute);
@@ -1176,6 +1190,7 @@
   function signOut(role) {
     const account = AUTH[role];
     sessionStorage.removeItem(account.sessionKey);
+    if (role === "dealer") sessionStorage.removeItem(account.codeKey);
     setRoute(account.loginRoute);
   }
 
@@ -1321,6 +1336,11 @@
   }
 
   function activeDealer() {
+    const dealerCode = sessionStorage.getItem(AUTH.dealer.codeKey);
+    if (dealerCode) {
+      const found = data.dealers.find((d) => d.code === dealerCode);
+      if (found) return found;
+    }
     return data.dealers[0];
   }
 
@@ -2160,10 +2180,10 @@
           </div>
         </div>
         <form class="login-panel" data-form="dealer-login">
-          <h3>Demo account</h3>
-          <p class="demo-account">Email: dealer@hhppf.com<br>Password: dealer123</p>
-          <label>Email or account name<input name="email" value="dealer@hhppf.com" required /></label>
-          <label>Password<input name="password" type="password" value="dealer123" required /></label>
+          <h3>Sign In</h3>
+          <p>Use the account created by HQ to log in.</p>
+          <label>Username<input name="email" placeholder="Your dealer username" required /></label>
+          <label>Password<input name="password" type="password" placeholder="Your password" required /></label>
           <button class="button" type="submit">Enter Dealer Portal</button>
         </form>
       </section>
@@ -2178,13 +2198,14 @@
       ["dealer/points", "My Points"],
       ["dealer/rewards", "Rewards Center"],
     ];
+    const dealer = activeDealer();
     return renderWorkspaceShell({
       active,
       content,
       items,
       kicker: "Dealer Portal",
-      title: "Moscow Auto Studio",
-      lead: "Demo dealer workspace for warranty registration, record tracking, points, and material redemption.",
+      title: dealer.name,
+      lead: `Dealer code: ${dealer.code} · Level: ${dealer.level || "-"} · Country: ${dealer.country || "-"}`,
       logoutAction: "dealer-logout",
     });
   }
@@ -2445,9 +2466,8 @@
         </div>
         <form class="login-panel" data-form="admin-login">
           <h3>Demo account</h3>
-          <p class="demo-account">Email: admin@hhppf.com<br>Password: admin123</p>
-          <label>Email or account name<input name="email" value="admin@hhppf.com" required /></label>
-          <label>Password<input name="password" type="password" value="admin123" required /></label>
+          <label>Account name<input name="email" placeholder="Your admin account" required /></label>
+          <label>Password<input name="password" type="password" placeholder="Your password" required /></label>
           <button class="button" type="submit">Enter Admin Console</button>
         </form>
       </section>
@@ -2633,15 +2653,50 @@
       `
         <section class="panel">
           <h2>Dealer Management</h2>
+          <p>Create and manage dealer accounts. Each dealer will use the assigned username and password to log into the Dealer Portal.</p>
+        </section>
+        <section class="panel">
+          <h3>Create / Edit Dealer</h3>
+          <div class="form-grid">
+            <label>Dealer Code <input id="admin-dealer-code" placeholder="e.g. RU-MSK-001" /></label>
+            <label>Dealer Name <input id="admin-dealer-name" placeholder="e.g. Moscow Auto Studio" /></label>
+            <label>Username <input id="admin-dealer-username" placeholder="Login username" /></label>
+            <label>Password <input id="admin-dealer-password" type="text" placeholder="Login password" /></label>
+            <label>Country <input id="admin-dealer-country" placeholder="e.g. Russia" /></label>
+            <label>City <input id="admin-dealer-city" placeholder="e.g. Moscow" /></label>
+            <label>Level <select id="admin-dealer-level">
+              <option value="Country Partner">Country Partner</option>
+              <option value="Regional Dealer">Regional Dealer</option>
+              <option value="City Dealer">City Dealer</option>
+              <option value="Shop">Shop</option>
+            </select></label>
+            <label>Parent Dealer <select id="admin-dealer-parent">
+              <option value="HQ">HQ</option>
+              ${data.dealers.map((d) => `<option value="${d.code}">${d.code} - ${d.name}</option>`).join("")}
+            </select></label>
+            <label>Status <select id="admin-dealer-status">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select></label>
+          </div>
+          <div class="inline-actions" style="margin-top:18px;">
+            <button class="button" data-action="admin-dealer-save">Save Dealer</button>
+            <button class="ghost-button" data-action="admin-dealer-reset">Reset Form</button>
+          </div>
+          <input type="hidden" id="admin-dealer-edit-idx" />
+        </section>
+        <section class="panel">
+          <h3>Dealer List (${data.dealers.length})</h3>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Dealer Code</th><th>Name</th><th>Country</th><th>City</th><th>Level</th><th>Parent</th><th>Points</th><th>Status</th></tr></thead>
+              <thead><tr><th>Code</th><th>Username</th><th>Name</th><th>Country</th><th>City</th><th>Level</th><th>Parent</th><th>Points</th><th>Status</th><th>Actions</th></tr></thead>
               <tbody>
                 ${data.dealers
                   .map(
-                    (dealer) => `
+                    (dealer, idx) => `
                       <tr>
-                        <td>${escapeHtml(dealer.code)}</td>
+                        <td><strong>${escapeHtml(dealer.code)}</strong></td>
+                        <td>${escapeHtml(dealer.username || "-")}</td>
                         <td>${escapeHtml(dealer.name)}</td>
                         <td>${escapeHtml(dealer.country)}</td>
                         <td>${escapeHtml(dealer.city)}</td>
@@ -2649,6 +2704,10 @@
                         <td>${escapeHtml(dealer.parentCode)}</td>
                         <td>${escapeHtml(dealer.points)}</td>
                         <td>${statusBadge(dealer.status)}</td>
+                        <td>
+                          <button class="text-button" data-action="admin-dealer-edit" data-idx="${idx}">Edit</button>
+                          <button class="text-button danger-button" data-action="admin-dealer-delete" data-idx="${idx}" style="color:var(--red);">Delete</button>
+                        </td>
                       </tr>
                     `,
                   )
@@ -2659,6 +2718,83 @@
         </section>
       `,
     );
+  }
+
+  function handleAdminDealerSave() {
+    const idField = document.getElementById("admin-dealer-edit-idx");
+    const editIdx = idField.value !== "" ? parseInt(idField.value, 10) : -1;
+    const code = document.getElementById("admin-dealer-code").value.trim();
+    const username = document.getElementById("admin-dealer-username").value.trim();
+    const password = document.getElementById("admin-dealer-password").value.trim();
+    const name = document.getElementById("admin-dealer-name").value.trim();
+    if (!code) { alert("Dealer code is required."); return; }
+    if (!username) { alert("Username is required for login."); return; }
+    if (!name) { alert("Dealer name is required."); return; }
+    if (editIdx < 0 && !password) { alert("Password is required for new dealer."); return; }
+    const existing = data.dealers.find((d) => d.code === code);
+    if (existing && (editIdx < 0 || existing !== data.dealers[editIdx])) {
+      alert("Dealer code already exists. Use a unique code.");
+      return;
+    }
+    const dealer = {
+      code,
+      username,
+      name,
+      country: document.getElementById("admin-dealer-country").value.trim(),
+      city: document.getElementById("admin-dealer-city").value.trim(),
+      level: document.getElementById("admin-dealer-level").value,
+      parentCode: document.getElementById("admin-dealer-parent").value,
+      status: document.getElementById("admin-dealer-status").value,
+      points: editIdx >= 0 && data.dealers[editIdx] ? data.dealers[editIdx].points : 0,
+    };
+    if (password) dealer.password = password;
+    else if (editIdx >= 0 && data.dealers[editIdx]) dealer.password = data.dealers[editIdx].password;
+    if (editIdx >= 0 && editIdx < data.dealers.length) {
+      data.dealers[editIdx] = dealer;
+    } else {
+      data.dealers.push(dealer);
+    }
+    saveData();
+    renderPage("admin/dealers");
+  }
+
+  function handleAdminDealerEdit(idx) {
+    const dealer = data.dealers[idx];
+    if (!dealer) return;
+    document.getElementById("admin-dealer-edit-idx").value = idx;
+    document.getElementById("admin-dealer-code").value = dealer.code || "";
+    document.getElementById("admin-dealer-name").value = dealer.name || "";
+    document.getElementById("admin-dealer-username").value = dealer.username || "";
+    document.getElementById("admin-dealer-password").value = "";
+    document.getElementById("admin-dealer-country").value = dealer.country || "";
+    document.getElementById("admin-dealer-city").value = dealer.city || "";
+    document.getElementById("admin-dealer-level").value = dealer.level || "Country Partner";
+    document.getElementById("admin-dealer-parent").value = dealer.parentCode || "HQ";
+    document.getElementById("admin-dealer-status").value = dealer.status || "Active";
+    const saveBtn = document.querySelector("[data-action='admin-dealer-save']");
+    if (saveBtn) saveBtn.textContent = "Update Dealer";
+  }
+
+  function handleAdminDealerDelete(idx) {
+    if (!confirm("Delete this dealer? Warranty codes and records associated with this dealer will be preserved but the account will no longer be accessible. Continue?")) return;
+    data.dealers.splice(idx, 1);
+    saveData();
+    renderPage("admin/dealers");
+  }
+
+  function handleAdminDealerReset() {
+    document.getElementById("admin-dealer-edit-idx").value = "";
+    document.getElementById("admin-dealer-code").value = "";
+    document.getElementById("admin-dealer-name").value = "";
+    document.getElementById("admin-dealer-username").value = "";
+    document.getElementById("admin-dealer-password").value = "";
+    document.getElementById("admin-dealer-country").value = "";
+    document.getElementById("admin-dealer-city").value = "";
+    document.getElementById("admin-dealer-level").value = "Country Partner";
+    document.getElementById("admin-dealer-parent").value = "HQ";
+    document.getElementById("admin-dealer-status").value = "Active";
+    const saveBtn = document.querySelector("[data-action='admin-dealer-save']");
+    if (saveBtn) saveBtn.textContent = "Save Dealer";
   }
 
   function renderAdminWarrantyCodes() {
@@ -3218,6 +3354,10 @@
     if (action === "admin-product-reset") handleAdminProductReset();
     if (action === "admin-product-edit") handleAdminProductEdit(parseInt(target.getAttribute("data-idx"), 10));
     if (action === "admin-product-delete") handleAdminProductDelete(parseInt(target.getAttribute("data-idx"), 10));
+    if (action === "admin-dealer-save") handleAdminDealerSave();
+    if (action === "admin-dealer-reset") handleAdminDealerReset();
+    if (action === "admin-dealer-edit") handleAdminDealerEdit(parseInt(target.getAttribute("data-idx"), 10));
+    if (action === "admin-dealer-delete") handleAdminDealerDelete(parseInt(target.getAttribute("data-idx"), 10));
   });
 
   function handleVerify(form) {
