@@ -9,6 +9,10 @@ export async function onRequest(context) {
   // Allow preflight + public endpoints
   if (request.method === "OPTIONS") return new Response(null, { status: 204 });
   if (PUBLIC_PATHS.includes(path)) return context.next();
+  // GET /api/data is public (read-only, no secrets); mutations require auth below
+  if (path === "/api/data" && request.method === "GET") return context.next();
+  // GET /api/photo/* is public (serve images)
+  if (path.startsWith("/api/photo/") && request.method === "GET") return context.next();
 
   const user = await getSessionUser(env.DB, request);
   if (!user) {

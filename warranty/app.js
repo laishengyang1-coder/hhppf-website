@@ -328,6 +328,8 @@
       "Campaign activity reward": "活动奖励",
       /* ── New: Product Management ── */
       "Add / Edit Product": "新增 / 编辑产品",
+      "Add Product": "新增产品",
+      "Product saved.": "产品已保存。",
       "Product Type": "产品类型",
       "External Model": "外部型号",
       "Save Product": "保存产品",
@@ -690,6 +692,8 @@
       "Campaign activity reward": "Бонус за активность",
       /* ── New: Product Management ── */
       "Add / Edit Product": "Добавить / изменить продукт",
+      "Add Product": "Добавить продукт",
+      "Product saved.": "Продукт сохранён.",
       "Product Type": "Тип продукта",
       "External Model": "Внешняя модель",
       "Save Product": "Сохранить продукт",
@@ -2849,37 +2853,10 @@
           <p>Products define default warranty years, usage type, and usage limit. Add, edit, or manage products that will be selectable during warranty registration.</p>
         </section>
         <section class="panel">
-          <h3>Add / Edit Product</h3>
-          <div class="form-grid">
-            <label>Product Type <select id="admin-product-type" data-action="admin-product-type">
-              <option value="PPF">PPF (Paint Protection Film)</option>
-              <option value="WINDOW_FILM">Window Film</option>
-              <option value="TPU_COLOR_PPF">TPU Color PPF</option>
-              <option value="SPECIAL_FILM">Specialty Film</option>
-              <option value="MANUAL_PARTIAL">Manual / Partial</option>
-            </select></label>
-            <label>Product Name <input id="admin-product-name" placeholder="e.g. HEHE PPF Classic 190" /></label>
-            <label>External Model <input id="admin-product-external" placeholder="e.g. HH Classic 190" /></label>
-            <label>Warranty Years <input id="admin-product-years" type="number" min="1" max="15" value="5" placeholder="5" /></label>
-            <label>Usage Type <select id="admin-product-usage">
-              <option value="Single">Single</option>
-              <option value="Multi">Multi</option>
-            </select></label>
-            <label>Default Usage Limit <input id="admin-product-limit" type="number" min="1" max="999" value="1" /></label>
-            <label>Status <select id="admin-product-status">
-              <option value="Active">Active</option>
-              <option value="Reserved">Reserved</option>
-            </select></label>
-            <label class="full">Remark <input id="admin-product-remark" placeholder="Brief product description" /></label>
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+            <h3 style="margin:0;">Product Catalog (${data.products.length})</h3>
+            <button class="button" data-action="open-product-modal">+ ${translateValue("Add Product")}</button>
           </div>
-          <div class="inline-actions" style="margin-top:18px;">
-            <button class="button" data-action="admin-product-save">Save Product</button>
-            <button class="ghost-button" data-action="admin-product-reset">Reset Form</button>
-          </div>
-          <input type="hidden" id="admin-product-edit-id" />
-        </section>
-        <section class="panel">
-          <h3>Product Catalog (${data.products.length})</h3>
           <div class="table-wrap">
             <table>
               <thead><tr><th>Type</th><th>Name</th><th>External</th><th>Years</th><th>Usage</th><th>Limit</th><th>Status</th><th>Actions</th></tr></thead>
@@ -2931,23 +2908,60 @@
       data.products.push(product);
     }
     saveData();
+    closeModals();
     renderPage("admin/products");
+    showToast(translateValue("Product saved."));
   }
 
   function handleAdminProductEdit(idx) {
-    const product = data.products[idx];
-    if (!product) return;
-    document.getElementById("admin-product-edit-id").value = idx;
-    document.getElementById("admin-product-type").value = product.type;
-    document.getElementById("admin-product-name").value = product.name || "";
-    document.getElementById("admin-product-external").value = product.externalModel || "";
-    document.getElementById("admin-product-years").value = product.warrantyYears;
-    document.getElementById("admin-product-usage").value = product.usageType;
-    document.getElementById("admin-product-limit").value = product.defaultUsageLimit;
-    document.getElementById("admin-product-status").value = product.status;
-    document.getElementById("admin-product-remark").value = product.remark || "";
-    const saveBtn = document.querySelector("[data-action='admin-product-save']");
-    if (saveBtn) saveBtn.textContent = "Update Product";
+    openProductModal(idx);
+  }
+
+  function openProductModal(editIdx) {
+    closeModals();
+    const product = editIdx >= 0 ? data.products[editIdx] : null;
+    const isEdit = !!product;
+    const overlay = document.createElement("div");
+    overlay.className = "wc-detail-modal";
+    overlay.innerHTML = `
+      <div class="wc-detail-card" style="max-width:640px;">
+        <button class="lightbox-close" aria-label="Close">&times;</button>
+        <h3>${isEdit ? translateValue("Add / Edit Product") : translateValue("Add Product")}</h3>
+        <div class="form-grid">
+          <label>${translateValue("Product Type")} <select id="admin-product-type">
+            <option value="PPF" ${product && product.type === "PPF" ? "selected" : ""}>PPF (Paint Protection Film)</option>
+            <option value="WINDOW_FILM" ${product && product.type === "WINDOW_FILM" ? "selected" : ""}>Window Film</option>
+            <option value="TPU_COLOR_PPF" ${product && product.type === "TPU_COLOR_PPF" ? "selected" : ""}>TPU Color PPF</option>
+            <option value="SPECIAL_FILM" ${product && product.type === "SPECIAL_FILM" ? "selected" : ""}>Specialty Film</option>
+            <option value="MANUAL_PARTIAL" ${product && product.type === "MANUAL_PARTIAL" ? "selected" : ""}>Manual / Partial</option>
+          </select></label>
+          <label>${translateValue("Product Name")} <input id="admin-product-name" placeholder="e.g. HEHE PPF Classic 190" value="${escapeHtml(product ? product.name : "")}" /></label>
+          <label>${translateValue("External Model")} <input id="admin-product-external" placeholder="e.g. HH Classic 190" value="${escapeHtml(product ? product.externalModel : "")}" /></label>
+          <label>Warranty Years <input id="admin-product-years" type="number" min="1" max="15" value="${product ? product.warrantyYears : 5}" placeholder="5" /></label>
+          <label>Usage Type <select id="admin-product-usage">
+            <option value="Single" ${(!product || product.usageType === "Single") ? "selected" : ""}>Single</option>
+            <option value="Multi" ${product && product.usageType === "Multi" ? "selected" : ""}>Multi</option>
+          </select></label>
+          <label>Default Usage Limit <input id="admin-product-limit" type="number" min="1" max="999" value="${product ? product.defaultUsageLimit : 1}" /></label>
+          <label>Status <select id="admin-product-status">
+            <option value="Active" ${(!product || product.status === "Active") ? "selected" : ""}>Active</option>
+            <option value="Reserved" ${product && product.status === "Reserved" ? "selected" : ""}>Reserved</option>
+          </select></label>
+          <label class="full">Remark <input id="admin-product-remark" placeholder="Brief product description" value="${escapeHtml(product ? product.remark : "")}" /></label>
+        </div>
+        <div class="inline-actions" style="margin-top:18px;">
+          <button class="button" data-action="admin-product-save">${isEdit ? translateValue("Update Product") : translateValue("Save Product")}</button>
+          <button class="ghost-button" data-action="admin-product-reset">${translateValue("Reset Form")}</button>
+        </div>
+        <input type="hidden" id="admin-product-edit-id" value="${isEdit ? editIdx : ""}" />
+      </div>
+    `;
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay || event.target.classList.contains("lightbox-close")) {
+        overlay.remove();
+      }
+    });
+    document.body.appendChild(overlay);
   }
 
   function handleAdminProductDelete(idx) {
@@ -2959,6 +2973,7 @@
 
   function handleAdminProductReset() {
     document.getElementById("admin-product-edit-id").value = "";
+    document.getElementById("admin-product-type").value = "PPF";
     document.getElementById("admin-product-name").value = "";
     document.getElementById("admin-product-external").value = "";
     document.getElementById("admin-product-years").value = "5";
@@ -2967,7 +2982,7 @@
     document.getElementById("admin-product-status").value = "Active";
     document.getElementById("admin-product-remark").value = "";
     const saveBtn = document.querySelector("[data-action='admin-product-save']");
-    if (saveBtn) saveBtn.textContent = "Save Product";
+    if (saveBtn) saveBtn.textContent = translateValue("Save Product");
   }
 
   function renderAdminDealers() {
@@ -4514,6 +4529,7 @@
     if (action === "admin-product-reset") handleAdminProductReset();
     if (action === "admin-product-edit") handleAdminProductEdit(parseInt(target.getAttribute("data-idx"), 10));
     if (action === "admin-product-delete") handleAdminProductDelete(parseInt(target.getAttribute("data-idx"), 10));
+    if (action === "open-product-modal") openProductModal(-1);
     if (action === "admin-dealer-save") handleAdminDealerSave();
     if (action === "admin-dealer-reset") handleAdminDealerReset();
     if (action === "admin-dealer-edit") handleAdminDealerEdit(parseInt(target.getAttribute("data-idx"), 10));
