@@ -2788,7 +2788,6 @@
       ["admin/records", "Records"],
       ["admin/points", "Points"],
       ["admin/rewards", "Rewards"],
-      ["admin/redemptions", "Redemptions"],
       ["admin/export", "Export"],
     ];
     return renderWorkspaceShell({
@@ -3983,20 +3982,16 @@
               .join("")}
           </div>
         </section>
-      `,
-    );
-  }
-
-  function renderAdminRedemptions() {
-    return adminShell(
-      "admin/redemptions",
-      `
         <section class="panel">
           <h2>Redemption Requests</h2>
           ${redemptionsTable(true)}
         </section>
       `,
     );
+  }
+
+  function renderAdminRedemptions() {
+    return renderAdminRewards();
   }
 
   function renderAdminExport() {
