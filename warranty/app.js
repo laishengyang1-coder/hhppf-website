@@ -3337,7 +3337,7 @@
 
   function renderAdminAllocation() {
     const allCodes = data.warrantyCodes;
-    const unallocated = allCodes.filter((code) => code.status === "Unallocated");
+    const unallocated = allCodes.map((code, idx) => ({ code, idx })).filter(({ code }) => code.status === "Unallocated");
     const allocated = allCodes.filter((code) => code.status === "Allocated" || code.status === "Active");
     return adminShell(
       "admin/allocation",
@@ -3361,23 +3361,23 @@
             <span class="small" id="alloc-count">0 codes selected</span>
           </div>
         </section>
-        <section class="panel">
+        <section class="panel allocation-section">
           <h3>Unallocated Codes (${unallocated.length})</h3>
           ${unallocated.length ? `
-            <div class="table-wrap">
+            <div class="table-wrap allocation-table">
               <table>
-                <thead><tr><th style="width:40px;"><input type="checkbox" id="alloc-select-all" data-action="alloc-select-all" /></th><th>Warranty Code</th><th>Product</th><th>Batch</th><th>Usage</th><th>Remaining</th></tr></thead>
+                <thead><tr><th style="width:32px;"><input type="checkbox" id="alloc-select-all" data-action="alloc-select-all" /></th><th>Warranty Code</th><th>Product</th><th>Batch</th><th>Usage</th><th>Remaining</th></tr></thead>
                 <tbody>
-                  ${unallocated.map((code) => {
+                  ${unallocated.map(({ code, idx }) => {
                     const remaining = Number(code.usageLimit) - Number(code.usedCount);
                     return `
                       <tr>
-                        <td><input type="checkbox" class="alloc-checkbox" data-code="${escapeHtml(code.code)}" data-action="alloc-check" /></td>
-                        <td><strong>${escapeHtml(code.code)}</strong></td>
-                        <td>${productLabel(code.productType)}<br><span class="small">${escapeHtml(code.productName)}</span></td>
-                        <td>${escapeHtml(code.batchNo || "-")}</td>
-                        <td>${escapeHtml(code.usageType)} / ${escapeHtml(code.usageLimit)}</td>
-                        <td>${remaining}</td>
+                        <td><input type="checkbox" class="alloc-checkbox" data-idx="${idx}" /></td>
+                        <td class="mono">${escapeHtml(code.code)}</td>
+                        <td>${productLabel(code.productType)} <span class="small">${escapeHtml(code.productName)}</span></td>
+                        <td class="small">${escapeHtml(code.batchNo || "-")}</td>
+                        <td class="small">${escapeHtml(code.usageType)} / ${escapeHtml(code.usageLimit)}</td>
+                        <td class="small">${remaining}</td>
                       </tr>
                     `;
                   }).join("")}
@@ -3386,9 +3386,9 @@
             </div>
           ` : `<p class="notice">No unallocated codes. All codes have been allocated.</p>`}
         </section>
-        <section class="panel">
+        <section class="panel allocation-section">
           <h3>Allocated Codes (${allocated.length})</h3>
-          <div class="table-wrap">
+          <div class="table-wrap allocation-table">
             <table>
               <thead><tr><th>Warranty Code</th><th>Product</th><th>Dealer</th><th>Usage</th><th>Remaining</th><th>Status</th></tr></thead>
               <tbody>
@@ -3396,11 +3396,11 @@
                   const remaining = Number(code.usageLimit) - Number(code.usedCount);
                   return `
                     <tr>
-                      <td><strong>${escapeHtml(code.code)}</strong></td>
-                      <td>${productLabel(code.productType)}<br><span class="small">${escapeHtml(code.productName)}</span></td>
-                      <td>${escapeHtml(code.dealerCode || "-")}</td>
-                      <td>${escapeHtml(code.usageType)} / ${escapeHtml(code.usageLimit)}</td>
-                      <td>${remaining}</td>
+                      <td class="mono">${escapeHtml(code.code)}</td>
+                      <td>${productLabel(code.productType)} <span class="small">${escapeHtml(code.productName)}</span></td>
+                      <td class="small">${escapeHtml(code.dealerCode || "-")}</td>
+                      <td class="small">${escapeHtml(code.usageType)} / ${escapeHtml(code.usageLimit)}</td>
+                      <td class="small">${remaining}</td>
                       <td>${statusBadge(code.status)}</td>
                     </tr>
                   `;
@@ -4092,7 +4092,8 @@
     }
     let count = 0;
     checkboxes.forEach((cb) => {
-      const code = codeByValue(cb.dataset.code);
+      const idx = parseInt(cb.dataset.idx, 10);
+      const code = data.warrantyCodes[idx];
       if (code && code.status === "Unallocated") {
         code.dealerCode = dealer.code;
         code.status = "Allocated";
