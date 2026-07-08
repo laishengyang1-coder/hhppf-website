@@ -4601,7 +4601,7 @@
     if (code.usageType === "Single") {
       code.status = "Pending Review";
     }
-    saveData();
+    await saveData();
     showToast("Warranty submitted for HQ review.");
     setRoute("dealer/warranty-records");
   }
