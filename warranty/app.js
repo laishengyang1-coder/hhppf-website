@@ -151,6 +151,8 @@
       "Final warranty limitations should be reviewed by H&H and local legal counsel before production launch in each country.": "正式上线前，H&H 和当地法律顾问应根据各国市场复核最终质保限制。",
       "Dealer Portal": "经销商端",
       "Dealer Login": "经销商登录",
+      "Authorized dealers register warranties, upload installation photos, track review status, and redeem partner points.": "授权经销商登记质保、上传施工照片、跟踪审核状态并兑换伙伴积分。",
+      "Use the account created by HQ to log in.": "使用总部创建账号登录。",
       "Demo account": "演示账号",
       "Email or account name": "邮箱或账号名",
       "Password": "密码",
@@ -173,6 +175,9 @@
       "Redeem materials": "兑换物料",
       "Product type, product name, warranty years, and usage rules are filled from the selected factory warranty code.": "产品类型、产品名称、质保年限和使用规则会根据所选工厂质保码自动带出。",
       "Warranty Code": "质保码",
+      "Type or search warranty code...": "输入或搜索质保码...",
+      "codes available": "个可用",
+      "No available warranty codes. Please ask HQ to allocate codes.": "暂无可用的质保码，请联系总部划拨。",
       "Installation Photo - 1 to 3 photos": "施工照片 - 1 至 3 张",
       "Production upload should compress images to 500KB-1MB, max 1600px longest edge, then store files in Cloudflare R2.": "生产环境上传前应将图片压缩至 500KB-1MB，最长边不超过 1600px，并存储到 Cloudflare R2。",
       "Remark": "备注",
@@ -213,6 +218,7 @@
       "Pending HQ review. Points are frozen until review.": "等待总部审核。积分将在审核期间冻结。",
       "HQ Admin": "总部管理员",
       "Admin Login": "总部登录",
+      "HQ administrators manage products, dealers, factory warranty codes, reviews, points, rewards, and export workflows.": "总部管理员管理产品、经销商、工厂质保码、审核、积分、兑换物料和数据导出。",
       "Enter Admin Console": "进入总部后台",
       "HQ Admin Console": "总部后台",
       "Warranty Operations": "质保运营",
@@ -234,6 +240,7 @@
       "Dealer Ranking": "经销商排名",
       "Product Type Split": "产品类型分布",
       "Product Management": "产品库管理",
+      "Products define default warranty years, usage type, and usage limit. Add, edit, or manage products that will be selectable during warranty registration.": "产品库定义默认质保年限、使用类型和使用次数。新增、编辑或管理将在质保登记中可选的产品。",
       "Products define default warranty years, usage type, and usage limit. Dealers cannot edit product information during warranty registration.": "产品库定义默认质保年限、使用类型和使用次数。经销商登记质保时不能修改产品信息。",
       "Dealer Management": "经销商管理",
       "Warranty Code Management": "质保码管理",
@@ -280,7 +287,29 @@
       "Usage": "使用",
       "Limit": "次数上限",
       "Code": "编号",
+      "Vehicle": "车辆",
+      "Product": "产品",
       "Install Date": "安装日期",
+      "Expiry": "到期日",
+      "Photos": "照片",
+      "Action": "操作",
+      "Certificate": "证书",
+      "Pending": "待定",
+      "ID": "编号",
+      "Dealer": "经销商",
+      "Change": "变动",
+      "Operator": "操作人",
+      "Time": "时间",
+      "Materials": "物料",
+      "Qty": "数量",
+      "Total points": "总积分",
+      "Approve": "通过",
+      "Reject": "驳回",
+      "Ship": "发货",
+      "No warranty records yet.": "暂无质保记录。",
+      "No matching warranty codes.": "无匹配的质保码。",
+      "No points history yet.": "暂无积分记录。",
+      "No redemption requests yet.": "暂无兑换申请。",
       "Expiry": "到期日",
       "Pending": "待审核",
       "Batch": "批次",
@@ -413,9 +442,25 @@
       "No unallocated codes. All codes have been allocated.": "没有未划拨的质保码，所有质保码已划拨。",
       "No allocated codes yet.": "暂无已划拨质保码。",
       "Please select a dealer.": "请选择经销商。",
+      "Please select at least one warranty code.": "请至少选择一个质保码。",
+      "Please select a valid warranty code.": "请选择一个有效的质保码。",
+      "Please upload 1 to 3 installation photos.": "请上传 1 到 3 张施工照片。",
+      "Failed to upload photos. Please try again.": "照片上传失败，请重试。",
+      "Warranty submitted for HQ review.": "质保已提交总部审核。",
+      "Network error. Please retry.": "网络错误，请重试。",
+      "Points settings saved.": "积分设置已保存。",
+      "Manual points adjustment applied.": "手动积分调整已生效。",
+      "Redemption request submitted. Points are frozen for review.": "兑换申请已提交，积分已冻结等待审核。",
+      "Warranty record rejected.": "质保记录已驳回。",
+      "Warranty approved, certificate generated, and points awarded.": "质保已通过，证书已生成，积分已发放。",
+      "Reward status updated.": "兑换物料状态已更新。",
+      "Data refreshed from server.": "数据已从服务器刷新。",
+      "Certificate is available after HQ approval.": "质保通过总部审核后即可查看证书。",
+      "Popup blocked. Please allow popups to print certificates.": "弹窗被浏览器拦截，请允许弹窗以打印证书。",
       "Select warranty codes from the list below, then choose a dealer to allocate. Only unallocated codes can be allocated.": "从下方列表中勾选质保码，然后选择经销商进行划拨。只有未划拨的质保码可以划拨。",
       /* ── Import file upload ── */
       "Import Warranty Codes": "导入质保码",
+      "Upload a CSV file with warranty codes. Only 4 columns are required: warranty code, batch number, product type, and product name. The system automatically fills in warranty years, usage type, and usage limit from the product catalog.": "上传包含质保码的 CSV 文件。仅需 4 列：质保号、批次号、产品类型、产品名称。系统将自动从产品目录中补全质保年限、使用类型和使用次数。",
       "Select CSV File": "选择 CSV 文件",
       "Missing warranty code": "缺少质保码",
       "Missing product type": "缺少产品类型",
@@ -519,6 +564,8 @@
       "Dealer Portal": "Портал дилера",
       "Dealer Login": "Вход дилера",
       "Authorized dealers register warranties, upload installation photos, track review status, and redeem partner points.": "Авторизованные дилеры регистрируют гарантии, загружают фото установки, отслеживают статус проверки и обменивают партнерские баллы.",
+      "Use the account created by HQ to log in.": "Используйте учетную запись, созданную HQ.",
+      "Authorized dealers register warranties, upload installation photos, track review status, and redeem partner points.": "Авторизованные дилеры регистрируют гарантии, загружают фото установки, отслеживают статус проверки и обменивают партнерские баллы.",
       "Demo account": "Демо-аккаунт",
       "Email or account name": "Email или логин",
       "Password": "Пароль",
@@ -541,6 +588,9 @@
       "Use partner points for workwear, caps, color cards, sample books, and tools.": "Используйте партнерские баллы для рабочей одежды, кепок, цветовых карт, каталогов образцов и инструментов.",
       "Product type, product name, warranty years, and usage rules are filled from the selected factory warranty code.": "Тип продукта, название, срок гарантии и правила использования заполняются из выбранного заводского гарантийного кода.",
       "Warranty Code": "Гарантийный код",
+      "Type or search warranty code...": "Введите или найдите код гарантии...",
+      "codes available": "доступно",
+      "No available warranty codes. Please ask HQ to allocate codes.": "Нет доступных кодов гарантии. Обратитесь в HQ для распределения.",
       "Installation Photo - 1 to 3 photos": "Фото установки - от 1 до 3",
       "Production upload should compress images to 500KB-1MB, max 1600px longest edge, then store files in Cloudflare R2.": "В продакшене изображения нужно сжимать до 500KB-1MB, максимум 1600px по длинной стороне, затем хранить файлы в Cloudflare R2.",
       "Remark": "Примечание",
@@ -580,6 +630,7 @@
       "Pending HQ review. Points are frozen until review.": "Ожидает проверки HQ. Баллы заморожены до проверки.",
       "HQ Admin": "Админ HQ",
       "Admin Login": "Вход администратора",
+      "HQ administrators manage products, dealers, factory warranty codes, reviews, points, rewards, and export workflows.": "Администраторы HQ управляют продуктами, дилерами, кодами гарантии, проверками, баллами, материалами и экспортом.",
       "Enter Admin Console": "Войти в админ-панель",
       "HQ Admin Console": "Админ-панель HQ",
       "Warranty Operations": "Операции гарантии",
@@ -601,6 +652,7 @@
       "Dealer Ranking": "Рейтинг дилеров",
       "Product Type Split": "Разбивка по продуктам",
       "Product Management": "Управление продуктами",
+      "Products define default warranty years, usage type, and usage limit. Add, edit, or manage products that will be selectable during warranty registration.": "Продукты задают срок гарантии по умолчанию, тип использования и лимит. Добавляйте, редактируйте или управляйте продуктами, доступными при регистрации гарантии.",
       "Products define default warranty years, usage type, and usage limit. Dealers cannot edit product information during warranty registration.": "Продукты задают срок гарантии по умолчанию, тип использования и лимит. Дилеры не могут изменять данные продукта при регистрации гарантии.",
       "Dealer Management": "Управление дилерами",
       "Warranty Code Management": "Управление кодами",
@@ -648,7 +700,19 @@
       "Code": "Код",
       "Install Date": "Дата установки",
       "Expiry": "Окончание",
+      "Photos": "Фото",
+      "Certificate": "Сертификат",
+      "Vehicle": "Автомобиль",
       "Pending": "Ожидает",
+      "Materials": "Материалы",
+      "Total points": "Всего баллов",
+      "Approve": "Одобрить",
+      "Reject": "Отклонить",
+      "Ship": "Отправить",
+      "No matching warranty codes.": "Нет подходящих кодов гарантии.",
+      "No points history yet.": "История баллов пока пуста.",
+      "No redemption requests yet.": "Заявок на обмен пока нет.",
+      "No warranty records yet.": "Записей гарантии пока нет.",
       "Batch": "Партия",
       "Time": "Время",
       "Operator": "Оператор",
@@ -777,9 +841,25 @@
       "No unallocated codes. All codes have been allocated.": "Нет нераспределенных кодов. Все коды распределены.",
       "No allocated codes yet.": "Нет распределенных кодов.",
       "Please select a dealer.": "Выберите дилера.",
+      "Please select at least one warranty code.": "Выберите хотя бы один код гарантии.",
+      "Please select a valid warranty code.": "Выберите действительный код гарантии.",
+      "Please upload 1 to 3 installation photos.": "Загрузите от 1 до 3 фото установки.",
+      "Failed to upload photos. Please try again.": "Не удалось загрузить фото. Попробуйте снова.",
+      "Warranty submitted for HQ review.": "Гарантия отправлена на проверку HQ.",
+      "Network error. Please retry.": "Ошибка сети. Попробуйте снова.",
+      "Points settings saved.": "Настройки баллов сохранены.",
+      "Manual points adjustment applied.": "Ручная корректировка баллов применена.",
+      "Redemption request submitted. Points are frozen for review.": "Заявка на обмен отправлена. Баллы заморожены до проверки.",
+      "Warranty record rejected.": "Запись гарантии отклонена.",
+      "Warranty approved, certificate generated, and points awarded.": "Гарантия одобрена, сертификат создан, баллы начислены.",
+      "Reward status updated.": "Статус материала обновлен.",
+      "Data refreshed from server.": "Данные обновлены с сервера.",
+      "Certificate is available after HQ approval.": "Сертификат доступен после одобрения HQ.",
+      "Popup blocked. Please allow popups to print certificates.": "Всплывающие окна заблокированы. Разрешите всплывающие окна для печати сертификатов.",
       "Select warranty codes from the list below, then choose a dealer to allocate. Only unallocated codes can be allocated.": "Выберите гарантийные коды из списка ниже, затем выберите дилера для распределения. Только нераспределенные коды можно распределить.",
       /* ── Import file upload ── */
       "Import Warranty Codes": "Импорт гарантийных кодов",
+      "Upload a CSV file with warranty codes. Only 4 columns are required: warranty code, batch number, product type, and product name. The system automatically fills in warranty years, usage type, and usage limit from the product catalog.": "Загрузите CSV-файл с гарантийными кодами. Требуются только 4 столбца: код гарантии, номер партии, тип продукта и название продукта. Система автоматически дополнит срок гарантии, тип использования и лимит использования из каталога продуктов.",
       "Select CSV File": "Выбрать CSV-файл",
       "Missing warranty code": "Нет гарантийного кода",
       "Missing product type": "Нет типа продукта",
@@ -1742,7 +1822,7 @@
         <a class="portal-brand" href="${href("home")}" aria-label="H&H Warranty home">
           <img class="portal-brand-logo" src="../assets/hh-logo.png" alt="H&H Automotive Films" />
           <span class="portal-brand-copy">
-            <span>Warranty System</span>
+            <span>${translateValue("Warranty System")}</span>
             <strong>H&amp;H</strong>
           </span>
         </a>
@@ -1778,7 +1858,7 @@
     return `
       <footer class="portal-footer">
         <span>H&amp;H Warranty &amp; Partner Points System V1 Preview</span>
-        <span>Future deployment target: warranty.hhppf.com - <a href="../index.html">Main website</a> - <button class="text-button" data-action="reset-demo" type="button">Reset demo data</button></span>
+        <span>${translateValue("Future deployment target: warranty.hhppf.com -")} <a href="../index.html">${translateValue("Main website")}</a> - <button class="text-button" data-action="reset-demo" type="button">${translateValue("Reset demo data")}</button></span>
       </footer>
     `;
   }
@@ -1819,7 +1899,7 @@
                 ([route, label]) => `
                   <a class="${active === route ? "is-active" : ""}" href="${href(route)}">
                     <span class="workspace-nav-mark" aria-hidden="true"></span>
-                    ${label}
+                    ${translateValue(label)}
                   </a>
                 `,
               )
@@ -1827,15 +1907,15 @@
           </nav>
           <div class="workspace-sidebar-footer">
             <a href="../index.html">${escapeHtml(t("back"))}</a>
-            <button data-action="${logoutAction}" type="button">Log out</button>
+            <button data-action="${logoutAction}" type="button">${translateValue("Log out")}</button>
           </div>
         </aside>
         <section class="workspace-main">
           <header class="workspace-topbar">
             <div>
-              <p class="section-kicker">${kicker}</p>
-              <h1>${title}</h1>
-              <p>${lead}</p>
+              <p class="section-kicker">${translateValue(kicker)}</p>
+              <h1>${translateValue(title)}</h1>
+              <p>${translateValue(lead)}</p>
             </div>
             <div class="workspace-actions">
               ${renderLanguageSelect("workspace-language-select")}
@@ -2497,22 +2577,22 @@
     return renderPage(`
       <section class="login-wrap">
         <div>
-          <p class="section-kicker">Dealer Portal</p>
-          <h1>Dealer Login</h1>
-          <p class="lead">Authorized dealers register warranties, upload installation photos, track review status, and redeem partner points.</p>
+          <p class="section-kicker">${translateValue("Dealer Portal")}</p>
+          <h1>${translateValue("Dealer Login")}</h1>
+          <p class="lead">${translateValue("Authorized dealers register warranties, upload installation photos, track review status, and redeem partner points.")}</p>
           <div class="code-pill-list">
-            <span>Register Warranty</span>
-            <span>Warranty Records</span>
-            <span>Partner Points</span>
-            <span>Rewards Center</span>
+            <span>${translateValue("Register Warranty")}</span>
+            <span>${translateValue("Warranty Records")}</span>
+            <span>${translateValue("Partner Points")}</span>
+            <span>${translateValue("Rewards Center")}</span>
           </div>
         </div>
         <form class="login-panel" data-form="dealer-login">
-          <h3>Sign In</h3>
-          <p>Use the account created by HQ to log in.</p>
-          <label>Username<input name="email" placeholder="Your dealer username" required /></label>
-          <label>Password<input name="password" type="password" placeholder="Your password" required /></label>
-          <button class="button" type="submit">Enter Dealer Portal</button>
+          <h3>${translateValue("Sign In")}</h3>
+          <p>${translateValue("Use the account created by HQ to log in.")}</p>
+          <label>${translateValue("Username")}<input name="email" placeholder="${translateValue("Your dealer username")}" required /></label>
+          <label>${translateValue("Password")}<input name="password" type="password" placeholder="${translateValue("Your password")}" required /></label>
+          <button class="button" type="submit">${translateValue("Enter Dealer Portal")}</button>
         </form>
       </section>
     `);
@@ -2533,7 +2613,7 @@
       items,
       kicker: "Dealer Portal",
       title: dealer.name,
-      lead: `Dealer code: ${dealer.code} · Level: ${dealer.level || "-"} · Country: ${dealer.country || "-"}`,
+      lead: `${translateValue("Dealer code:")} ${dealer.code} · ${translateValue("Level:")} ${dealer.level || "-"} · ${translateValue("Country:")} ${dealer.country || "-"}`,
       logoutAction: "dealer-logout",
     });
   }
@@ -2549,15 +2629,15 @@
       "dealer/dashboard",
       `
         <section class="metric-grid">
-          <article class="metric-card"><strong>${dealer.points - frozen}</strong><span>Available points</span></article>
-          <article class="metric-card"><strong>${pendingCount}</strong><span>Pending review</span></article>
-          <article class="metric-card"><strong>${activeCount}</strong><span>Active warranties</span></article>
-          <article class="metric-card"><strong>${availableCodes.length}</strong><span>Usable warranty codes</span></article>
+          <article class="metric-card"><strong>${dealer.points - frozen}</strong><span>${translateValue("Available points")}</span></article>
+          <article class="metric-card"><strong>${pendingCount}</strong><span>${translateValue("Pending review")}</span></article>
+          <article class="metric-card"><strong>${activeCount}</strong><span>${translateValue("Active warranties")}</span></article>
+          <article class="metric-card"><strong>${availableCodes.length}</strong><span>${translateValue("Usable warranty codes")}</span></article>
         </section>
         <section class="home-grid" style="margin-top: 18px;">
-          <article class="panel"><h3>Register Warranty</h3><p>Select an allocated warranty code, fill vehicle information, and submit photos for HQ review.</p><a class="text-button" href="${href("dealer/register-warranty")}">Start registration</a></article>
-          <article class="panel"><h3>Warranty Records</h3><p>Review pending, active, and rejected records submitted by this dealer account.</p><a class="text-button" href="${href("dealer/warranty-records")}">View records</a></article>
-          <article class="panel"><h3>Rewards Center</h3><p>Use partner points for workwear, caps, color cards, sample books, and tools.</p><a class="text-button" href="${href("dealer/rewards")}">Redeem materials</a></article>
+          <article class="panel"><h3>${translateValue("Register Warranty")}</h3><p>${translateValue("Select an allocated warranty code, fill vehicle information, and submit photos for HQ review.")}</p><a class="text-button" href="${href("dealer/register-warranty")}">${translateValue("Start registration")}</a></article>
+          <article class="panel"><h3>${translateValue("Warranty Records")}</h3><p>${translateValue("Review pending, active, and rejected records submitted by this dealer account.")}</p><a class="text-button" href="${href("dealer/warranty-records")}">${translateValue("View records")}</a></article>
+          <article class="panel"><h3>${translateValue("Rewards Center")}</h3><p>${translateValue("Use partner points for workwear, caps, color cards, sample books, and tools.")}</p><a class="text-button" href="${href("dealer/rewards")}">${translateValue("Redeem materials")}</a></article>
         </section>
       `,
     );
@@ -2571,67 +2651,67 @@
       "dealer/register-warranty",
       `
         <section class="panel">
-          <h2>Register Warranty</h2>
-          <p>Product type, product name, warranty years, and usage rules are filled from the selected factory warranty code.</p>
+          <h2>${translateValue("Register Warranty")}</h2>
+          <p>${translateValue("Product type, product name, warranty years, and usage rules are filled from the selected factory warranty code.")}</p>
           <form class="form-grid" data-form="register-warranty">
             <label>
-              Warranty Code
+              ${translateValue("Warranty Code")}
               <div class="code-combobox">
-                <input name="warrantyCode" id="dealer-code-input" autocomplete="off" placeholder="Type or search warranty code..." required />
+                <input name="warrantyCode" id="dealer-code-input" autocomplete="off" placeholder="${translateValue("Type or search warranty code...")}" required />
                 <input type="hidden" name="warrantyCodeValue" id="dealer-code-value" />
                 <div class="code-combobox-dropdown" id="dealer-code-dropdown" style="display:none;"></div>
               </div>
-              <span class="small" id="dealer-code-count">${codes.length} codes available</span>
+              <span class="small" id="dealer-code-count">${codes.length} ${translateValue("codes available")}</span>
             </label>
             <label>
-              Installation Category
+              ${translateValue("Installation Category")}
               <select name="installationCategory" required>
-                <option value="FULL_CAR_PPF">Full Car PPF</option>
-                <option value="PARTIAL_PPF">Partial PPF</option>
-                <option value="WINDOW_FILM">Window Film</option>
-                <option value="TPU_COLOR_PPF">TPU Color PPF</option>
-                <option value="SPECIAL_FILM">Specialty Film</option>
-                <option value="MANUAL_PARTIAL">Manual / Partial</option>
+                <option value="FULL_CAR_PPF">${translateValue("Full Car PPF")}</option>
+                <option value="PARTIAL_PPF">${translateValue("Partial PPF")}</option>
+                <option value="WINDOW_FILM">${translateValue("Window Film")}</option>
+                <option value="TPU_COLOR_PPF">${translateValue("TPU Color PPF")}</option>
+                <option value="SPECIAL_FILM">${translateValue("Specialty Film")}</option>
+                <option value="MANUAL_PARTIAL">${translateValue("Manual / Partial")}</option>
               </select>
             </label>
             <div class="full notice" id="dealer-code-summary">
-              ${firstCode ? renderCodeSummary(firstCode) : "No available warranty codes. Please ask HQ to allocate codes."}
+              ${firstCode ? renderCodeSummary(firstCode) : translateValue("No available warranty codes. Please ask HQ to allocate codes.")}
             </div>
             <label>
-              VIN
-              <input name="vin" placeholder="17-character VIN" required />
+              ${translateValue("VIN")}
+              <input name="vin" placeholder="${translateValue("17-character VIN")}" required />
             </label>
             <label>
-              Customer Name
-              <input name="customerName" placeholder="Owner name" />
+              ${translateValue("Customer Name")}
+              <input name="customerName" placeholder="${translateValue("Owner name")}" />
             </label>
             <label>
-              Vehicle Make
+              ${translateValue("Vehicle Make")}
               <input name="vehicleMake" placeholder="BMW" />
             </label>
             <label>
-              Vehicle Model
+              ${translateValue("Vehicle Model")}
               <input name="vehicleModel" placeholder="X5" />
             </label>
             <label>
-              Vehicle Year
+              ${translateValue("Vehicle Year")}
               <input name="vehicleYear" placeholder="2026" />
             </label>
             <label>
-              Installation Date
+              ${translateValue("Installation Date")}
               <input name="installationDate" type="date" value="${today()}" required />
             </label>
             <label class="full upload-box">
-              Installation Photo - 1 to 3 photos
+              ${translateValue("Installation Photo - 1 to 3 photos")}
               <input name="photos" type="file" accept="image/*" multiple />
-              <span class="small">Production upload should compress images to 500KB-1MB, max 1600px longest edge, then store files in Cloudflare R2.</span>
+              <span class="small">${translateValue("Production upload should compress images to 500KB-1MB, max 1600px longest edge, then store files in Cloudflare R2.")}</span>
             </label>
             <label class="full">
-              Remark
-              <textarea name="remark" placeholder="Any special note for HQ review"></textarea>
+              ${translateValue("Remark")}
+              <textarea name="remark" placeholder="${translateValue("Any special note for HQ review")}"></textarea>
             </label>
             <div class="form-actions full">
-              <button class="button" type="submit" ${codes.length ? "" : "disabled"}>Submit for Review</button>
+              <button class="button" type="submit" ${codes.length ? "" : "disabled"}>${translateValue("Submit for Review")}</button>
             </div>
           </form>
         </section>
@@ -2642,9 +2722,9 @@
   function renderCodeSummary(code) {
     const remaining = Number(code.usageLimit) - Number(code.usedCount);
     return `
-      Product: ${productLabel(code.productType)} / ${escapeHtml(code.productName)}.
-      Warranty Years: ${escapeHtml(code.warrantyYears)}.
-      Usage: ${escapeHtml(code.usageType)} (${remaining} remaining).
+      ${translateValue("Product:")} ${productLabel(code.productType)} / ${escapeHtml(code.productName)}.
+      ${translateValue("Warranty Years:")} ${escapeHtml(code.warrantyYears)}.
+      ${translateValue("Usage:")} ${escapeHtml(code.usageType)} (${remaining} ${translateValue("remaining")}).
     `;
   }
 
@@ -2791,15 +2871,15 @@
     return renderPage(`
       <section class="login-wrap">
         <div>
-          <p class="section-kicker">HQ Admin</p>
-          <h1>Admin Login</h1>
-          <p class="lead">HQ administrators manage products, dealers, factory warranty codes, reviews, points, rewards, and export workflows.</p>
+          <p class="section-kicker">${translateValue("HQ Admin")}</p>
+          <h1>${translateValue("Admin Login")}</h1>
+          <p class="lead">${translateValue("HQ administrators manage products, dealers, factory warranty codes, reviews, points, rewards, and export workflows.")}</p>
         </div>
         <form class="login-panel" data-form="admin-login">
-          <h3>Sign In</h3>
-          <label>Account name<input name="email" placeholder="Your admin account" required /></label>
-          <label>Password<input name="password" type="password" placeholder="Your password" required /></label>
-          <button class="button" type="submit">Enter Admin Console</button>
+          <h3>${translateValue("Sign In")}</h3>
+          <label>${translateValue("Account name")}<input name="email" placeholder="${translateValue("Your admin account")}" required /></label>
+          <label>${translateValue("Password")}<input name="password" type="password" placeholder="${translateValue("Your password")}" required /></label>
+          <button class="button" type="submit">${translateValue("Enter Admin Console")}</button>
         </form>
       </section>
     `);
@@ -2814,7 +2894,7 @@
       ["admin/import", "Import"],
       ["admin/allocation", "Allocation"],
       ["admin/reviews", "Reviews"],
-      ["admin/records", "Records"],
+      ["admin/records", "Warranty Records"],
       ["admin/points", "Points"],
       ["admin/rewards", "Rewards"],
       ["admin/export", "Export"],
@@ -2853,17 +2933,17 @@
       "admin/products",
       `
         <section class="panel">
-          <h2>Product Management</h2>
-          <p>Products define default warranty years, usage type, and usage limit. Add, edit, or manage products that will be selectable during warranty registration.</p>
+          <h2>${translateValue("Product Management")}</h2>
+          <p>${translateValue("Products define default warranty years, usage type, and usage limit. Add, edit, or manage products that will be selectable during warranty registration.")}</p>
         </section>
         <section class="panel">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-            <h3 style="margin:0;">Product Catalog (${data.products.length})</h3>
+            <h3 style="margin:0;">${translateValue("Product Catalog")} (${data.products.length})</h3>
             <button class="button" data-action="open-product-modal">+ ${translateValue("Add Product")}</button>
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Type</th><th>Name</th><th>External</th><th>Years</th><th>Usage</th><th>Limit</th><th>Status</th><th>Actions</th></tr></thead>
+              <thead><tr><th>${translateValue("Type")}</th><th>${translateValue("Name")}</th><th>${translateValue("External")}</th><th>${translateValue("Years")}</th><th>${translateValue("Usage")}</th><th>${translateValue("Limit")}</th><th>${translateValue("Status")}</th><th>${translateValue("Actions")}</th></tr></thead>
               <tbody>
                 ${data.products
                   .map(
@@ -2877,8 +2957,8 @@
                         <td>${escapeHtml(product.defaultUsageLimit)}</td>
                         <td>${statusBadge(product.status)}</td>
                         <td>
-                          <button class="text-button" data-action="admin-product-edit" data-idx="${idx}">Edit</button>
-                          ${product.type !== "MANUAL_PARTIAL" ? `<button class="danger-button text-button" data-action="admin-product-delete" data-idx="${idx}" style="color:var(--red);">Delete</button>` : ""}
+                          <button class="text-button" data-action="admin-product-edit" data-idx="${idx}">${translateValue("Edit")}</button>
+                          ${product.type !== "MANUAL_PARTIAL" ? `<button class="danger-button text-button" data-action="admin-product-delete" data-idx="${idx}" style="color:var(--red);">${translateValue("Delete")}</button>` : ""}
                         </td>
                       </tr>
                     `,
@@ -3452,20 +3532,20 @@
       "admin/import",
       `
         <section class="panel">
-          <h2>Import Warranty Codes</h2>
-          <p>Upload a CSV file with warranty codes. Only 4 columns are required: warranty code, batch number, product type, and product name. The system automatically fills in warranty years, usage type, and usage limit from the product catalog.</p>
+          <h2>${translateValue("Import Warranty Codes")}</h2>
+          <p>${translateValue("Upload a CSV file with warranty codes. Only 4 columns are required: warranty code, batch number, product type, and product name. The system automatically fills in warranty years, usage type, and usage limit from the product catalog.")}</p>
           <div class="form-actions">
-            <button class="button" data-action="download-template">Download CSV Template</button>
+            <button class="button" data-action="download-template">${translateValue("Download CSV Template")}</button>
           </div>
           <div class="divider"></div>
           <label class="full upload-box" style="margin-bottom:16px;">
-            Select CSV File
+            ${translateValue("Select CSV File")}
             <input type="file" id="import-file" accept=".csv,text/csv" data-action="import-file-select" />
           </label>
           <div id="import-preview"></div>
         </section>
         <section class="panel">
-          <h3>Import Batches</h3>
+          <h3>${translateValue("Import Batches")}</h3>
           ${importBatchTable()}
         </section>
       `,
@@ -4073,11 +4153,11 @@
   }
 
   function warrantyRecordTable(records, context) {
-    if (!records.length) return `<p class="notice">No warranty records yet.</p>`;
+    if (!records.length) return `<p class="notice">${translateValue("No warranty records yet.")}</p>`;
     return `
       <div class="table-wrap">
         <table>
-          <thead><tr><th>ID</th><th>Code</th><th>VIN</th><th>Vehicle</th><th>Product</th><th>Install Date</th><th>Expiry</th><th>Status</th>${context === "dealer" ? "<th>Photos</th><th>Action</th>" : ""}</tr></thead>
+          <thead><tr><th>${translateValue("ID")}</th><th>${translateValue("Code")}</th><th>${translateValue("VIN")}</th><th>${translateValue("Vehicle")}</th><th>${translateValue("Product")}</th><th>${translateValue("Install Date")}</th><th>${translateValue("Expiry")}</th><th>${translateValue("Status")}</th>${context === "dealer" ? `<th>${translateValue("Photos")}</th><th>${translateValue("Action")}</th>` : ""}</tr></thead>
           <tbody>
             ${records
               .map(
@@ -4089,9 +4169,9 @@
                     <td>${escapeHtml(`${record.vehicleMake} ${record.vehicleModel} ${record.vehicleYear}`)}</td>
                     <td>${productLabel(record.productType)}<br><span class="small">${escapeHtml(record.productName)}</span></td>
                     <td>${escapeHtml(record.installationDate)}</td>
-                    <td>${escapeHtml(record.warrantyExpiryDate || "Pending")}</td>
+                    <td>${escapeHtml(record.warrantyExpiryDate || translateValue("Pending"))}</td>
                     <td>${statusBadge(record.status)}</td>
-                    ${context === "dealer" ? `<td><div class="thumb-grid">${renderPhotos(record.photos)}</div></td><td><button class="text-button" data-action="print-certificate" data-id="${record.id}" ${record.status === "Active" ? "" : "disabled"}>Certificate</button></td>` : ""}
+                    ${context === "dealer" ? `<td><div class="thumb-grid">${renderPhotos(record.photos)}</div></td><td><button class="text-button" data-action="print-certificate" data-id="${record.id}" ${record.status === "Active" ? "" : "disabled"}>${translateValue("Certificate")}</button></td>` : ""}
                   </tr>
                 `,
               )
@@ -4103,11 +4183,11 @@
   }
 
   function warrantyCodesTable(codes) {
-    if (!codes.length) return `<p class="notice">No matching warranty codes.</p>`;
+    if (!codes.length) return `<p class="notice">${translateValue("No matching warranty codes.")}</p>`;
     return `
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Warranty Code</th><th>Product</th><th>Dealer</th><th>Usage</th><th>Remaining</th><th>Batch</th><th>Status</th></tr></thead>
+          <thead><tr><th>${translateValue("Warranty Code")}</th><th>${translateValue("Product")}</th><th>${translateValue("Dealer")}</th><th>${translateValue("Usage")}</th><th>${translateValue("Remaining")}</th><th>${translateValue("Batch")}</th><th>${translateValue("Status")}</th></tr></thead>
           <tbody>
             ${codes
               .map((code) => {
@@ -4116,7 +4196,7 @@
                   <tr>
                     <td>${escapeHtml(code.code)}</td>
                     <td>${productLabel(code.productType)}<br><span class="small">${escapeHtml(code.productName)}</span></td>
-                    <td>${escapeHtml(code.dealerCode || "Unallocated")}</td>
+                    <td>${escapeHtml(code.dealerCode || translateValue("Unallocated"))}</td>
                     <td>${escapeHtml(code.usageType)} / ${escapeHtml(code.usageLimit)}</td>
                     <td>${remaining}</td>
                     <td>${escapeHtml(code.importBatch)}</td>
@@ -4132,11 +4212,11 @@
   }
 
   function pointsTable(entries) {
-    if (!entries.length) return `<p class="notice">No points history yet.</p>`;
+    if (!entries.length) return `<p class="notice">${translateValue("No points history yet.")}</p>`;
     return `
       <div class="table-wrap">
         <table>
-          <thead><tr><th>ID</th><th>Dealer</th><th>Change</th><th>Type</th><th>Reason</th><th>Operator</th><th>Time</th></tr></thead>
+          <thead><tr><th>${translateValue("ID")}</th><th>${translateValue("Dealer")}</th><th>${translateValue("Change")}</th><th>${translateValue("Type")}</th><th>${translateValue("Reason")}</th><th>${translateValue("Operator")}</th><th>${translateValue("Time")}</th></tr></thead>
           <tbody>
             ${entries
               .map(
@@ -4161,11 +4241,11 @@
 
   function redemptionsTable(withActions, dealerCode = "") {
     const rows = dealerCode ? data.redemptions.filter((item) => item.dealerCode === dealerCode) : data.redemptions;
-    if (!rows.length) return `<p class="notice">No redemption requests yet.</p>`;
+    if (!rows.length) return `<p class="notice">${translateValue("No redemption requests yet.")}</p>`;
     return `
       <div class="table-wrap">
         <table>
-          <thead><tr><th>ID</th><th>Dealer</th><th>Materials</th><th>Qty</th><th>Total points</th><th>Status</th><th>Remark</th>${withActions ? "<th>Action</th>" : ""}</tr></thead>
+          <thead><tr><th>${translateValue("ID")}</th><th>${translateValue("Dealer")}</th><th>${translateValue("Materials")}</th><th>${translateValue("Qty")}</th><th>${translateValue("Total points")}</th><th>${translateValue("Status")}</th><th>${translateValue("Remark")}</th>${withActions ? `<th>${translateValue("Action")}</th>` : ""}</tr></thead>
           <tbody>
             ${rows
               .map(
@@ -4181,9 +4261,9 @@
                     ${
                       withActions
                         ? `<td><div class="inline-actions">
-                            <button class="text-button" data-action="approve-redemption" data-id="${item.id}">Approve</button>
-                            <button class="text-button" data-action="reject-redemption" data-id="${item.id}">Reject</button>
-                            <button class="text-button" data-action="ship-redemption" data-id="${item.id}">Ship</button>
+                            <button class="text-button" data-action="approve-redemption" data-id="${item.id}">${translateValue("Approve")}</button>
+                            <button class="text-button" data-action="reject-redemption" data-id="${item.id}">${translateValue("Reject")}</button>
+                            <button class="text-button" data-action="ship-redemption" data-id="${item.id}">${translateValue("Ship")}</button>
                           </div></td>`
                         : ""
                     }
