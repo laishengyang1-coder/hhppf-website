@@ -6,7 +6,7 @@
   }
 
   const STORAGE_KEY = "hhWarrantyPortalV1";
-  const VERSION = 3;
+  const VERSION = 4;
   const AUTH = {
     dealer: {
       sessionKey: "hhDealerAuthed",
@@ -15,13 +15,12 @@
       loginRoute: "dealer/login",
     },
     admin: {
-      email: "anhuiheheppf",
-      password: "hhppf",
       sessionKey: "hhAdminAuthed",
       dashboardRoute: "admin/dashboard",
       loginRoute: "admin/login",
     },
   };
+  let currentUser = null; // { role, username, dealerCode } from API
 
   const copy = {
     en: {
@@ -1375,29 +1374,37 @@
   };
 
   const app = document.getElementById("app");
-  let data = loadData();
+  let data = null;
   let ui = {
     selectedRecordId: "",
     toast: "",
+    loading: true,
   };
   let lastRenderedRoute = "";
 
-  function loadData() {
+  async function loadData() {
     try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (saved && saved.version === VERSION) {
-        return saved;
+      const res = await fetch("/api/data");
+      const json = await res.json();
+      if (json.ok && json.data) {
+        return json.data;
       }
     } catch (error) {
-      // Fall back to seed data.
+      // network error
     }
-    const cloned = JSON.parse(JSON.stringify(seedData));
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(cloned));
-    return cloned;
+    return null;
   }
 
-  function saveData() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  async function saveData() {
+    try {
+      await fetch("/api/data", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data }),
+      });
+    } catch (error) {
+      showToast("Save failed. Please retry.");
+    }
   }
 
   function lang() {
@@ -1409,37 +1416,51 @@
   }
 
   function isAuthenticated(role) {
+    if (!currentUser || currentUser.role !== role) return false;
     return sessionStorage.getItem(AUTH[role].sessionKey) === "true";
   }
 
-  function authenticate(role, form) {
+  async function authenticate(role, form) {
     const formData = new FormData(form);
-    const email = String(formData.get("email") || "").trim();
+    const username = String(formData.get("email") || "").trim();
     const password = String(formData.get("password") || "");
-    const account = AUTH[role];
-    if (role === "admin") {
-      if (email !== account.email || password !== account.password) {
-        showToast("Invalid admin account or password.");
-        return;
-      }
-    } else if (role === "dealer") {
-      const matchedDealer = data.dealers.find(
-        (d) => d.username === email && d.password === password && d.status === "Active",
-      );
-      if (!matchedDealer) {
-        showToast("Invalid dealer account or password, or account is not active.");
-        return;
-      }
-      sessionStorage.setItem(account.codeKey, matchedDealer.code);
+    if (!username || !password) {
+      showToast(role === "dealer" ? "Invalid dealer account or password." : "Invalid admin account or password.");
+      return;
     }
-    sessionStorage.setItem(account.sessionKey, "true");
-    setRoute(account.dashboardRoute);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role, username, password }),
+      });
+      const result = await res.json();
+      if (!result.ok) {
+        showToast(role === "dealer" ? "Invalid dealer account or password, or account is not active." : "Invalid admin account or password.");
+        return;
+      }
+      currentUser = { role: result.role, username: result.username, dealerCode: result.dealerCode };
+      const account = AUTH[role];
+      sessionStorage.setItem(account.sessionKey, "true");
+      if (role === "dealer" && result.dealerCode) {
+        sessionStorage.setItem(AUTH.dealer.codeKey, result.dealerCode);
+      }
+      setRoute(account.dashboardRoute);
+    } catch (error) {
+      showToast("Network error. Please retry.");
+    }
   }
 
-  function signOut(role) {
+  async function signOut(role) {
     const account = AUTH[role];
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (e) {
+      // ignore
+    }
     sessionStorage.removeItem(account.sessionKey);
-    if (role === "dealer") sessionStorage.removeItem(account.codeKey);
+    if (role === "dealer") sessionStorage.removeItem(AUTH.dealer.codeKey);
+    currentUser = null;
     setRoute(account.loginRoute);
   }
 
@@ -3022,7 +3043,7 @@
     );
   }
 
-  function handleAdminDealerSave() {
+  async function handleAdminDealerSave() {
     const idField = document.getElementById("admin-dealer-edit-idx");
     const editIdx = idField.value !== "" ? parseInt(idField.value, 10) : -1;
     const code = document.getElementById("admin-dealer-code").value.trim();
@@ -3033,14 +3054,10 @@
     if (!username) { alert(translateValue("Username is required for login.")); return; }
     if (!name) { alert(translateValue("Dealer name is required.")); return; }
     if (editIdx < 0 && !password) { alert(translateValue("Password is required for new dealer.")); return; }
-    const existing = data.dealers.find((d) => d.code === code);
-    if (existing && (editIdx < 0 || existing !== data.dealers[editIdx])) {
-      alert(translateValue("Dealer code already exists. Use a unique code."));
-      return;
-    }
-    const dealer = {
+    const payload = {
       code,
       username,
+      password: password || undefined,
       name,
       country: document.getElementById("admin-dealer-country").value.trim(),
       city: document.getElementById("admin-dealer-city").value.trim(),
@@ -3049,15 +3066,25 @@
       status: document.getElementById("admin-dealer-status").value,
       points: editIdx >= 0 && data.dealers[editIdx] ? data.dealers[editIdx].points : 0,
     };
-    if (password) dealer.password = password;
-    else if (editIdx >= 0 && data.dealers[editIdx]) dealer.password = data.dealers[editIdx].password;
-    if (editIdx >= 0 && editIdx < data.dealers.length) {
-      data.dealers[editIdx] = dealer;
-    } else {
-      data.dealers.push(dealer);
+    try {
+      const method = editIdx >= 0 ? "PUT" : "POST";
+      const res = await fetch("/api/dealers", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await res.json();
+      if (!result.ok) {
+        alert(translateValue(result.error === "username_exists" ? "Username already exists." : "Failed to save dealer."));
+        return;
+      }
+      // Refetch data to sync local cache with server
+      data = await loadData();
+      renderPage("admin/dealers");
+      showToast(translateValue("Dealer saved."));
+    } catch (error) {
+      showToast("Network error. Please retry.");
     }
-    saveData();
-    renderPage("admin/dealers");
   }
 
   function handleAdminDealerEdit(idx) {
@@ -3077,11 +3104,18 @@
     if (saveBtn) saveBtn.textContent = "Update Dealer";
   }
 
-  function handleAdminDealerDelete(idx) {
+  async function handleAdminDealerDelete(idx) {
     if (!confirm(translateValue("Delete this dealer? Warranty codes and records associated with this dealer will be preserved but the account will no longer be accessible. Continue?"))) return;
-    data.dealers.splice(idx, 1);
-    saveData();
-    renderPage("admin/dealers");
+    const dealer = data.dealers[idx];
+    if (!dealer) return;
+    try {
+      await fetch(`/api/dealers?code=${encodeURIComponent(dealer.code)}`, { method: "DELETE" });
+      data = await loadData();
+      renderPage("admin/dealers");
+      showToast(translateValue("Dealer deleted."));
+    } catch (error) {
+      showToast("Network error. Please retry.");
+    }
   }
 
   function handleAdminDealerReset() {
@@ -3694,7 +3728,7 @@
     }
     return photos
       .map((photo) => {
-        if (typeof photo === "string" && photo.startsWith("data:image")) {
+        if (typeof photo === "string" && (photo.startsWith("data:image") || photo.startsWith("/api/photo") || photo.startsWith("http"))) {
           return `<img class="review-thumb" src="${photo}" alt="installation photo" data-full="${photo}" />`;
         }
         return `<span class="photo-name">${escapeHtml(photo)}</span>`;
@@ -4236,6 +4270,14 @@
 
   function render() {
     const route = getRoute();
+    if (ui.loading) {
+      app.innerHTML = `<div class="portal-shell"><div class="panel" style="text-align:center;padding:60px 20px;"><p style="font-size:18px;color:var(--soft);">Loading warranty system…</p></div></div>`;
+      return;
+    }
+    if (!data) {
+      app.innerHTML = `<div class="portal-shell"><div class="panel" style="text-align:center;padding:60px 20px;"><h2>System not initialized</h2><p style="color:var(--soft);">The warranty database has not been set up yet. Please contact your administrator or run setup.</p><button class="button" data-action="run-setup">Initialize System</button></div></div>`;
+      return;
+    }
     const workspace = isWorkspaceRoute(route);
     const shouldResetScroll = route !== lastRenderedRoute;
     document.documentElement.lang = lang();
@@ -4481,6 +4523,9 @@
     if (action === "admin-wc-delete") handleAdminWcDelete(parseInt(target.getAttribute("data-idx"), 10));
     if (action === "wc-view-detail") openWcDetail(parseInt(target.getAttribute("data-idx"), 10));
     if (action === "open-wc-create") openWcCreateModal();
+    if (action === "run-setup") {
+      fetch("/api/setup", { method: "POST" }).then(() => { ui.loading = true; render(); boot(); });
+    }
     if (action === "rec-view") openRecordDetail(parseInt(target.getAttribute("data-idx"), 10));
     if (action === "rec-edit") { closeModals(); openRecordEdit(parseInt(target.getAttribute("data-idx"), 10)); }
     if (action === "rec-save") handleRecordSave(parseInt(target.getAttribute("data-idx"), 10));
@@ -4515,9 +4560,18 @@
     }
     let photos;
     try {
-      photos = await Promise.all(Array.from(files).map((file) => readImageAsDataUrl(file)));
+      photos = await Promise.all(
+        Array.from(files).map(async (file) => {
+          const fd = new FormData();
+          fd.append("file", file);
+          const res = await fetch("/api/photo", { method: "POST", body: fd });
+          const result = await res.json();
+          if (!result.ok) throw new Error("upload failed");
+          return result.url;
+        }),
+      );
     } catch (error) {
-      showToast("Failed to read photos. Please try again.");
+      showToast("Failed to upload photos. Please try again.");
       return;
     }
     const installDate = formData.get("installationDate") || today();
@@ -4882,12 +4936,11 @@
     showToast("Import validation passed and one demo code was added.");
   }
 
-  function resetDemoData() {
-    data = JSON.parse(JSON.stringify(seedData));
-    saveData();
+  async function resetDemoData() {
+    data = await loadData();
     sessionStorage.removeItem("hhVerifyVin");
-    ui = { selectedRecordId: "", toast: "" };
-    showToast("Demo data reset.");
+    showToast("Data refreshed from server.");
+    render();
   }
 
   function exportWarranties() {
@@ -4974,5 +5027,27 @@
   if (!window.location.hash) {
     window.location.hash = "#/";
   }
-  render();
+
+  // Async boot: restore session + load cloud data, then render
+  async function boot() {
+    ui.loading = true;
+    try {
+      const meRes = await fetch("/api/auth/me");
+      const me = await meRes.json();
+      if (me.ok) {
+        currentUser = { role: me.role, username: me.username, dealerCode: me.dealerCode };
+        if (me.role === "admin") sessionStorage.setItem(AUTH.admin.sessionKey, "true");
+        if (me.role === "dealer") {
+          sessionStorage.setItem(AUTH.dealer.sessionKey, "true");
+          if (me.dealerCode) sessionStorage.setItem(AUTH.dealer.codeKey, me.dealerCode);
+        }
+      }
+    } catch (e) {
+      // not logged in
+    }
+    data = await loadData();
+    ui.loading = false;
+    render();
+  }
+  boot();
 })();

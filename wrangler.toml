@@ -1,3 +1,12 @@
 name = "hhppf-website"
 compatibility_date = "2026-07-06"
 pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hhppf-warranty"
+database_id = "ee29f53d-5cbb-43ae-8990-146c92912aaa"
+
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "hhppf-photos"
