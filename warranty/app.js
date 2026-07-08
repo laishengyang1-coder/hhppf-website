@@ -423,6 +423,12 @@
       " warranty codes.": " 个质保码。",
       "Installation photos": "施工照片",
       "No photos uploaded": "未上传照片",
+      "Search": "搜索",
+      "VIN": "VIN",
+      "Used": "已用",
+      "Remaining": "剩余",
+      "Linked Warranty Records": "关联质保记录",
+      "No linked warranty records yet.": "暂无关联质保记录。",
     },
     ru: {
       "Warranty System": "Система гарантии",
@@ -771,6 +777,12 @@
       " warranty codes.": " гарантийных кодов.",
       "Installation photos": "Фото установки",
       "No photos uploaded": "Фото не загружены",
+      "Search": "Поиск",
+      "VIN": "VIN",
+      "Used": "Использовано",
+      "Remaining": "Осталось",
+      "Linked Warranty Records": "Связанные гарантийные записи",
+      "No linked warranty records yet.": "Пока нет связанных записей.",
     },
   };
 
@@ -3114,16 +3126,34 @@
         </section>
         <section class="panel">
           <h3>Warranty Codes (${data.warrantyCodes.length})</h3>
+          <div class="wc-filter-bar">
+            <label class="wc-search-label">
+              <span>Search</span>
+              <input id="wc-search" type="search" placeholder="Code / product / batch / dealer..." autocomplete="off" />
+            </label>
+            <label class="wc-status-label">
+              <span>Status</span>
+              <select id="wc-status-filter">
+                <option value="All">All</option>
+                <option value="Unallocated">Unallocated</option>
+                <option value="Allocated">Allocated</option>
+                <option value="Pending Review">Pending Review</option>
+                <option value="Active">Active</option>
+                <option value="Void">Void</option>
+              </select>
+            </label>
+            <span class="small wc-count" id="wc-count"></span>
+          </div>
           <div class="table-wrap">
-            <table>
+            <table id="wc-table">
               <thead><tr><th>Warranty Code</th><th>Product</th><th>Dealer</th><th>Usage</th><th>Remaining</th><th>Batch</th><th>Status</th><th>Actions</th></tr></thead>
               <tbody>
                 ${data.warrantyCodes
                   .map((code, idx) => {
                     const remaining = Number(code.usageLimit) - Number(code.usedCount);
                     return `
-                      <tr>
-                        <td><strong>${escapeHtml(code.code)}</strong></td>
+                      <tr class="wc-row" data-idx="${idx}" data-code="${escapeHtml(code.code)}" data-product="${escapeHtml(code.productType + " " + code.productName)}" data-dealer="${escapeHtml(code.dealerCode || "")}" data-batch="${escapeHtml(code.importBatch || "")}" data-status="${escapeHtml(code.status)}">
+                        <td><button class="wc-code-btn" data-action="wc-view-detail" data-idx="${idx}"><strong>${escapeHtml(code.code)}</strong></button></td>
                         <td>${productLabel(code.productType)}<br><span class="small">${escapeHtml(code.productName)}</span></td>
                         <td>${escapeHtml(code.dealerCode || "Unallocated")}</td>
                         <td>${escapeHtml(code.usageType)} / ${escapeHtml(code.usageLimit)}</td>
@@ -3138,6 +3168,7 @@
               </tbody>
             </table>
           </div>
+          <p class="notice wc-empty" id="wc-empty" style="display:none;">No warranty codes match your filter.</p>
         </section>
       `,
     );
@@ -3194,6 +3225,107 @@
     document.getElementById("wc-usage").value = "Single";
     document.getElementById("wc-limit").value = "1";
     syncWcProductFields();
+  }
+
+  function initWcFilters() {
+    const search = document.getElementById("wc-search");
+    const statusFilter = document.getElementById("wc-status-filter");
+    if (!search || !statusFilter) return;
+    const apply = () => {
+      const q = search.value.trim().toLowerCase();
+      const status = statusFilter.value;
+      const rows = document.querySelectorAll(".wc-row");
+      let shown = 0;
+      rows.forEach((row) => {
+        const idx = row.getAttribute("data-idx");
+        const code = data.warrantyCodes[idx];
+        if (!code) {
+          row.style.display = "none";
+          return;
+        }
+        const haystack = [
+          code.code, code.productType, code.productName,
+          code.dealerCode, code.importBatch, code.batchNo,
+          code.factoryRollNo, code.shipmentNo, code.remark,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        const matchSearch = !q || haystack.includes(q);
+        const matchStatus = status === "All" || code.status === status;
+        const show = matchSearch && matchStatus;
+        row.style.display = show ? "" : "none";
+        if (show) shown++;
+      });
+      const countEl = document.getElementById("wc-count");
+      if (countEl) countEl.textContent = `${shown} / ${rows.length}`;
+      const empty = document.getElementById("wc-empty");
+      if (empty) empty.style.display = shown === 0 ? "block" : "none";
+    };
+    search.addEventListener("input", apply);
+    statusFilter.addEventListener("change", apply);
+    apply();
+  }
+
+  function openWcDetail(idx) {
+    const code = data.warrantyCodes[idx];
+    if (!code) return;
+    const dealer = code.dealerCode ? dealerByCode(code.dealerCode) : null;
+    const records = data.warrantyRecords.filter((r) => r.warrantyCode === code.code);
+    const remaining = Number(code.usageLimit) - Number(code.usedCount);
+    const fieldRow = (label, value) =>
+      `<div class="wc-field"><span class="wc-field-label">${translateValue(label)}</span><span class="wc-field-value">${escapeHtml(value || "-")}</span></div>`;
+    const overlay = document.createElement("div");
+    overlay.className = "wc-detail-modal";
+    overlay.innerHTML = `
+      <div class="wc-detail-card">
+        <button class="lightbox-close" aria-label="Close">&times;</button>
+        <div class="wc-detail-head">
+          <span class="badge">${escapeHtml(code.code)}</span>
+          ${statusBadge(code.status)}
+        </div>
+        <h3>${productLabel(code.productType)} — ${escapeHtml(code.productName)}</h3>
+        <div class="wc-detail-grid">
+          ${fieldRow("Warranty Years", code.warrantyYears)}
+          ${fieldRow("Usage Type", code.usageType)}
+          ${fieldRow("Usage Limit", code.usageLimit)}
+          ${fieldRow("Used", code.usedCount)}
+          ${fieldRow("Remaining", remaining)}
+          ${fieldRow("Factory Roll No.", code.factoryRollNo)}
+          ${fieldRow("Batch No.", code.batchNo)}
+          ${fieldRow("Import Batch", code.importBatch)}
+          ${fieldRow("Shipment No.", code.shipmentNo)}
+          ${fieldRow("Dealer Code", code.dealerCode)}
+          ${fieldRow("Dealer Name", dealer ? dealer.name : "")}
+          ${fieldRow("Remark", code.remark)}
+        </div>
+        <h4 class="wc-section-title">${translateValue("Linked Warranty Records")} (${records.length})</h4>
+        ${records.length
+          ? records
+              .map(
+                (r) => `
+              <div class="wc-record">
+                <div class="wc-record-head">
+                  <span class="badge">${escapeHtml(r.id)}</span>
+                  ${statusBadge(r.status)}
+                </div>
+                <p><strong>${escapeHtml(r.vehicleMake)} ${escapeHtml(r.vehicleModel)} ${escapeHtml(r.vehicleYear)}</strong></p>
+                <p>${translateValue("VIN")}: ${escapeHtml(maskVin(r.vin))} · ${escapeHtml(r.dealerName)}</p>
+                <p>${translateValue("Install Date")}: ${escapeHtml(r.installationDate)} · ${translateValue("Expiry")}: ${escapeHtml(r.warrantyExpiryDate || "Pending")}</p>
+                ${r.photos && r.photos.length ? `<div class="thumb-grid">${renderPhotos(r.photos)}</div>` : ""}
+              </div>
+            `,
+              )
+              .join("")
+          : `<p class="notice">${translateValue("No linked warranty records yet.")}</p>`}
+      </div>
+    `;
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay || event.target.classList.contains("lightbox-close")) {
+        overlay.remove();
+      }
+    });
+    document.body.appendChild(overlay);
   }
 
   function syncWcProductFields() {
@@ -3866,7 +3998,7 @@
     `;
     localizeRenderedPage();
     if (route === "dealer/register-warranty") initCodeCombobox();
-    if (route === "admin/warranty-codes") syncWcProductFields();
+    if (route === "admin/warranty-codes") { syncWcProductFields(); initWcFilters(); }
     if (shouldResetScroll) {
       resetPageScroll();
     }
@@ -4095,6 +4227,7 @@
     if (action === "admin-wc-create") handleAdminWcCreate();
     if (action === "admin-wc-reset") handleAdminWcReset();
     if (action === "admin-wc-delete") handleAdminWcDelete(parseInt(target.getAttribute("data-idx"), 10));
+    if (action === "wc-view-detail") openWcDetail(parseInt(target.getAttribute("data-idx"), 10));
     if (action === "allocate-selected") handleAllocateSelected();
     if (action === "alloc-select-all") toggleAllocSelectAll();
     if (action === "confirm-import") handleConfirmImport();
