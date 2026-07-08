@@ -1816,6 +1816,29 @@ tr:last-child td {
 }
 
 /* ── Warranty code filter bar & detail modal ── */
+.panel-head-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+.panel-head-row > div {
+  flex: 1 1 320px;
+}
+.panel-head-row .button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+@media (max-width: 560px) {
+  .panel-head-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .panel-head-row .button {
+    align-self: stretch;
+  }
+}
 .wc-filter-bar {
   display: flex;
   flex-wrap: wrap;

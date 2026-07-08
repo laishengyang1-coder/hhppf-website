@@ -429,6 +429,12 @@
       "Remaining": "剩余",
       "Linked Warranty Records": "关联质保记录",
       "No linked warranty records yet.": "暂无关联质保记录。",
+      "Save Changes": "保存修改",
+      "Edit Warranty Record": "编辑质保记录",
+      "Points Awarded": "已发积分",
+      "Warranty code created.": "质保码已创建。",
+      "Warranty record updated.": "质保记录已更新。",
+      "All registered warranties. Click a record to view full details, or edit to correct information entered by dealers.": "所有已登记的质保记录。点击记录查看完整详情，或编辑以更正经销商填写的信息。",
     },
     ru: {
       "Warranty System": "Система гарантии",
@@ -783,6 +789,12 @@
       "Remaining": "Осталось",
       "Linked Warranty Records": "Связанные гарантийные записи",
       "No linked warranty records yet.": "Пока нет связанных записей.",
+      "Save Changes": "Сохранить изменения",
+      "Edit Warranty Record": "Редактировать запись",
+      "Points Awarded": "Начислено баллов",
+      "Warranty code created.": "Гарантийный код создан.",
+      "Warranty record updated.": "Запись гарантии обновлена.",
+      "All registered warranties. Click a record to view full details, or edit to correct information entered by dealers.": "Все зарегистрированные гарантии. Нажмите на запись для просмотра деталей или отредактируйте для исправления информации от дилеров.",
     },
   };
 
@@ -2773,6 +2785,7 @@
       ["admin/import", "Import"],
       ["admin/allocation", "Allocation"],
       ["admin/reviews", "Reviews"],
+      ["admin/records", "Records"],
       ["admin/points", "Points"],
       ["admin/rewards", "Rewards"],
       ["admin/redemptions", "Redemptions"],
@@ -3088,40 +3101,16 @@
   }
 
   function renderAdminWarrantyCodes() {
-    const productOpts = data.products
-      .filter((p) => p.status === "Active")
-      .map((p) => `<option value="${p.type}|||${p.name}|||${p.warrantyYears}|||${p.usageType}|||${p.defaultUsageLimit}">${productLabel(p.type)} — ${escapeHtml(p.name)}</option>`)
-      .join("");
     return adminShell(
       "admin/warranty-codes",
       `
         <section class="panel">
-          <h2>Warranty Code Management</h2>
-          <p>Factory warranty code is the system warranty code and certificate number.</p>
-        </section>
-        <section class="panel">
-          <h3>Create Warranty Code</h3>
-          <div class="form-grid">
-            <label>Warranty Code <input id="wc-code" placeholder="e.g. HH-PPF-2026-0001" /></label>
-            <label>Product <select id="wc-product">${productOpts}</select></label>
-            <label>Factory Roll No. <input id="wc-roll" placeholder="e.g. FR-PPF-8891" /></label>
-            <label>Batch No. <input id="wc-batch" placeholder="e.g. B-PPF-2026-07" /></label>
-            <label>Shipment No. <input id="wc-shipment" placeholder="e.g. HH-RU-2026-07-A" /></label>
-            <label>Dealer <select id="wc-dealer">
-              <option value="">— Unallocated —</option>
-              ${data.dealers.map((d) => `<option value="${d.code}">${d.code} - ${escapeHtml(d.name)}</option>`).join("")}
-            </select></label>
-            <label>Warranty Years <input id="wc-years" type="number" min="1" max="15" value="5" /></label>
-            <label>Usage Type <select id="wc-usage">
-              <option value="Single">Single</option>
-              <option value="Multi">Multi</option>
-            </select></label>
-            <label>Usage Limit <input id="wc-limit" type="number" min="1" max="999" value="1" /></label>
-            <label class="full">Remark <input id="wc-remark" placeholder="Optional note" /></label>
-          </div>
-          <div class="inline-actions" style="margin-top:18px;">
-            <button class="button" data-action="admin-wc-create">Create Warranty Code</button>
-            <button class="ghost-button" data-action="admin-wc-reset">Reset Form</button>
+          <div class="panel-head-row">
+            <div>
+              <h2>Warranty Code Management</h2>
+              <p>Factory warranty code is the system warranty code and certificate number. Click a code to view full details and linked warranty records.</p>
+            </div>
+            <button class="button" data-action="open-wc-create">+ Create Warranty Code</button>
           </div>
         </section>
         <section class="panel">
@@ -3174,6 +3163,61 @@
     );
   }
 
+  function wcCreateFormHtml() {
+    const productOpts = data.products
+      .filter((p) => p.status === "Active")
+      .map((p) => `<option value="${p.type}|||${p.name}|||${p.warrantyYears}|||${p.usageType}|||${p.defaultUsageLimit}">${productLabel(p.type)} — ${escapeHtml(p.name)}</option>`)
+      .join("");
+    return `
+      <div class="form-grid">
+        <label>Warranty Code <input id="wc-code" placeholder="e.g. HH-PPF-2026-0001" /></label>
+        <label>Product <select id="wc-product">${productOpts}</select></label>
+        <label>Factory Roll No. <input id="wc-roll" placeholder="e.g. FR-PPF-8891" /></label>
+        <label>Batch No. <input id="wc-batch" placeholder="e.g. B-PPF-2026-07" /></label>
+        <label>Shipment No. <input id="wc-shipment" placeholder="e.g. HH-RU-2026-07-A" /></label>
+        <label>Dealer <select id="wc-dealer">
+          <option value="">— Unallocated —</option>
+          ${data.dealers.map((d) => `<option value="${d.code}">${d.code} - ${escapeHtml(d.name)}</option>`).join("")}
+        </select></label>
+        <label>Warranty Years <input id="wc-years" type="number" min="1" max="15" value="5" /></label>
+        <label>Usage Type <select id="wc-usage">
+          <option value="Single">Single</option>
+          <option value="Multi">Multi</option>
+        </select></label>
+        <label>Usage Limit <input id="wc-limit" type="number" min="1" max="999" value="1" /></label>
+        <label class="full">Remark <input id="wc-remark" placeholder="Optional note" /></label>
+      </div>
+      <div class="inline-actions" style="margin-top:18px;">
+        <button class="button" data-action="admin-wc-create">Create Warranty Code</button>
+        <button class="ghost-button" data-action="admin-wc-reset">Reset Form</button>
+      </div>
+    `;
+  }
+
+  function openWcCreateModal() {
+    closeModals();
+    const overlay = document.createElement("div");
+    overlay.className = "wc-detail-modal";
+    overlay.innerHTML = `
+      <div class="wc-detail-card">
+        <button class="lightbox-close" aria-label="Close">&times;</button>
+        <h3>${translateValue("Create Warranty Code")}</h3>
+        ${wcCreateFormHtml()}
+      </div>
+    `;
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay || event.target.classList.contains("lightbox-close")) {
+        overlay.remove();
+      }
+    });
+    document.body.appendChild(overlay);
+    syncWcProductFields();
+  }
+
+  function closeModals() {
+    document.querySelectorAll(".wc-detail-modal, .photo-lightbox").forEach((el) => el.remove());
+  }
+
   function handleAdminWcCreate() {
     const code = document.getElementById("wc-code").value.trim();
     const productVal = document.getElementById("wc-product").value;
@@ -3202,7 +3246,9 @@
     };
     data.warrantyCodes.unshift(newCode);
     saveData();
+    closeModals();
     renderPage("admin/warranty-codes");
+    showToast(translateValue("Warranty code created."));
   }
 
   function handleAdminWcDelete(idx) {
@@ -3657,6 +3703,215 @@
       .join("");
   }
 
+  function renderAdminRecords() {
+    return adminShell(
+      "admin/records",
+      `
+        <section class="panel">
+          <div class="panel-head-row">
+            <div>
+              <h2>Warranty Records</h2>
+              <p>All registered warranties. Click a record to view full details, or edit to correct information entered by dealers.</p>
+            </div>
+          </div>
+          <div class="wc-filter-bar">
+            <label class="wc-search-label">
+              <span>Search</span>
+              <input id="rec-search" type="search" placeholder="ID / code / VIN / dealer / vehicle..." autocomplete="off" />
+            </label>
+            <label class="wc-status-label">
+              <span>Status</span>
+              <select id="rec-status-filter">
+                <option value="All">All</option>
+                <option value="Pending Review">Pending Review</option>
+                <option value="Active">Active</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </label>
+            <span class="small wc-count" id="rec-count"></span>
+          </div>
+          <div class="table-wrap">
+            <table id="rec-table">
+              <thead><tr><th>ID</th><th>Code</th><th>VIN</th><th>Vehicle</th><th>Product</th><th>Dealer</th><th>Install Date</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                ${data.warrantyRecords
+                  .map((record, idx) => {
+                    return `
+                      <tr class="rec-row" data-idx="${idx}" data-search="${escapeHtml((record.id + " " + record.warrantyCode + " " + record.vin + " " + record.dealerName + " " + record.vehicleMake + " " + record.vehicleModel).toLowerCase())}" data-status="${escapeHtml(record.status)}">
+                        <td>${escapeHtml(record.id)}</td>
+                        <td><button class="wc-code-btn" data-action="rec-view" data-idx="${idx}"><strong>${escapeHtml(record.warrantyCode)}</strong></button></td>
+                        <td>${escapeHtml(maskVin(record.vin))}</td>
+                        <td>${escapeHtml(`${record.vehicleMake} ${record.vehicleModel} ${record.vehicleYear}`)}</td>
+                        <td>${productLabel(record.productType)}<br><span class="small">${escapeHtml(record.productName)}</span></td>
+                        <td>${escapeHtml(record.dealerName)}</td>
+                        <td>${escapeHtml(record.installationDate)}</td>
+                        <td>${escapeHtml(record.warrantyExpiryDate || "Pending")}</td>
+                        <td>${statusBadge(record.status)}</td>
+                        <td>
+                          <button class="text-button" data-action="rec-view" data-idx="${idx}">View</button>
+                          <button class="text-button" data-action="rec-edit" data-idx="${idx}">Edit</button>
+                        </td>
+                      </tr>
+                    `;
+                  })
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
+          <p class="notice wc-empty" id="rec-empty" style="display:none;">No warranty records match your filter.</p>
+        </section>
+      `,
+    );
+  }
+
+  function initRecFilters() {
+    const search = document.getElementById("rec-search");
+    const statusFilter = document.getElementById("rec-status-filter");
+    if (!search || !statusFilter) return;
+    const apply = () => {
+      const q = search.value.trim().toLowerCase();
+      const status = statusFilter.value;
+      const rows = document.querySelectorAll(".rec-row");
+      let shown = 0;
+      rows.forEach((row) => {
+        const haystack = row.getAttribute("data-search") || "";
+        const rowStatus = row.getAttribute("data-status") || "";
+        const matchSearch = !q || haystack.includes(q);
+        const matchStatus = status === "All" || rowStatus === status;
+        const show = matchSearch && matchStatus;
+        row.style.display = show ? "" : "none";
+        if (show) shown++;
+      });
+      const countEl = document.getElementById("rec-count");
+      if (countEl) countEl.textContent = `${shown} / ${rows.length}`;
+      const empty = document.getElementById("rec-empty");
+      if (empty) empty.style.display = shown === 0 ? "block" : "none";
+    };
+    search.addEventListener("input", apply);
+    statusFilter.addEventListener("change", apply);
+    apply();
+  }
+
+  function openRecordDetail(idx) {
+    const record = data.warrantyRecords[idx];
+    if (!record) return;
+    const code = codeByValue(record.warrantyCode);
+    const fieldRow = (label, value) =>
+      `<div class="wc-field"><span class="wc-field-label">${translateValue(label)}</span><span class="wc-field-value">${escapeHtml(value || "-")}</span></div>`;
+    const overlay = document.createElement("div");
+    overlay.className = "wc-detail-modal";
+    overlay.innerHTML = `
+      <div class="wc-detail-card">
+        <button class="lightbox-close" aria-label="Close">&times;</button>
+        <div class="wc-detail-head">
+          <span class="badge">${escapeHtml(record.id)}</span>
+          ${statusBadge(record.status)}
+        </div>
+        <h3>${escapeHtml(record.warrantyCode)} — ${escapeHtml(record.vehicleMake)} ${escapeHtml(record.vehicleModel)}</h3>
+        <div class="wc-detail-grid">
+          ${fieldRow("VIN", record.vin)}
+          ${fieldRow("Customer Name", record.customerName)}
+          ${fieldRow("Vehicle Make", record.vehicleMake)}
+          ${fieldRow("Vehicle Model", record.vehicleModel)}
+          ${fieldRow("Vehicle Year", record.vehicleYear)}
+          ${fieldRow("Product", record.productName)}
+          ${fieldRow("Installation Category", record.installationCategory)}
+          ${fieldRow("Install Date", record.installationDate)}
+          ${fieldRow("Expiry", record.warrantyExpiryDate)}
+          ${fieldRow("Dealer Code", record.dealerCode)}
+          ${fieldRow("Dealer Name", record.dealerName)}
+          ${fieldRow("Country", record.country)}
+          ${fieldRow("City", record.city)}
+          ${fieldRow("Points Awarded", record.pointsAwarded)}
+          ${fieldRow("Warranty Years", code ? code.warrantyYears : "")}
+          ${fieldRow("Remark", record.reviewNote)}
+        </div>
+        <h4 class="wc-section-title">${translateValue("Installation photos")}</h4>
+        <div class="thumb-grid">${renderPhotos(record.photos)}</div>
+        <div class="inline-actions" style="margin-top:18px;">
+          <button class="button" data-action="rec-edit" data-idx="${idx}">${translateValue("Edit")}</button>
+        </div>
+      </div>
+    `;
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay || event.target.classList.contains("lightbox-close")) {
+        overlay.remove();
+      }
+    });
+    document.body.appendChild(overlay);
+  }
+
+  function openRecordEdit(idx) {
+    const record = data.warrantyRecords[idx];
+    if (!record) return;
+    const field = (label, name, value, type) =>
+      `<label>${translateValue(label)}<input id="re-${name}" name="${name}" type="${type || "text"}" value="${escapeHtml(value || "")}" /></label>`;
+    const overlay = document.createElement("div");
+    overlay.className = "wc-detail-modal";
+    overlay.innerHTML = `
+      <div class="wc-detail-card">
+        <button class="lightbox-close" aria-label="Close">&times;</button>
+        <div class="wc-detail-head">
+          <span class="badge">${escapeHtml(record.id)}</span>
+          ${statusBadge(record.status)}
+        </div>
+        <h3>${translateValue("Edit Warranty Record")}</h3>
+        <div class="form-grid">
+          ${field("VIN", "vin", record.vin)}
+          ${field("Customer Name", "customerName", record.customerName)}
+          ${field("Vehicle Make", "vehicleMake", record.vehicleMake)}
+          ${field("Vehicle Model", "vehicleModel", record.vehicleModel)}
+          ${field("Vehicle Year", "vehicleYear", record.vehicleYear)}
+          <label>${translateValue("Installation Category")}<select id="re-installationCategory">
+            ${["FULL_CAR_PPF", "PARTIAL_PPF", "WINDOW_FILM", "TPU_COLOR_PPF", "SPECIAL_FILM", "MANUAL_PARTIAL"].map((cat) => `<option value="${cat}" ${record.installationCategory === cat ? "selected" : ""}>${categoryLabel(cat)}</option>`).join("")}
+          </select></label>
+          ${field("Install Date", "installationDate", record.installationDate, "date")}
+          ${field("Expiry", "warrantyExpiryDate", record.warrantyExpiryDate, "date")}
+          <label>${translateValue("Status")}<select id="re-status">
+            <option value="Pending Review" ${record.status === "Pending Review" ? "selected" : ""}>Pending Review</option>
+            <option value="Active" ${record.status === "Active" ? "selected" : ""}>Active</option>
+            <option value="Rejected" ${record.status === "Rejected" ? "selected" : ""}>Rejected</option>
+          </select></label>
+          <label class="full">${translateValue("Remark")}<input id="re-reviewNote" value="${escapeHtml(record.reviewNote || "")}" /></label>
+        </div>
+        <div class="inline-actions" style="margin-top:18px;">
+          <button class="button" data-action="rec-save" data-idx="${idx}">${translateValue("Save Changes")}</button>
+        </div>
+      </div>
+    `;
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay || event.target.classList.contains("lightbox-close")) {
+        overlay.remove();
+      }
+    });
+    document.body.appendChild(overlay);
+  }
+
+  function handleRecordSave(idx) {
+    const record = data.warrantyRecords[idx];
+    if (!record) return;
+    const val = (name) => {
+      const el = document.getElementById(`re-${name}`);
+      return el ? el.value.trim() : "";
+    };
+    record.vin = val("vin").toUpperCase() || record.vin;
+    record.customerName = val("customerName") || record.customerName;
+    record.vehicleMake = val("vehicleMake") || record.vehicleMake;
+    record.vehicleModel = val("vehicleModel") || record.vehicleModel;
+    record.vehicleYear = val("vehicleYear") || record.vehicleYear;
+    record.installationCategory = val("installationCategory") || record.installationCategory;
+    record.installationDate = val("installationDate") || record.installationDate;
+    const newExpiry = val("warrantyExpiryDate");
+    if (newExpiry) record.warrantyExpiryDate = newExpiry;
+    record.reviewNote = val("reviewNote");
+    const statusEl = document.getElementById("re-status");
+    if (statusEl) record.status = statusEl.value;
+    saveData();
+    closeModals();
+    renderPage("admin/records");
+    showToast(translateValue("Warranty record updated."));
+  }
+
   function renderAdminPoints() {
     return adminShell(
       "admin/points",
@@ -3976,6 +4231,7 @@
     if (route === "admin/import") return renderAdminImport();
     if (route === "admin/allocation") return renderAdminAllocation();
     if (route === "admin/reviews") return renderAdminReviews();
+    if (route === "admin/records") return renderAdminRecords();
     if (route === "admin/points") return renderAdminPoints();
     if (route === "admin/rewards") return renderAdminRewards();
     if (route === "admin/redemptions") return renderAdminRedemptions();
@@ -3998,7 +4254,8 @@
     `;
     localizeRenderedPage();
     if (route === "dealer/register-warranty") initCodeCombobox();
-    if (route === "admin/warranty-codes") { syncWcProductFields(); initWcFilters(); }
+    if (route === "admin/warranty-codes") initWcFilters();
+    if (route === "admin/records") initRecFilters();
     if (shouldResetScroll) {
       resetPageScroll();
     }
@@ -4228,6 +4485,10 @@
     if (action === "admin-wc-reset") handleAdminWcReset();
     if (action === "admin-wc-delete") handleAdminWcDelete(parseInt(target.getAttribute("data-idx"), 10));
     if (action === "wc-view-detail") openWcDetail(parseInt(target.getAttribute("data-idx"), 10));
+    if (action === "open-wc-create") openWcCreateModal();
+    if (action === "rec-view") openRecordDetail(parseInt(target.getAttribute("data-idx"), 10));
+    if (action === "rec-edit") { closeModals(); openRecordEdit(parseInt(target.getAttribute("data-idx"), 10)); }
+    if (action === "rec-save") handleRecordSave(parseInt(target.getAttribute("data-idx"), 10));
     if (action === "allocate-selected") handleAllocateSelected();
     if (action === "alloc-select-all") toggleAllocSelectAll();
     if (action === "confirm-import") handleConfirmImport();
