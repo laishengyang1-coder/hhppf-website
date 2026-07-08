@@ -345,6 +345,8 @@
       "PPF (Paint Protection Film)": "PPF（车衣保护膜）",
       /* ── New: Dealer Management ── */
       "Create / Edit Dealer": "创建 / 编辑经销商",
+      "Add Dealer": "新增经销商",
+      "Leave blank to keep current": "留空则保持不变",
       "Dealer Code": "经销商代码",
       "Dealer Name": "经销商名称",
       "Username": "用户名",
@@ -709,6 +711,8 @@
       "PPF (Paint Protection Film)": "PPF (защитная пленка)",
       /* ── New: Dealer Management ── */
       "Create / Edit Dealer": "Создать / изменить дилера",
+      "Add Dealer": "Добавить дилера",
+      "Leave blank to keep current": "Оставьте пустым, чтобы сохранить текущий",
       "Dealer Code": "Код дилера",
       "Dealer Name": "Название дилера",
       "Username": "Логин",
@@ -2994,37 +2998,10 @@
           <p>Create and manage dealer accounts. Each dealer will use the assigned username and password to log into the Dealer Portal.</p>
         </section>
         <section class="panel">
-          <h3>Create / Edit Dealer</h3>
-          <div class="form-grid">
-            <label>Dealer Code <input id="admin-dealer-code" placeholder="e.g. RU-MSK-001" /></label>
-            <label>Dealer Name <input id="admin-dealer-name" placeholder="e.g. Moscow Auto Studio" /></label>
-            <label>Username <input id="admin-dealer-username" placeholder="Login username" /></label>
-            <label>Password <input id="admin-dealer-password" type="text" placeholder="Login password" /></label>
-            <label>Country <input id="admin-dealer-country" placeholder="e.g. Russia" /></label>
-            <label>City <input id="admin-dealer-city" placeholder="e.g. Moscow" /></label>
-            <label>Level <select id="admin-dealer-level">
-              <option value="Country Partner">Country Partner</option>
-              <option value="Regional Dealer">Regional Dealer</option>
-              <option value="City Dealer">City Dealer</option>
-              <option value="Shop">Shop</option>
-            </select></label>
-            <label>Parent Dealer <select id="admin-dealer-parent">
-              <option value="HQ">HQ</option>
-              ${data.dealers.map((d) => `<option value="${d.code}">${d.code} - ${d.name}</option>`).join("")}
-            </select></label>
-            <label>Status <select id="admin-dealer-status">
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select></label>
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+            <h3 style="margin:0;">Dealer List (${data.dealers.length})</h3>
+            <button class="button" data-action="open-dealer-modal">+ ${translateValue("Add Dealer")}</button>
           </div>
-          <div class="inline-actions" style="margin-top:18px;">
-            <button class="button" data-action="admin-dealer-save">Save Dealer</button>
-            <button class="ghost-button" data-action="admin-dealer-reset">Reset Form</button>
-          </div>
-          <input type="hidden" id="admin-dealer-edit-idx" />
-        </section>
-        <section class="panel">
-          <h3>Dealer List (${data.dealers.length})</h3>
           <div class="table-wrap">
             <table>
               <thead><tr><th>Code</th><th>Username</th><th>Name</th><th>Country</th><th>City</th><th>Level</th><th>Parent</th><th>Points</th><th>Status</th><th>Actions</th></tr></thead>
@@ -3095,6 +3072,7 @@
       }
       // Refetch data to sync local cache with server
       data = await loadData();
+      closeModals();
       renderPage("admin/dealers");
       showToast(translateValue("Dealer saved."));
     } catch (error) {
@@ -3103,20 +3081,54 @@
   }
 
   function handleAdminDealerEdit(idx) {
-    const dealer = data.dealers[idx];
-    if (!dealer) return;
-    document.getElementById("admin-dealer-edit-idx").value = idx;
-    document.getElementById("admin-dealer-code").value = dealer.code || "";
-    document.getElementById("admin-dealer-name").value = dealer.name || "";
-    document.getElementById("admin-dealer-username").value = dealer.username || "";
-    document.getElementById("admin-dealer-password").value = "";
-    document.getElementById("admin-dealer-country").value = dealer.country || "";
-    document.getElementById("admin-dealer-city").value = dealer.city || "";
-    document.getElementById("admin-dealer-level").value = dealer.level || "Country Partner";
-    document.getElementById("admin-dealer-parent").value = dealer.parentCode || "HQ";
-    document.getElementById("admin-dealer-status").value = dealer.status || "Active";
-    const saveBtn = document.querySelector("[data-action='admin-dealer-save']");
-    if (saveBtn) saveBtn.textContent = "Update Dealer";
+    openDealerModal(idx);
+  }
+
+  function openDealerModal(editIdx) {
+    closeModals();
+    const dealer = editIdx >= 0 ? data.dealers[editIdx] : null;
+    const isEdit = !!dealer;
+    const overlay = document.createElement("div");
+    overlay.className = "wc-detail-modal";
+    overlay.innerHTML = `
+      <div class="wc-detail-card" style="max-width:640px;">
+        <button class="lightbox-close" aria-label="Close">&times;</button>
+        <h3>${isEdit ? translateValue("Create / Edit Dealer") : translateValue("Add Dealer")}</h3>
+        <div class="form-grid">
+          <label>${translateValue("Dealer Code")} <input id="admin-dealer-code" placeholder="e.g. RU-MSK-001" value="${escapeHtml(dealer ? dealer.code : "")}" /></label>
+          <label>${translateValue("Dealer Name")} <input id="admin-dealer-name" placeholder="e.g. Moscow Auto Studio" value="${escapeHtml(dealer ? dealer.name : "")}" /></label>
+          <label>Username <input id="admin-dealer-username" placeholder="Login username" value="${escapeHtml(dealer ? dealer.username : "")}" /></label>
+          <label>Password <input id="admin-dealer-password" type="text" placeholder="${isEdit ? translateValue("Leave blank to keep current") : "Login password"}" value="" /></label>
+          <label>Country <input id="admin-dealer-country" placeholder="e.g. Russia" value="${escapeHtml(dealer ? dealer.country : "")}" /></label>
+          <label>City <input id="admin-dealer-city" placeholder="e.g. Moscow" value="${escapeHtml(dealer ? dealer.city : "")}" /></label>
+          <label>Level <select id="admin-dealer-level">
+            <option value="Country Partner" ${(!dealer || dealer.level === "Country Partner") ? "selected" : ""}>Country Partner</option>
+            <option value="Regional Dealer" ${dealer && dealer.level === "Regional Dealer" ? "selected" : ""}>Regional Dealer</option>
+            <option value="City Dealer" ${dealer && dealer.level === "City Dealer" ? "selected" : ""}>City Dealer</option>
+            <option value="Shop" ${dealer && dealer.level === "Shop" ? "selected" : ""}>Shop</option>
+          </select></label>
+          <label>Parent Dealer <select id="admin-dealer-parent">
+            <option value="HQ" ${(!dealer || dealer.parentCode === "HQ") ? "selected" : ""}>HQ</option>
+            ${data.dealers.map((d) => `<option value="${d.code}" ${dealer && dealer.parentCode === d.code ? "selected" : ""}>${d.code} - ${d.name}</option>`).join("")}
+          </select></label>
+          <label>Status <select id="admin-dealer-status">
+            <option value="Active" ${(!dealer || dealer.status === "Active") ? "selected" : ""}>Active</option>
+            <option value="Inactive" ${dealer && dealer.status === "Inactive" ? "selected" : ""}>Inactive</option>
+          </select></label>
+        </div>
+        <div class="inline-actions" style="margin-top:18px;">
+          <button class="button" data-action="admin-dealer-save">${isEdit ? translateValue("Update Dealer") : translateValue("Save Dealer")}</button>
+          <button class="ghost-button" data-action="admin-dealer-reset">${translateValue("Reset Form")}</button>
+        </div>
+        <input type="hidden" id="admin-dealer-edit-idx" value="${isEdit ? editIdx : ""}" />
+      </div>
+    `;
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay || event.target.classList.contains("lightbox-close")) {
+        overlay.remove();
+      }
+    });
+    document.body.appendChild(overlay);
   }
 
   async function handleAdminDealerDelete(idx) {
@@ -3145,7 +3157,7 @@
     document.getElementById("admin-dealer-parent").value = "HQ";
     document.getElementById("admin-dealer-status").value = "Active";
     const saveBtn = document.querySelector("[data-action='admin-dealer-save']");
-    if (saveBtn) saveBtn.textContent = "Save Dealer";
+    if (saveBtn) saveBtn.textContent = translateValue("Save Dealer");
   }
 
   function renderAdminWarrantyCodes() {
@@ -4534,6 +4546,7 @@
     if (action === "admin-dealer-reset") handleAdminDealerReset();
     if (action === "admin-dealer-edit") handleAdminDealerEdit(parseInt(target.getAttribute("data-idx"), 10));
     if (action === "admin-dealer-delete") handleAdminDealerDelete(parseInt(target.getAttribute("data-idx"), 10));
+    if (action === "open-dealer-modal") openDealerModal(-1);
     if (action === "admin-wc-create") handleAdminWcCreate();
     if (action === "admin-wc-reset") handleAdminWcReset();
     if (action === "admin-wc-delete") handleAdminWcDelete(parseInt(target.getAttribute("data-idx"), 10));
