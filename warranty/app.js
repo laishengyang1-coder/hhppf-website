@@ -421,6 +421,8 @@
       "Duplicate code": "质保码重复",
       "Imported ": "已导入 ",
       " warranty codes.": " 个质保码。",
+      "Installation photos": "施工照片",
+      "No photos uploaded": "未上传照片",
     },
     ru: {
       "Warranty System": "Система гарантии",
@@ -767,6 +769,8 @@
       "Duplicate code": "Дубликат кода",
       "Imported ": "Импортировано ",
       " warranty codes.": " гарантийных кодов.",
+      "Installation photos": "Фото установки",
+      "No photos uploaded": "Фото не загружены",
     },
   };
 
@@ -1484,6 +1488,56 @@
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
+  }
+
+  // Read an uploaded image file and return a compressed JPEG data URI.
+  // Compresses to max width 1280px / quality 0.82 to keep localStorage small.
+  function readImageAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("read error"));
+      reader.onload = () => {
+        const dataUrl = reader.result;
+        if (typeof dataUrl !== "string" || !dataUrl.startsWith("data:image")) {
+          resolve(dataUrl);
+          return;
+        }
+        const img = new Image();
+        img.onload = () => {
+          const maxWidth = 1280;
+          const scale = img.width > maxWidth ? maxWidth / img.width : 1;
+          const width = Math.round(img.width * scale);
+          const height = Math.round(img.height * scale);
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          try {
+            resolve(canvas.toDataURL("image/jpeg", 0.82));
+          } catch (e) {
+            resolve(dataUrl);
+          }
+        };
+        img.onerror = () => resolve(dataUrl);
+        img.src = dataUrl;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function openLightbox(src) {
+    const existing = document.querySelector(".photo-lightbox");
+    if (existing) existing.remove();
+    const overlay = document.createElement("div");
+    overlay.className = "photo-lightbox";
+    overlay.innerHTML = `<img src="${src}" alt="Installation photo" /><button class="lightbox-close" aria-label="Close">&times;</button>`;
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay || event.target.classList.contains("lightbox-close")) {
+        overlay.remove();
+      }
+    });
+    document.body.appendChild(overlay);
   }
 
   function statusClass(status) {
@@ -3437,10 +3491,16 @@
             <span class="badge">${record.id}</span>
             <h3>${escapeHtml(record.warrantyCode)} - ${productLabel(record.productType)}</h3>
             <p>${escapeHtml(record.vehicleMake)} ${escapeHtml(record.vehicleModel)} / VIN ${escapeHtml(maskVin(record.vin))}</p>
-            <p>Dealer: ${escapeHtml(record.dealerName)}. Photos: ${record.photos.map(escapeHtml).join(", ")}.</p>
+            <p>Dealer: ${escapeHtml(record.dealerName)}</p>
           </div>
           <div class="notice">
             Checklist: valid code, allocated dealer, VIN filled, product match, photo uploaded, remaining uses ${remaining}, notes reviewed.
+          </div>
+        </div>
+        <div class="review-photos">
+          <p class="photo-label">${translateValue("Installation photos")}</p>
+          <div class="thumb-grid">
+            ${renderPhotos(record.photos)}
           </div>
         </div>
         <div class="form-actions" style="margin-top: 14px;">
@@ -3449,6 +3509,20 @@
         </div>
       </article>
     `;
+  }
+
+  function renderPhotos(photos) {
+    if (!photos || photos.length === 0) {
+      return `<span class="small">${translateValue("No photos uploaded")}</span>`;
+    }
+    return photos
+      .map((photo) => {
+        if (typeof photo === "string" && photo.startsWith("data:image")) {
+          return `<img class="review-thumb" src="${photo}" alt="installation photo" data-full="${photo}" />`;
+        }
+        return `<span class="photo-name">${escapeHtml(photo)}</span>`;
+      })
+      .join("");
   }
 
   function renderAdminPoints() {
@@ -3560,7 +3634,7 @@
     return `
       <div class="table-wrap">
         <table>
-          <thead><tr><th>ID</th><th>Code</th><th>VIN</th><th>Vehicle</th><th>Product</th><th>Install Date</th><th>Expiry</th><th>Status</th>${context === "dealer" ? "<th>Action</th>" : ""}</tr></thead>
+          <thead><tr><th>ID</th><th>Code</th><th>VIN</th><th>Vehicle</th><th>Product</th><th>Install Date</th><th>Expiry</th><th>Status</th>${context === "dealer" ? "<th>Photos</th><th>Action</th>" : ""}</tr></thead>
           <tbody>
             ${records
               .map(
@@ -3574,7 +3648,7 @@
                     <td>${escapeHtml(record.installationDate)}</td>
                     <td>${escapeHtml(record.warrantyExpiryDate || "Pending")}</td>
                     <td>${statusBadge(record.status)}</td>
-                    ${context === "dealer" ? `<td><button class="text-button" data-action="print-certificate" data-id="${record.id}" ${record.status === "Active" ? "" : "disabled"}>Certificate</button></td>` : ""}
+                    ${context === "dealer" ? `<td><div class="thumb-grid">${renderPhotos(record.photos)}</div></td><td><button class="text-button" data-action="print-certificate" data-id="${record.id}" ${record.status === "Active" ? "" : "disabled"}>Certificate</button></td>` : ""}
                   </tr>
                 `,
               )
@@ -3973,6 +4047,11 @@
   });
 
   document.addEventListener("click", (event) => {
+    const origTarget = event.target;
+    if (origTarget && origTarget.classList && origTarget.classList.contains("review-thumb")) {
+      openLightbox(origTarget.getAttribute("data-full") || origTarget.src);
+      return;
+    }
     const target = event.target.closest("[data-action]");
     if (!target || target.matches("select")) return;
     const action = target.getAttribute("data-action");
@@ -4032,7 +4111,7 @@
     }
   }
 
-  function handleRegisterWarranty(form) {
+  async function handleRegisterWarranty(form) {
     const formData = new FormData(form);
     const code = codeByValue(formData.get("warrantyCode"));
     const dealer = activeDealer();
@@ -4043,6 +4122,13 @@
     const files = form.elements.photos.files || [];
     if (files.length < 1 || files.length > 3) {
       showToast("Please upload 1 to 3 installation photos.");
+      return;
+    }
+    let photos;
+    try {
+      photos = await Promise.all(Array.from(files).map((file) => readImageAsDataUrl(file)));
+    } catch (error) {
+      showToast("Failed to read photos. Please try again.");
       return;
     }
     const installDate = formData.get("installationDate") || today();
@@ -4065,7 +4151,7 @@
       country: dealer.country,
       city: dealer.city,
       status: "Pending Review",
-      photos: Array.from(files).map((file) => file.name),
+      photos,
       reviewNote: formData.get("remark") || "",
       pointsAwarded: 0,
     });
