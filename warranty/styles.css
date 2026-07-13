@@ -2065,7 +2065,7 @@ tr:last-child td {
   }
 }
 
-/* ===== Hero Section (Homepage) ===== */
+/* ===== Hero Section (Homepage) — H&H Orange ===== */
 .hero-section {
   position: relative;
   width: 100%;
@@ -2074,16 +2074,31 @@ tr:last-child td {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: #0d0d0f;
+  background: #E9481A;
   background-image:
-    radial-gradient(ellipse 60% 50% at 30% 35%, rgba(233, 72, 26, 0.15) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 75% 65%, rgba(189, 51, 18, 0.10) 0%, transparent 60%),
-    linear-gradient(160deg, #0d0d0f 0%, #1a1a1e 40%, #121214 70%, #0d0d0f 100%);
+    radial-gradient(ellipse 55% 45% at 25% 30%, rgba(255, 106, 50, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 35% at 80% 60%, rgba(122, 33, 14, 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255, 255, 255, 0.04) 0%, transparent 70%),
+    linear-gradient(120deg, #7A210E 0%, #B83212 35%, #E9481A 68%, #FF6530 100%);
+}
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.015) 2px,
+      rgba(255, 255, 255, 0.015) 4px
+    );
+  pointer-events: none;
 }
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 45%, transparent 0%, rgba(0, 0, 0, 0.5) 100%);
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, transparent 0%, rgba(0, 0, 0, 0.15) 100%);
   pointer-events: none;
 }
 .hero-content {
@@ -2099,14 +2114,13 @@ tr:last-child td {
   font-weight: 600;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--orange);
+  color: rgba(255, 255, 255, 0.78);
   margin: 0 0 20px;
-  opacity: 0.9;
 }
 .hero-title {
   font-size: 32px;
   font-weight: 700;
-  color: #fff;
+  color: #FFFFFF;
   margin: 0 0 48px;
   line-height: 1.35;
 }
@@ -2122,7 +2136,7 @@ tr:last-child td {
 .hero-number {
   font-size: 72px;
   font-weight: 800;
-  color: #fff;
+  color: #FFFFFF;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   letter-spacing: -2px;
@@ -2130,29 +2144,32 @@ tr:last-child td {
 .hero-number-unit {
   font-size: 22px;
   font-weight: 600;
-  color: var(--orange);
+  color: #FFE5D8;
 }
 .hero-number-label {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.82);
   margin: 14px 0 0;
   letter-spacing: 1px;
 }
 .hero-data-note {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.62);
   margin: 0 0 40px;
   line-height: 1.6;
   max-width: 560px;
   margin-left: auto;
   margin-right: auto;
 }
+/* Subtle divider between main stat and sub-stats */
 .hero-sub-stats {
   display: flex;
   justify-content: center;
   gap: 56px;
   margin-bottom: 40px;
   flex-wrap: wrap;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.20);
 }
 .hero-sub-stat {
   text-align: center;
@@ -2161,26 +2178,34 @@ tr:last-child td {
 .hero-sub-number {
   font-size: 30px;
   font-weight: 700;
-  color: #fff;
+  color: #FFFFFF;
   font-variant-numeric: tabular-nums;
 }
 .hero-sub-unit {
   font-size: 14px;
   font-weight: 500;
-  color: var(--orange);
+  color: #FFE5D8;
   margin-left: 4px;
 }
 .hero-sub-label {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.72);
   margin: 8px 0 0;
   white-space: nowrap;
+}
+/* Vertical separators between sub-stats (desktop) */
+@media (min-width: 641px) {
+  .hero-sub-stat + .hero-sub-stat {
+    padding-left: 56px;
+    border-left: 1px solid rgba(255, 255, 255, 0.20);
+  }
 }
 .hero-actions {
   display: flex;
   gap: 16px;
   justify-content: center;
   flex-wrap: wrap;
+  margin-top: 8px;
 }
 .hero-actions .button {
   padding: 14px 36px;
@@ -2189,26 +2214,27 @@ tr:last-child td {
   border-radius: 4px;
   text-decoration: none;
   display: inline-block;
-  border: none;
   cursor: pointer;
   transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
+/* Primary: white bg + orange text */
 .hero-actions .button-primary {
-  background: var(--orange);
-  color: #fff;
+  background: #FFFFFF;
+  color: #E9481A;
+  border: 1px solid #FFFFFF;
 }
 .hero-actions .button-primary:hover {
-  background: var(--orange-deep);
+  background: #FFF8F4;
   transform: translateY(-1px);
 }
+/* Secondary: semi-transparent + white text */
 .hero-actions .button-ghost {
-  background: transparent;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.65);
 }
 .hero-actions .button-ghost:hover {
-  border-color: var(--orange);
-  color: var(--orange);
+  background: rgba(255, 255, 255, 0.16);
   transform: translateY(-1px);
 }
 
