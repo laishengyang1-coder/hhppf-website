@@ -1,0 +1,21 @@
+{
+  "name": "H&H Automotive Films",
+  "short_name": "H&H",
+  "description": "Premium PPF, Color Film & Window Film Solutions",
+  "icons": [
+    {
+      "src": "assets/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#E9481A",
+  "background_color": "#F9F2EC",
+  "display": "standalone",
+  "start_url": "/"
+}
