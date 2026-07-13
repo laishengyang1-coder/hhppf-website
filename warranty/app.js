@@ -25,6 +25,7 @@
   const copy = {
     en: {
       home: "Warranty",
+      navHome: "Home",
       verify: "Verify",
       terms: "Terms",
       dealer: "Dealer Portal",
@@ -38,20 +39,32 @@
       dealerLogin: "Dealer Login",
       adminLogin: "Admin Login",
       heroMainHeading: "Every Warranty Is a Long-Term Commitment",
-      heroWarrantyUnit: "",
+      heroWarrantyUnit: "Warranties",
       heroActiveWarranties: "H&H Global Active Warranties",
       heroVehiclesUnit: "",
-      heroUniqueVehicles: "Vehicles Served",
+      heroUniqueVehicles: "Vehicles Covered",
       heroDealersUnit: "",
       heroActiveDealers: "Authorized Partners",
       heroCountriesUnit: "",
       heroCoveredCountries: "Countries & Regions",
       heroVerifyBtn: "Verify My Warranty",
       heroDealerBtn: "Dealer Login",
-      heroDataSource: "Data from H&H official electronic warranty system. Only approved and active warranties are counted.",
+      heroDataNote: "Includes verified historical warranty records prior to system launch and active warranties approved through the H&H electronic warranty system.",
+      heroStepTitle: "How to Use H&H Electronic Warranty",
+      heroStep1Title: "Authorized Installation",
+      heroStep1Desc: "Products are installed by H&H authorized dealers or certified installation shops.",
+      heroStep2Title: "Dealer Submits Warranty",
+      heroStep2Desc: "The dealer submits vehicle, product, and installation details via the Dealer Portal.",
+      heroStep3Title: "Owner Queries & Downloads Certificate",
+      heroStep3Desc: "After HQ approval, owners can search by VIN and download the electronic warranty certificate.",
+      heroEntryOwners: "For Vehicle Owners",
+      heroEntryOwnersDesc: "Verify your H&H warranty by VIN",
+      heroEntryDealers: "For Authorized Dealers",
+      heroEntryDealersDesc: "Register warranties and manage points",
     },
     zh: {
       home: "电子质保",
+      navHome: "首页",
       verify: "车主查询",
       terms: "质保条款",
       dealer: "经销商端",
@@ -75,10 +88,22 @@
       heroCoveredCountries: "覆盖国家和地区",
       heroVerifyBtn: "查询我的质保",
       heroDealerBtn: "经销商登录",
-      heroDataSource: "数据来自 H&H 官方电子质保系统，仅统计已审核并正式生效的质保记录",
+      heroDataNote: "数据包含系统上线前已确认的历史质保记录，以及 H&H 电子质保系统中已审核生效的质保记录。",
+      heroStepTitle: "如何使用 H&H 电子质保",
+      heroStep1Title: "授权门店完成施工",
+      heroStep1Desc: "产品由 H&H 授权经销商或授权施工门店完成安装。",
+      heroStep2Title: "经销商提交质保",
+      heroStep2Desc: "经销商通过 Dealer Portal 提交车辆、产品及施工信息。",
+      heroStep3Title: "车主查询并下载证书",
+      heroStep3Desc: "总部审核通过后，车主可使用 VIN 查询并下载电子质保证书。",
+      heroEntryOwners: "车主查询",
+      heroEntryOwnersDesc: "通过 VIN 验证您的 H&H 质保",
+      heroEntryDealers: "经销商端",
+      heroEntryDealersDesc: "登记质保并管理积分",
     },
     ru: {
       home: "Гарантия",
+      navHome: "Главная",
       verify: "Проверка VIN",
       terms: "Условия",
       dealer: "Портал дилера",
@@ -102,7 +127,18 @@
       heroCoveredCountries: "Стран и регионов",
       heroVerifyBtn: "Проверить гарантию",
       heroDealerBtn: "Вход для дилеров",
-      heroDataSource: "Данные из официальной электронной гарантийной системы H&H. Учитываются только одобренные и активные гарантии.",
+      heroDataNote: "Включает подтверждённые исторические гарантии до запуска системы и активные гарантии, одобренные через электронную гарантийную систему H&H.",
+      heroStepTitle: "Как использовать электронную гарантию H&H",
+      heroStep1Title: "Авторизованный монтаж",
+      heroStep1Desc: "Продукция устанавливается авторизованными дилерами или сертифицированными монтажными центрами H&H.",
+      heroStep2Title: "Дилер регистрирует гарантию",
+      heroStep2Desc: "Дилер вводит данные автомобиля, продукции и монтажа через портал дилера.",
+      heroStep3Title: "Владелец проверяет и скачивает сертификат",
+      heroStep3Desc: "После одобрения штаб-квартирой владелец может найти гарантию по VIN и скачать электронный сертификат.",
+      heroEntryOwners: "Для владельцев",
+      heroEntryOwnersDesc: "Проверьте гарантию H&H по VIN",
+      heroEntryDealers: "Для дилеров",
+      heroEntryDealersDesc: "Регистрация гарантий и управление баллами",
     },
   };
 
@@ -300,6 +336,8 @@
       "Default Warranty Approval Points": "默认质保审核积分",
       "Reserved Validity Months": "预留有效期月份",
       "Save Settings": "保存设置",
+      "Historical Warranty Baseline": "历史质保基数",
+      "System launch前已确认但未逐条导入数据库的历史质保数量。首页累计质保总数 = 该基数 + 系统内 Active 质保数量。": "系统上线前已确认但未逐条导入数据库的历史质保数量。首页累计质保总数 = 该基数 + 系统内 Active 质保数量。",
       "Manual Points Adjustment": "人工积分调整",
       "Points Change": "积分变动",
       "Reason": "原因",
@@ -725,6 +763,8 @@
       "Default Warranty Approval Points": "Баллы за одобрение гарантии",
       "Reserved Validity Months": "Зарезервированные месяцы действия",
       "Save Settings": "Сохранить",
+      "Historical Warranty Baseline": "Базовое количество исторических гарантий",
+      "System launch前已确认但未逐条导入数据库的历史质保数量。首页累计质保总数 = 该基数 + 系统内 Active 质保数量。": "Количество подтверждённых исторических гарантий до запуска системы, ещё не импортированных в базу данных. Общее количество гарантий на главной = это базовое число + активные гарантии в системе.",
       "Manual Points Adjustment": "Ручная корректировка баллов",
       "Points Change": "Изменение баллов",
       "Reason": "Причина",
@@ -1024,6 +1064,7 @@
     settings: {
       defaultWarrantyPoints: 100,
       pointsValidityMonths: 12,
+      historicalWarrantyBaseline: 1717,
     },
     products: [
       /* ── PPF / Paint Protection Film 车衣系列 ── */
@@ -1842,6 +1883,7 @@
 
   function renderHeader(route) {
     const nav = [
+      ["home", t("navHome")],
       ["verify", t("verify")],
       ["terms", t("terms")],
       [isAuthenticated("dealer") ? AUTH.dealer.dashboardRoute : AUTH.dealer.loginRoute, t("dealer")],
@@ -1859,10 +1901,7 @@
         <nav class="portal-nav" aria-label="Warranty navigation">
           ${nav
             .map(([navRoute, label]) => {
-              const active =
-                navRoute === "verify"
-                  ? route === "home" || route === "verify"
-                  : isRoute(route, navRoute.split("/")[0]);
+              const active = isRoute(route, navRoute.split("/")[0]);
               return `<a class="${active ? "is-active" : ""}" href="${href(navRoute)}">${escapeHtml(label)}</a>`;
             })
             .join("")}
@@ -1887,8 +1926,8 @@
 
     return `
       <footer class="portal-footer">
-        <span>H&amp;H Warranty &amp; Partner Points System V1 Preview</span>
-        <span>${translateValue("Future deployment target: warranty.hhppf.com -")} <a href="../index.html">${translateValue("Main website")}</a> - <button class="text-button" data-action="reset-demo" type="button">${translateValue("Reset demo data")}</button></span>
+        <span>H&amp;H Warranty System</span>
+        <span><a href="../index.html">${translateValue("Main website")}</a></span>
       </footer>
     `;
   }
@@ -1960,6 +1999,8 @@
   }
 
   function renderHome() {
+    const baseline = data?.settings?.historicalWarrantyBaseline ?? 1717;
+
     const hero = `
       <section class="hero-section">
         <div class="hero-overlay"></div>
@@ -1967,23 +2008,26 @@
           <p class="hero-kicker">H&H GLOBAL WARRANTY NETWORK</p>
           <h1 class="hero-title">${escapeHtml(t("heroMainHeading"))}</h1>
           <div class="hero-main-stat">
-            <span class="hero-number" id="hero-active-warranties" data-target="0">0</span>
-            <span class="hero-number-unit">${escapeHtml(t("heroWarrantyUnit"))}</span>
+            <div class="hero-number-row">
+              <span class="hero-number" id="hero-warranty-total">${baseline.toLocaleString()}</span>
+              <span class="hero-number-unit">${escapeHtml(t("heroWarrantyUnit"))}</span>
+            </div>
             <p class="hero-number-label">${escapeHtml(t("heroActiveWarranties"))}</p>
           </div>
+          <p class="hero-data-note">${escapeHtml(t("heroDataNote"))}</p>
           <div class="hero-sub-stats">
             <div class="hero-sub-stat">
-              <span class="hero-sub-number" id="hero-unique-vehicles" data-target="0">0</span>
+              <span class="hero-sub-number" id="hero-unique-vehicles">—</span>
               <span class="hero-sub-unit">${escapeHtml(t("heroVehiclesUnit"))}</span>
               <p class="hero-sub-label">${escapeHtml(t("heroUniqueVehicles"))}</p>
             </div>
             <div class="hero-sub-stat">
-              <span class="hero-sub-number" id="hero-active-dealers" data-target="0">0</span>
+              <span class="hero-sub-number" id="hero-active-dealers">—</span>
               <span class="hero-sub-unit">${escapeHtml(t("heroDealersUnit"))}</span>
               <p class="hero-sub-label">${escapeHtml(t("heroActiveDealers"))}</p>
             </div>
             <div class="hero-sub-stat">
-              <span class="hero-sub-number" id="hero-covered-countries" data-target="0">0</span>
+              <span class="hero-sub-number" id="hero-covered-countries">—</span>
               <span class="hero-sub-unit">${escapeHtml(t("heroCountriesUnit"))}</span>
               <p class="hero-sub-label">${escapeHtml(t("heroCoveredCountries"))}</p>
             </div>
@@ -1992,15 +2036,49 @@
             <a class="button button-primary" href="#/verify">${escapeHtml(t("heroVerifyBtn"))}</a>
             <a class="button button-ghost" href="#/dealer/login">${escapeHtml(t("heroDealerBtn"))}</a>
           </div>
-          <p class="hero-note">${escapeHtml(t("heroDataSource"))}</p>
         </div>
       </section>
     `;
 
-    // Trigger count-up after DOM insert
-    setTimeout(fetchPublicStats, 100);
+    const steps = `
+      <section class="hero-steps">
+        <h2 class="hero-steps-title">${escapeHtml(t("heroStepTitle"))}</h2>
+        <div class="hero-steps-grid">
+          <div class="hero-step">
+            <span class="hero-step-num">1</span>
+            <h3>${escapeHtml(t("heroStep1Title"))}</h3>
+            <p>${escapeHtml(t("heroStep1Desc"))}</p>
+          </div>
+          <div class="hero-step">
+            <span class="hero-step-num">2</span>
+            <h3>${escapeHtml(t("heroStep2Title"))}</h3>
+            <p>${escapeHtml(t("heroStep2Desc"))}</p>
+          </div>
+          <div class="hero-step">
+            <span class="hero-step-num">3</span>
+            <h3>${escapeHtml(t("heroStep3Title"))}</h3>
+            <p>${escapeHtml(t("heroStep3Desc"))}</p>
+          </div>
+        </div>
+      </section>
+      <section class="hero-entry-cards">
+        <a class="hero-entry-card" href="#/verify">
+          <h3>${escapeHtml(t("heroEntryOwners"))}</h3>
+          <p>${escapeHtml(t("heroEntryOwnersDesc"))}</p>
+          <span class="hero-entry-arrow">&rarr;</span>
+        </a>
+        <a class="hero-entry-card" href="#/dealer/login">
+          <h3>${escapeHtml(t("heroEntryDealers"))}</h3>
+          <p>${escapeHtml(t("heroEntryDealersDesc"))}</p>
+          <span class="hero-entry-arrow">&rarr;</span>
+        </a>
+      </section>
+    `;
 
-    return renderPage(hero + renderVerifyContent());
+    // Fetch real stats after DOM insert
+    setTimeout(fetchPublicStats, 50);
+
+    return hero + renderPage(steps);
   }
 
   async function fetchPublicStats() {
@@ -2008,35 +2086,21 @@
       const res = await fetch("/api/public/stats");
       const json = await res.json();
       if (json.ok) {
-        animateCountUp("hero-active-warranties", json.activeWarranties || 0);
-        animateCountUp("hero-unique-vehicles", json.uniqueVehicles || 0);
-        animateCountUp("hero-active-dealers", json.activeDealers || 0);
-        animateCountUp("hero-covered-countries", json.coveredCountries || 0);
+        const totalEl = document.getElementById("hero-warranty-total");
+        if (totalEl) totalEl.textContent = (json.displayWarrantyTotal || json.historicalWarrantyBaseline || 1717).toLocaleString();
+
+        const vehEl = document.getElementById("hero-unique-vehicles");
+        if (vehEl) vehEl.textContent = (json.uniqueVehicleCount ?? 0).toLocaleString();
+
+        const dealEl = document.getElementById("hero-active-dealers");
+        if (dealEl) dealEl.textContent = (json.activeDealerCount ?? 0).toLocaleString();
+
+        const countryEl = document.getElementById("hero-covered-countries");
+        if (countryEl) countryEl.textContent = (json.coveredCountryCount ?? 0).toLocaleString();
       }
     } catch (e) {
-      // silently fail — numbers stay at 0
+      console.error("Failed to fetch public stats:", e);
     }
-  }
-
-  function animateCountUp(elementId, target) {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-    const duration = 2000;
-    const startTime = performance.now();
-    function update(now) {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      // ease-out: 1 - (1 - p)^3
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const current = Math.round(eased * target);
-      el.textContent = current.toLocaleString();
-      if (progress < 1) {
-        requestAnimationFrame(update);
-      } else {
-        el.textContent = target.toLocaleString();
-      }
-    }
-    requestAnimationFrame(update);
   }
 
   function renderVerify() {
@@ -4179,6 +4243,11 @@
                 Reserved Validity Months
                 <input name="pointsValidityMonths" type="number" min="0" value="${data.settings.pointsValidityMonths}" />
               </label>
+              <label class="full">
+                ${translateValue("Historical Warranty Baseline")}
+                <input name="historicalWarrantyBaseline" type="number" min="0" value="${data.settings.historicalWarrantyBaseline ?? 1717}" />
+                <small style="color:var(--soft);font-size:12px;">${translateValue("System launch前已确认但未逐条导入数据库的历史质保数量。首页累计质保总数 = 该基数 + 系统内 Active 质保数量。")}</small>
+              </label>
               <div class="form-actions full"><button class="button" type="submit">Save Settings</button></div>
             </form>
           </article>
@@ -4906,6 +4975,7 @@
     const formData = new FormData(form);
     data.settings.defaultWarrantyPoints = Number(formData.get("defaultWarrantyPoints"));
     data.settings.pointsValidityMonths = Number(formData.get("pointsValidityMonths"));
+    data.settings.historicalWarrantyBaseline = Math.max(0, Math.floor(Number(formData.get("historicalWarrantyBaseline")) || 0));
     saveData();
     showToast("Points settings saved.");
   }
