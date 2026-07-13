@@ -459,6 +459,15 @@
       "Please upload an image with 16:9 aspect ratio.": "请上传 16:9 比例的图片。",
       "Upload failed. Please try again.": "上传失败，请重试。",
       "Image uploaded.": "图片上传成功。",
+      "Add Reward": "新增奖励",
+      "Edit Reward": "编辑奖励",
+      "Reward added.": "奖励已添加。",
+      "Reward updated.": "奖励已更新。",
+      "Name is required.": "名称不能为空。",
+      "Points must be at least 1.": "积分至少为 1。",
+      "Cancel": "取消",
+      "Save": "保存",
+      "Update": "更新",
       "Data refreshed from server.": "数据已从服务器刷新。",
       "Certificate is available after HQ approval.": "质保通过总部审核后即可查看证书。",
       "Popup blocked. Please allow popups to print certificates.": "弹窗被浏览器拦截，请允许弹窗以打印证书。",
@@ -863,6 +872,15 @@
       "Please upload an image with 16:9 aspect ratio.": "Загрузите изображение с соотношением 16:9.",
       "Upload failed. Please try again.": "Загрузка не удалась. Попробуйте снова.",
       "Image uploaded.": "Изображение загружено.",
+      "Add Reward": "Добавить награду",
+      "Edit Reward": "Редактировать награду",
+      "Reward added.": "Награда добавлена.",
+      "Reward updated.": "Награда обновлена.",
+      "Name is required.": "Укажите название.",
+      "Points must be at least 1.": "Минимум 1 балл.",
+      "Cancel": "Отмена",
+      "Save": "Сохранить",
+      "Update": "Обновить",
       "Data refreshed from server.": "Данные обновлены с сервера.",
       "Certificate is available after HQ approval.": "Сертификат доступен после одобрения HQ.",
       "Popup blocked. Please allow popups to print certificates.": "Всплывающие окна заблокированы. Разрешите всплывающие окна для печати сертификатов.",
@@ -1393,60 +1411,20 @@
       },
     ],
     rewards: [
-      {
-        id: "RW-001",
-        category: "Workwear",
-        name: "H&H Workwear",
-        points: 420,
-        status: "Available for Redemption",
-        stockStatus: "Available for Redemption",
-        image: "",
-      },
-      {
-        id: "RW-002",
-        category: "Workwear",
-        name: "H&H Cap",
-        points: 160,
-        status: "Available for Redemption",
-        stockStatus: "Available for Redemption",
-        image: "",
-      },
-      {
-        id: "RW-003",
-        category: "Sample Material",
-        name: "TPU Color Film Color Card",
-        points: 520,
-        status: "Available for Redemption",
-        stockStatus: "Available for Redemption",
-        image: "",
-      },
-      {
-        id: "RW-004",
-        category: "Sample Material",
-        name: "PPF Sample Book",
-        points: 680,
-        status: "Out of Stock",
-        stockStatus: "Out of Stock",
-        image: "",
-      },
-      {
-        id: "RW-005",
-        category: "Tools",
-        name: "Installation Tool Kit",
-        points: 760,
-        status: "Available for Redemption",
-        stockStatus: "Available for Redemption",
-        image: "",
-      },
-      {
-        id: "RW-006",
-        category: "Tools",
-        name: "Seat Cover",
-        points: 120,
-        status: "Coming Soon",
-        stockStatus: "Coming Soon",
-        image: "",
-      },
+      { id: "RW-001", category: "Tools", name: "H&H Tool Kit（工具箱套装）", points: 760, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-tool-kit.png" },
+      { id: "RW-002", category: "Tools", name: "H&H Heat Gun（热风枪）", points: 520, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-heat-gun.png" },
+      { id: "RW-003", category: "Tools", name: "H&H Squeegee Tool Set（刮板工具套装）", points: 420, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-squeegee-set.png" },
+      { id: "RW-004", category: "Accessories", name: "H&H Car Cover（车衣）", points: 680, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-car-cover.png" },
+      { id: "RW-005", category: "Tools", name: "H&H Film Cutter（裁膜刀）", points: 200, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-film-cutter.png" },
+      { id: "RW-006", category: "Accessories", name: "H&H ID Card（工牌卡套）", points: 160, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-id-card.png" },
+      { id: "RW-007", category: "Accessories", name: "H&H Business Card（名片）", points: 100, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-business-card.png" },
+      { id: "RW-008", category: "Tools", name: "H&H Tool Pouch（工具包）", points: 300, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-tool-pouch.png" },
+      { id: "RW-009", category: "Tools", name: "H&H Installation Sprayer（安装喷壶）", points: 180, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-installation-sprayer.png" },
+      { id: "RW-010", category: "Tools", name: "H&H Sprayer（普通喷壶）", points: 140, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-sprayer.png" },
+      { id: "RW-011", category: "Tools", name: "H&H Spray Bottle（气压喷壶）", points: 160, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-spray-bottle.png" },
+      { id: "RW-012", category: "Accessories", name: "H&H License Plate Frame（车牌框）", points: 120, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-license-plate-frame.png" },
+      { id: "RW-013", category: "Sample Material", name: "H&H PPF Packaging（PPF包装贴纸）", points: 80, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-ppf-packaging.png" },
+      { id: "RW-014", category: "Tools", name: "H&H Film Scraper（刮板）", points: 120, status: "Available for Redemption", stockStatus: "Available for Redemption", image: "/api/photo/reward-film-scraper.png" },
     ],
     redemptions: [
       {
@@ -4120,8 +4098,13 @@
       "admin/rewards",
       `
         <section class="panel">
-          <h2>Rewards Management</h2>
-          <p>HQ controls points cost and internal inventory. Dealer-facing portal only shows Available, Out of Stock, or Coming Soon.</p>
+          <div class="panel-head-row">
+            <div>
+              <h2>Rewards Management</h2>
+              <p>HQ controls points cost and internal inventory. Dealer-facing portal only shows Available, Out of Stock, or Coming Soon.</p>
+            </div>
+            <button class="button" data-action="open-reward-modal">+ ${translateValue("Add Reward")}</button>
+          </div>
           <div class="reward-grid">
             ${data.rewards
               .map(
@@ -4665,6 +4648,9 @@
     if (action === "admin-dealer-edit") handleAdminDealerEdit(parseInt(target.getAttribute("data-idx"), 10));
     if (action === "admin-dealer-delete") handleAdminDealerDelete(parseInt(target.getAttribute("data-idx"), 10));
     if (action === "open-dealer-modal") openDealerModal(-1);
+    if (action === "open-reward-modal") openRewardModal(null);
+    if (action === "admin-reward-save") handleAdminRewardSave();
+    if (action === "close-modals") closeModals();
     if (action === "admin-wc-create") handleAdminWcCreate();
     if (action === "admin-wc-reset") handleAdminWcReset();
     if (action === "admin-wc-delete") handleAdminWcDelete(parseInt(target.getAttribute("data-idx"), 10));
@@ -5020,6 +5006,70 @@
     await saveData();
     showToast(translateValue("Image uploaded."));
     renderPage("admin/rewards");
+  }
+
+  function openRewardModal(editId) {
+    closeModals();
+    const reward = editId ? data.rewards.find((r) => r.id === editId) : null;
+    const isEdit = !!reward;
+    const overlay = document.createElement("div");
+    overlay.className = "wc-detail-modal";
+    overlay.innerHTML =
+      '<div class="wc-detail-card" style="max-width:560px;">' +
+        '<button class="lightbox-close" aria-label="Close">&times;</button>' +
+        "<h3>" + (isEdit ? translateValue("Edit Reward") : translateValue("Add Reward")) + "</h3>" +
+        '<div class="form-grid">' +
+          "<label>" + translateValue("Name") + ' <input id="reward-edit-name" placeholder="' + translateValue("e.g. H&H Tool Kit") + '" value="' + escapeHtml(reward ? reward.name : "") + '" /></label>' +
+          "<label>" + translateValue("Category") + ' <select id="reward-edit-category">' +
+            '<option value="Tools"' + ((!reward || reward.category === "Tools") ? " selected" : "") + ">Tools</option>" +
+            '<option value="Accessories"' + (reward && reward.category === "Accessories" ? " selected" : "") + ">Accessories</option>" +
+            '<option value="Workwear"' + (reward && reward.category === "Workwear" ? " selected" : "") + ">Workwear</option>" +
+            '<option value="Sample Material"' + (reward && reward.category === "Sample Material" ? " selected" : "") + ">Sample Material</option>" +
+            "</select></label>" +
+          "<label>Points <input id=\"reward-edit-points\" type=\"number\" min=\"1\" max=\"99999\" value=\"" + (reward ? reward.points : 100) + "\" /></label>" +
+          "<label>Status <select id=\"reward-edit-status\">" +
+            '<option value="Available for Redemption"' + ((!reward || reward.status === "Available for Redemption") ? " selected" : "") + ">" + translateValue("Available for Redemption") + "</option>" +
+            '<option value="Out of Stock"' + (reward && reward.status === "Out of Stock" ? " selected" : "") + ">Out of Stock</option>" +
+            '<option value="Coming Soon"' + (reward && reward.status === "Coming Soon" ? " selected" : "") + ">Coming Soon</option>" +
+            "</select></label>" +
+        "</div>" +
+        '<div class="inline-actions" style="margin-top:18px;">' +
+          '<button class="button" data-action="admin-reward-save">' + (isEdit ? translateValue("Update") : translateValue("Save")) + "</button>" +
+          '<button class="ghost-button" data-action="close-modals">' + translateValue("Cancel") + "</button>" +
+        "</div>" +
+        '<input type="hidden" id="reward-edit-id" value="' + (editId || "") + '" />' +
+      "</div>";
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay || event.target.classList.contains("lightbox-close")) {
+        overlay.remove();
+      }
+    });
+    document.body.appendChild(overlay);
+  }
+
+  async function handleAdminRewardSave() {
+    const editId = document.getElementById("reward-edit-id").value;
+    const name = document.getElementById("reward-edit-name").value.trim();
+    const category = document.getElementById("reward-edit-category").value;
+    const points = parseInt(document.getElementById("reward-edit-points").value, 10);
+    const status = document.getElementById("reward-edit-status").value;
+    if (!name) { showToast(translateValue("Name is required.")); return; }
+    if (!points || points < 1) { showToast(translateValue("Points must be at least 1.")); return; }
+
+    if (editId) {
+      // Edit existing
+      const reward = data.rewards.find((r) => r.id === editId);
+      if (reward) { reward.name = name; reward.category = category; reward.points = points; reward.status = status; reward.stockStatus = status; }
+    } else {
+      // Add new
+      const maxNum = data.rewards.reduce((m, r) => { const n = parseInt(r.id.replace("RW-", ""), 10); return n > m ? n : m; }, 0);
+      const newId = "RW-" + String(maxNum + 1).padStart(3, "0");
+      data.rewards.push({ id: newId, category, name, points, status, stockStatus: status, image: "" });
+    }
+    await saveData();
+    closeModals();
+    renderPage("admin/rewards");
+    showToast(editId ? translateValue("Reward updated.") : translateValue("Reward added."));
   }
 
   function handleRedemption(redemptionId, status) {
