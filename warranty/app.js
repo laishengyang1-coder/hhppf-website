@@ -454,6 +454,11 @@
       "Warranty record rejected.": "质保记录已驳回。",
       "Warranty approved, certificate generated, and points awarded.": "质保已通过，证书已生成，积分已发放。",
       "Reward status updated.": "兑换物料状态已更新。",
+      "Upload Image": "上传图片",
+      "No image": "暂无图片",
+      "Please upload an image with 16:9 aspect ratio.": "请上传 16:9 比例的图片。",
+      "Upload failed. Please try again.": "上传失败，请重试。",
+      "Image uploaded.": "图片上传成功。",
       "Data refreshed from server.": "数据已从服务器刷新。",
       "Certificate is available after HQ approval.": "质保通过总部审核后即可查看证书。",
       "Popup blocked. Please allow popups to print certificates.": "弹窗被浏览器拦截，请允许弹窗以打印证书。",
@@ -853,6 +858,11 @@
       "Warranty record rejected.": "Запись гарантии отклонена.",
       "Warranty approved, certificate generated, and points awarded.": "Гарантия одобрена, сертификат создан, баллы начислены.",
       "Reward status updated.": "Статус материала обновлен.",
+      "Upload Image": "Загрузить изображение",
+      "No image": "Нет изображения",
+      "Please upload an image with 16:9 aspect ratio.": "Загрузите изображение с соотношением 16:9.",
+      "Upload failed. Please try again.": "Загрузка не удалась. Попробуйте снова.",
+      "Image uploaded.": "Изображение загружено.",
       "Data refreshed from server.": "Данные обновлены с сервера.",
       "Certificate is available after HQ approval.": "Сертификат доступен после одобрения HQ.",
       "Popup blocked. Please allow popups to print certificates.": "Всплывающие окна заблокированы. Разрешите всплывающие окна для печати сертификатов.",
@@ -1390,6 +1400,7 @@
         points: 420,
         status: "Available for Redemption",
         stockStatus: "Available for Redemption",
+        image: "",
       },
       {
         id: "RW-002",
@@ -1398,6 +1409,7 @@
         points: 160,
         status: "Available for Redemption",
         stockStatus: "Available for Redemption",
+        image: "",
       },
       {
         id: "RW-003",
@@ -1406,6 +1418,7 @@
         points: 520,
         status: "Available for Redemption",
         stockStatus: "Available for Redemption",
+        image: "",
       },
       {
         id: "RW-004",
@@ -1414,6 +1427,7 @@
         points: 680,
         status: "Out of Stock",
         stockStatus: "Out of Stock",
+        image: "",
       },
       {
         id: "RW-005",
@@ -1422,6 +1436,7 @@
         points: 760,
         status: "Available for Redemption",
         stockStatus: "Available for Redemption",
+        image: "",
       },
       {
         id: "RW-006",
@@ -1430,6 +1445,7 @@
         points: 120,
         status: "Coming Soon",
         stockStatus: "Coming Soon",
+        image: "",
       },
     ],
     redemptions: [
@@ -2781,6 +2797,7 @@
               .map(
                 (reward) => `
                   <article class="data-card reward-catalog-card">
+                    ${reward.image ? `<div class="reward-image-wrap"><img src="${reward.image}" alt="${escapeHtml(reward.name)}" class="reward-thumb" /></div>` : ""}
                     <span class="badge">${escapeHtml(reward.category)}</span>
                     <h3>${escapeHtml(reward.name)}</h3>
                     <p>${reward.points} points per item</p>
@@ -4110,6 +4127,16 @@
               .map(
                 (reward) => `
                   <article class="data-card">
+                    <div class="reward-image-upload" data-reward-id="${reward.id}">
+                      ${reward.image
+                        ? `<img src="${reward.image}" alt="${escapeHtml(reward.name)}" class="reward-thumb" />`
+                        : `<div class="reward-image-placeholder">${translateValue("No image")}<br><span class="small">16:9</span></div>`
+                      }
+                      <div class="reward-image-actions">
+                        <input type="file" accept="image/png,image/jpeg,image/webp" class="reward-file-input" data-action="reward-upload" data-id="${reward.id}" />
+                        <button class="ghost-button reward-upload-btn" data-reward-id="${reward.id}">${translateValue("Upload Image")}</button>
+                      </div>
+                    </div>
                     <span class="badge">${escapeHtml(reward.category)}</span>
                     <h3>${escapeHtml(reward.name)}</h3>
                     <p>${reward.points} points</p>
@@ -4450,6 +4477,10 @@
     if (target.id === "wc-product") syncWcProductFields();
     if (target.classList.contains("alloc-checkbox")) updateAllocCount();
     if (target.id === "import-file") handleImportFileSelect(target);
+    if (target.matches(".reward-file-input")) {
+      handleRewardUpload(target.getAttribute("data-id"));
+      return;
+    }
   });
 
   /* ── Warranty Code Combobox (manual input + fuzzy search) ── */
@@ -4583,6 +4614,13 @@
     const origTarget = event.target;
     if (origTarget && origTarget.classList && origTarget.classList.contains("review-thumb")) {
       openLightbox(origTarget.getAttribute("data-full") || origTarget.src);
+      return;
+    }
+    // Trigger file input when "Upload Image" button is clicked
+    if (origTarget && origTarget.classList && origTarget.classList.contains("reward-upload-btn")) {
+      const rewardId = origTarget.getAttribute("data-reward-id");
+      const fileInput = document.querySelector(`.reward-file-input[data-id="${rewardId}"]`);
+      if (fileInput) fileInput.click();
       return;
     }
     const target = event.target.closest("[data-action]");
@@ -4947,6 +4985,41 @@
     reward.stockStatus = reward.status;
     saveData();
     showToast("Reward status updated.");
+  }
+
+  async function handleRewardUpload(rewardId) {
+    const input = document.querySelector(`.reward-file-input[data-id="${rewardId}"]`);
+    if (!input || !input.files || !input.files.length) return;
+    const file = input.files[0];
+    // Validate 16:9 aspect ratio (allow ~5% tolerance)
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = objectUrl;
+    });
+    URL.revokeObjectURL(objectUrl);
+    const ratio = img.naturalWidth / img.naturalHeight;
+    if (Math.abs(ratio - 16 / 9) > 0.15) {
+      showToast(translateValue("Please upload an image with 16:9 aspect ratio."));
+      return;
+    }
+    // Upload to R2
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/photo", { method: "POST", body: fd });
+    const result = await res.json();
+    if (!result.ok) {
+      showToast(translateValue("Upload failed. Please try again."));
+      return;
+    }
+    const reward = data.rewards.find((item) => item.id === rewardId);
+    if (!reward) return;
+    reward.image = result.url;
+    await saveData();
+    showToast(translateValue("Image uploaded."));
+    renderPage("admin/rewards");
   }
 
   function handleRedemption(redemptionId, status) {

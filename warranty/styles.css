@@ -839,6 +839,76 @@ html[lang="zh"] .panel > h2 {
   min-height: 176px;
 }
 
+/* ── Reward image upload / display ── */
+.reward-image-upload {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--gray-4);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.reward-image-upload .reward-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reward-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-2);
+  font-size: 14px;
+  gap: 4px;
+}
+
+.reward-image-placeholder .small {
+  font-size: 12px;
+  color: var(--gray-1);
+}
+
+.reward-image-actions {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+}
+
+.reward-file-input {
+  display: none;
+}
+
+.reward-upload-btn {
+  background: rgba(0,0,0,0.6) !important;
+  color: #fff !important;
+  border-color: rgba(255,255,255,0.3) !important;
+  font-size: 12px !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* Dealer catalog reward image */
+.reward-image-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.reward-image-wrap .reward-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* ============================================================
    Redemption
    ============================================================ */
