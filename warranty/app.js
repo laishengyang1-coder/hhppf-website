@@ -2001,6 +2001,24 @@
   function renderHome() {
     const baseline = data?.settings?.historicalWarrantyBaseline ?? 1717;
 
+    // Compute stats directly from loaded data (no API dependency for initial render)
+    const activeRecords = (data?.warrantyRecords || []).filter((r) => r.status === "Active");
+    const activeWarrantyCount = activeRecords.length;
+    const displayTotal = baseline + activeWarrantyCount;
+
+    const vinSet = new Set(
+      activeRecords.map((r) => (r.vin || "").toUpperCase().trim()).filter(Boolean),
+    );
+    const vehicleCount = vinSet.size;
+
+    const activeDealers = (data?.dealers || []).filter((d) => d.status === "Active");
+    const dealerCount = activeDealers.length;
+
+    const countrySet = new Set(
+      activeDealers.map((d) => (d.country || "").trim()).filter(Boolean),
+    );
+    const countryCount = countrySet.size;
+
     const hero = `
       <section class="hero-section">
         <div class="hero-overlay"></div>
@@ -2009,7 +2027,7 @@
           <h1 class="hero-title">${escapeHtml(t("heroMainHeading"))}</h1>
           <div class="hero-main-stat">
             <div class="hero-number-row">
-              <span class="hero-number" id="hero-warranty-total">${baseline.toLocaleString()}</span>
+              <span class="hero-number" id="hero-warranty-total">${displayTotal.toLocaleString()}</span>
               <span class="hero-number-unit">${escapeHtml(t("heroWarrantyUnit"))}</span>
             </div>
             <p class="hero-number-label">${escapeHtml(t("heroActiveWarranties"))}</p>
@@ -2017,17 +2035,17 @@
           <p class="hero-data-note">${escapeHtml(t("heroDataNote"))}</p>
           <div class="hero-sub-stats">
             <div class="hero-sub-stat">
-              <span class="hero-sub-number" id="hero-unique-vehicles">—</span>
+              <span class="hero-sub-number" id="hero-unique-vehicles">${vehicleCount.toLocaleString()}</span>
               <span class="hero-sub-unit">${escapeHtml(t("heroVehiclesUnit"))}</span>
               <p class="hero-sub-label">${escapeHtml(t("heroUniqueVehicles"))}</p>
             </div>
             <div class="hero-sub-stat">
-              <span class="hero-sub-number" id="hero-active-dealers">—</span>
+              <span class="hero-sub-number" id="hero-active-dealers">${dealerCount.toLocaleString()}</span>
               <span class="hero-sub-unit">${escapeHtml(t("heroDealersUnit"))}</span>
               <p class="hero-sub-label">${escapeHtml(t("heroActiveDealers"))}</p>
             </div>
             <div class="hero-sub-stat">
-              <span class="hero-sub-number" id="hero-covered-countries">—</span>
+              <span class="hero-sub-number" id="hero-covered-countries">${countryCount.toLocaleString()}</span>
               <span class="hero-sub-unit">${escapeHtml(t("heroCountriesUnit"))}</span>
               <p class="hero-sub-label">${escapeHtml(t("heroCoveredCountries"))}</p>
             </div>
@@ -2075,7 +2093,7 @@
       </section>
     `;
 
-    // Fetch real stats after DOM is painted
+    // Background refresh from API for eventual consistency
     requestAnimationFrame(() => {
       requestAnimationFrame(fetchPublicStats);
     });
