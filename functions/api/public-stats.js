@@ -6,17 +6,20 @@ export async function onRequestGet(context) {
   const { env } = context;
   const row = await env.DB.prepare("SELECT value FROM app_data WHERE key = ?").bind("main").first();
 
-  // Default fallback (no data yet)
-  const baseline = 1717;
+  const defaultWarrantyBaseline = 7654;
   if (!row || !row.value) {
     return json(
       {
         ok: true,
-        historicalWarrantyBaseline: baseline,
+        historicalWarrantyBaseline: defaultWarrantyBaseline,
         activeWarrantyCount: 0,
-        displayWarrantyTotal: baseline,
+        displayWarrantyTotal: defaultWarrantyBaseline,
+        historicalVehicleBaseline: 0,
         uniqueVehicleCount: 0,
+        displayVehicleTotal: 0,
+        historicalDealerBaseline: 0,
         activeDealerCount: 0,
+        displayDealerTotal: 0,
         coveredCountryCount: 0,
         updatedAt: new Date().toISOString(),
       },
@@ -31,31 +34,37 @@ export async function onRequestGet(context) {
     const dealers = data.dealers || [];
     const settings = data.settings || {};
 
-    // Historical baseline from settings (default 1717)
     const historicalWarrantyBaseline =
       typeof settings.historicalWarrantyBaseline === "number"
         ? settings.historicalWarrantyBaseline
-        : 1717;
+        : 7654;
+    const historicalVehicleBaseline =
+      typeof settings.historicalVehicleBaseline === "number"
+        ? settings.historicalVehicleBaseline
+        : 0;
+    const historicalDealerBaseline =
+      typeof settings.historicalDealerBaseline === "number"
+        ? settings.historicalDealerBaseline
+        : 0;
 
-    // Only count Active warranty records (approved and in effect)
+    // Active warranties
     const activeRecords = records.filter((r) => r.status === "Active");
     const activeWarrantyCount = activeRecords.length;
-
-    // Display total = baseline + active system records
     const displayWarrantyTotal = historicalWarrantyBaseline + activeWarrantyCount;
 
-    // Unique vehicles = distinct VINs among active records
+    // Unique vehicles
     const vinSet = new Set(
       activeRecords.map((r) => (r.vin || "").toUpperCase()).filter(Boolean),
     );
     const uniqueVehicleCount = vinSet.size;
+    const displayVehicleTotal = historicalVehicleBaseline + uniqueVehicleCount;
 
-    // Active dealers = dealers with status "Active"
+    // Active dealers
     const activeDealerList = dealers.filter((d) => d.status === "Active");
     const activeDealerCount = activeDealerList.length;
+    const displayDealerTotal = historicalDealerBaseline + activeDealerCount;
 
-    // Covered countries = distinct countries among active dealers
-    // Normalize: trim, lowercase for comparison to avoid duplicates
+    // Covered countries
     const seen = new Set();
     for (const d of activeDealerList) {
       const c = (d.country || "").trim();
@@ -69,8 +78,12 @@ export async function onRequestGet(context) {
         historicalWarrantyBaseline,
         activeWarrantyCount,
         displayWarrantyTotal,
+        historicalVehicleBaseline,
         uniqueVehicleCount,
+        displayVehicleTotal,
+        historicalDealerBaseline,
         activeDealerCount,
+        displayDealerTotal,
         coveredCountryCount,
         updatedAt: new Date().toISOString(),
       },

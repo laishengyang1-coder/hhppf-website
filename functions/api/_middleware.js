@@ -1,6 +1,6 @@
 import { getSessionUser, json } from "./_lib.js";
 
-const PUBLIC_PATHS = ["/api/auth/login", "/api/setup", "/api/health", "/api/ping", "/api/public-stats"];
+const PUBLIC_PATHS = ["/api/auth/login", "/api/setup", "/api/health", "/api/ping", "/api/public-stats", "/api/migrate-baselines"];
 
 export async function onRequest(context) {
   const { request, env } = context;

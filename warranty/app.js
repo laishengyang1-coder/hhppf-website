@@ -338,6 +338,10 @@
       "Save Settings": "保存设置",
       "Historical Warranty Baseline": "历史质保基数",
       "System launch前已确认但未逐条导入数据库的历史质保数量。首页累计质保总数 = 该基数 + 系统内 Active 质保数量。": "系统上线前已确认但未逐条导入数据库的历史质保数量。首页累计质保总数 = 该基数 + 系统内 Active 质保数量。",
+      "Historical Vehicle Baseline": "历史车辆基数",
+      "Historical vehicle baseline description.": "系统上线前已确认但未逐条导入的历史服务车辆数量。首页累计服务车辆 = 该基数 + 系统内 Active 质保去重 VIN 数量。",
+      "Historical Dealer Baseline": "历史经销商基数",
+      "Historical dealer baseline description.": "系统上线前已确认但未逐条导入的历史经销商数量。首页授权合作伙伴 = 该基数 + 系统内启用经销商数量。",
       "Manual Points Adjustment": "人工积分调整",
       "Points Change": "积分变动",
       "Reason": "原因",
@@ -765,6 +769,10 @@
       "Save Settings": "Сохранить",
       "Historical Warranty Baseline": "Базовое количество исторических гарантий",
       "System launch前已确认但未逐条导入数据库的历史质保数量。首页累计质保总数 = 该基数 + 系统内 Active 质保数量。": "Количество подтверждённых исторических гарантий до запуска системы, ещё не импортированных в базу данных. Общее количество гарантий на главной = это базовое число + активные гарантии в системе.",
+      "Historical Vehicle Baseline": "Базовое количество исторических автомобилей",
+      "Historical vehicle baseline description.": "Количество подтверждённых исторических автомобилей до запуска системы. Общее количество на главной = это число + уникальные VIN активных гарантий.",
+      "Historical Dealer Baseline": "Базовое количество исторических дилеров",
+      "Historical dealer baseline description.": "Количество подтверждённых исторических дилеров до запуска системы. Общее количество на главной = это число + активные дилеры в системе.",
       "Manual Points Adjustment": "Ручная корректировка баллов",
       "Points Change": "Изменение баллов",
       "Reason": "Причина",
@@ -1064,7 +1072,9 @@
     settings: {
       defaultWarrantyPoints: 100,
       pointsValidityMonths: 12,
-      historicalWarrantyBaseline: 1717,
+      historicalWarrantyBaseline: 7654,
+      historicalVehicleBaseline: 4567,
+      historicalDealerBaseline: 234,
     },
     products: [
       /* ── PPF / Paint Protection Film 车衣系列 ── */
@@ -1999,20 +2009,23 @@
   }
 
   function renderHome() {
-    const baseline = data?.settings?.historicalWarrantyBaseline ?? 1717;
+    const s = data?.settings || {};
+    const warrantyBaseline = s.historicalWarrantyBaseline ?? 7654;
+    const vehicleBaseline = s.historicalVehicleBaseline ?? 0;
+    const dealerBaseline = s.historicalDealerBaseline ?? 0;
 
     // Compute stats directly from loaded data (no API dependency for initial render)
     const activeRecords = (data?.warrantyRecords || []).filter((r) => r.status === "Active");
     const activeWarrantyCount = activeRecords.length;
-    const displayTotal = baseline + activeWarrantyCount;
+    const displayTotal = warrantyBaseline + activeWarrantyCount;
 
     const vinSet = new Set(
       activeRecords.map((r) => (r.vin || "").toUpperCase().trim()).filter(Boolean),
     );
-    const vehicleCount = vinSet.size;
+    const displayVehicle = vehicleBaseline + vinSet.size;
 
     const activeDealers = (data?.dealers || []).filter((d) => d.status === "Active");
-    const dealerCount = activeDealers.length;
+    const displayDealer = dealerBaseline + activeDealers.length;
 
     const countrySet = new Set(
       activeDealers.map((d) => (d.country || "").trim()).filter(Boolean),
@@ -2035,12 +2048,12 @@
           <p class="hero-data-note">${escapeHtml(t("heroDataNote"))}</p>
           <div class="hero-sub-stats">
             <div class="hero-sub-stat">
-              <span class="hero-sub-number" id="hero-unique-vehicles">${vehicleCount.toLocaleString()}</span>
+              <span class="hero-sub-number" id="hero-unique-vehicles">${displayVehicle.toLocaleString()}</span>
               <span class="hero-sub-unit">${escapeHtml(t("heroVehiclesUnit"))}</span>
               <p class="hero-sub-label">${escapeHtml(t("heroUniqueVehicles"))}</p>
             </div>
             <div class="hero-sub-stat">
-              <span class="hero-sub-number" id="hero-active-dealers">${dealerCount.toLocaleString()}</span>
+              <span class="hero-sub-number" id="hero-active-dealers">${displayDealer.toLocaleString()}</span>
               <span class="hero-sub-unit">${escapeHtml(t("heroDealersUnit"))}</span>
               <p class="hero-sub-label">${escapeHtml(t("heroActiveDealers"))}</p>
             </div>
@@ -2119,13 +2132,13 @@
       console.log("Public stats loaded:", json);
 
       const totalEl = document.getElementById("hero-warranty-total");
-      if (totalEl) totalEl.textContent = (json.displayWarrantyTotal || json.historicalWarrantyBaseline || 1717).toLocaleString();
+      if (totalEl) totalEl.textContent = (json.displayWarrantyTotal || json.historicalWarrantyBaseline || 7654).toLocaleString();
 
       const vehEl = document.getElementById("hero-unique-vehicles");
-      if (vehEl) vehEl.textContent = (json.uniqueVehicleCount ?? 0).toLocaleString();
+      if (vehEl) vehEl.textContent = (json.displayVehicleTotal ?? (json.uniqueVehicleCount ?? 0) + (json.historicalVehicleBaseline ?? 0)).toLocaleString();
 
       const dealEl = document.getElementById("hero-active-dealers");
-      if (dealEl) dealEl.textContent = (json.activeDealerCount ?? 0).toLocaleString();
+      if (dealEl) dealEl.textContent = (json.displayDealerTotal ?? (json.activeDealerCount ?? 0) + (json.historicalDealerBaseline ?? 0)).toLocaleString();
 
       const countryEl = document.getElementById("hero-covered-countries");
       if (countryEl) countryEl.textContent = (json.coveredCountryCount ?? 0).toLocaleString();
@@ -4286,8 +4299,18 @@
               </label>
               <label class="full">
                 ${translateValue("Historical Warranty Baseline")}
-                <input name="historicalWarrantyBaseline" type="number" min="0" value="${data.settings.historicalWarrantyBaseline ?? 1717}" />
+                <input name="historicalWarrantyBaseline" type="number" min="0" value="${data.settings.historicalWarrantyBaseline ?? 7654}" />
                 <small style="color:var(--soft);font-size:12px;">${translateValue("System launch前已确认但未逐条导入数据库的历史质保数量。首页累计质保总数 = 该基数 + 系统内 Active 质保数量。")}</small>
+              </label>
+              <label class="full">
+                ${translateValue("Historical Vehicle Baseline")}
+                <input name="historicalVehicleBaseline" type="number" min="0" value="${data.settings.historicalVehicleBaseline ?? 0}" />
+                <small style="color:var(--soft);font-size:12px;">${translateValue("Historical vehicle baseline description.")}</small>
+              </label>
+              <label class="full">
+                ${translateValue("Historical Dealer Baseline")}
+                <input name="historicalDealerBaseline" type="number" min="0" value="${data.settings.historicalDealerBaseline ?? 0}" />
+                <small style="color:var(--soft);font-size:12px;">${translateValue("Historical dealer baseline description.")}</small>
               </label>
               <div class="form-actions full"><button class="button" type="submit">Save Settings</button></div>
             </form>
@@ -5017,6 +5040,8 @@
     data.settings.defaultWarrantyPoints = Number(formData.get("defaultWarrantyPoints"));
     data.settings.pointsValidityMonths = Number(formData.get("pointsValidityMonths"));
     data.settings.historicalWarrantyBaseline = Math.max(0, Math.floor(Number(formData.get("historicalWarrantyBaseline")) || 0));
+    data.settings.historicalVehicleBaseline = Math.max(0, Math.floor(Number(formData.get("historicalVehicleBaseline")) || 0));
+    data.settings.historicalDealerBaseline = Math.max(0, Math.floor(Number(formData.get("historicalDealerBaseline")) || 0));
     saveData();
     showToast("Points settings saved.");
   }
