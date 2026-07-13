@@ -37,6 +37,18 @@
       ownerQuery: "Owner VIN Verification",
       dealerLogin: "Dealer Login",
       adminLogin: "Admin Login",
+      heroMainHeading: "Every Warranty Is a Long-Term Commitment",
+      heroWarrantyUnit: "",
+      heroActiveWarranties: "H&H Global Active Warranties",
+      heroVehiclesUnit: "",
+      heroUniqueVehicles: "Vehicles Served",
+      heroDealersUnit: "",
+      heroActiveDealers: "Authorized Partners",
+      heroCountriesUnit: "",
+      heroCoveredCountries: "Countries & Regions",
+      heroVerifyBtn: "Verify My Warranty",
+      heroDealerBtn: "Dealer Login",
+      heroDataSource: "Data from H&H official electronic warranty system. Only approved and active warranties are counted.",
     },
     zh: {
       home: "电子质保",
@@ -52,6 +64,18 @@
       ownerQuery: "车主 VIN 查询",
       dealerLogin: "经销商登录",
       adminLogin: "总部登录",
+      heroMainHeading: "每一份质保，都是一份长期承诺",
+      heroWarrantyUnit: "份",
+      heroActiveWarranties: "H&H 全球累计生效电子质保",
+      heroVehiclesUnit: "辆",
+      heroUniqueVehicles: "累计服务车辆",
+      heroDealersUnit: "家",
+      heroActiveDealers: "授权合作伙伴",
+      heroCountriesUnit: "个",
+      heroCoveredCountries: "覆盖国家和地区",
+      heroVerifyBtn: "查询我的质保",
+      heroDealerBtn: "经销商登录",
+      heroDataSource: "数据来自 H&H 官方电子质保系统，仅统计已审核并正式生效的质保记录",
     },
     ru: {
       home: "Гарантия",
@@ -67,6 +91,18 @@
       ownerQuery: "Проверка по VIN",
       dealerLogin: "Вход дилера",
       adminLogin: "Вход администратора",
+      heroMainHeading: "Каждая гарантия — это долгосрочное обязательство",
+      heroWarrantyUnit: "",
+      heroActiveWarranties: "Активных гарантий H&H в мире",
+      heroVehiclesUnit: "",
+      heroUniqueVehicles: "Обслужено автомобилей",
+      heroDealersUnit: "",
+      heroActiveDealers: "Авторизованных партнёров",
+      heroCountriesUnit: "",
+      heroCoveredCountries: "Стран и регионов",
+      heroVerifyBtn: "Проверить гарантию",
+      heroDealerBtn: "Вход для дилеров",
+      heroDataSource: "Данные из официальной электронной гарантийной системы H&H. Учитываются только одобренные и активные гарантии.",
     },
   };
 
@@ -1924,10 +1960,90 @@
   }
 
   function renderHome() {
-    return renderVerify();
+    const hero = `
+      <section class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <p class="hero-kicker">H&H GLOBAL WARRANTY NETWORK</p>
+          <h1 class="hero-title">${escapeHtml(t("heroMainHeading"))}</h1>
+          <div class="hero-main-stat">
+            <span class="hero-number" id="hero-active-warranties" data-target="0">0</span>
+            <span class="hero-number-unit">${escapeHtml(t("heroWarrantyUnit"))}</span>
+            <p class="hero-number-label">${escapeHtml(t("heroActiveWarranties"))}</p>
+          </div>
+          <div class="hero-sub-stats">
+            <div class="hero-sub-stat">
+              <span class="hero-sub-number" id="hero-unique-vehicles" data-target="0">0</span>
+              <span class="hero-sub-unit">${escapeHtml(t("heroVehiclesUnit"))}</span>
+              <p class="hero-sub-label">${escapeHtml(t("heroUniqueVehicles"))}</p>
+            </div>
+            <div class="hero-sub-stat">
+              <span class="hero-sub-number" id="hero-active-dealers" data-target="0">0</span>
+              <span class="hero-sub-unit">${escapeHtml(t("heroDealersUnit"))}</span>
+              <p class="hero-sub-label">${escapeHtml(t("heroActiveDealers"))}</p>
+            </div>
+            <div class="hero-sub-stat">
+              <span class="hero-sub-number" id="hero-covered-countries" data-target="0">0</span>
+              <span class="hero-sub-unit">${escapeHtml(t("heroCountriesUnit"))}</span>
+              <p class="hero-sub-label">${escapeHtml(t("heroCoveredCountries"))}</p>
+            </div>
+          </div>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#/verify">${escapeHtml(t("heroVerifyBtn"))}</a>
+            <a class="button button-ghost" href="#/dealer/login">${escapeHtml(t("heroDealerBtn"))}</a>
+          </div>
+          <p class="hero-note">${escapeHtml(t("heroDataSource"))}</p>
+        </div>
+      </section>
+    `;
+
+    // Trigger count-up after DOM insert
+    setTimeout(fetchPublicStats, 100);
+
+    return renderPage(hero + renderVerifyContent());
+  }
+
+  async function fetchPublicStats() {
+    try {
+      const res = await fetch("/api/public/stats");
+      const json = await res.json();
+      if (json.ok) {
+        animateCountUp("hero-active-warranties", json.activeWarranties || 0);
+        animateCountUp("hero-unique-vehicles", json.uniqueVehicles || 0);
+        animateCountUp("hero-active-dealers", json.activeDealers || 0);
+        animateCountUp("hero-covered-countries", json.coveredCountries || 0);
+      }
+    } catch (e) {
+      // silently fail — numbers stay at 0
+    }
+  }
+
+  function animateCountUp(elementId, target) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const duration = 2000;
+    const startTime = performance.now();
+    function update(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // ease-out: 1 - (1 - p)^3
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(eased * target);
+      el.textContent = current.toLocaleString();
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        el.textContent = target.toLocaleString();
+      }
+    }
+    requestAnimationFrame(update);
   }
 
   function renderVerify() {
+    return renderPage(renderVerifyContent());
+  }
+
+  function renderVerifyContent() {
     const query = sessionStorage.getItem("hhVerifyVin") || "";
     const normalized = query.trim().toUpperCase();
     const results = normalized
@@ -1938,8 +2054,8 @@
     const selected =
       results.find((record) => record.id === ui.selectedRecordId) || results[0] || null;
 
-    return renderPage(`
-      <section>
+    return `
+      <section class="verify-section">
         <p class="section-kicker">Owner Portal</p>
         <h1>${escapeHtml(t("ownerQuery"))}</h1>
         <p class="lead">Enter a VIN to view active H&amp;H warranty records and certificate details. Web pages mask the VIN; printable certificates show the full VIN.</p>
@@ -1959,7 +2075,7 @@
       </section>
 
       ${normalized ? renderVerifyResults(normalized, results, selected) : ""}
-    `);
+    `;
   }
 
   function renderVerifyResults(vin, results, selected) {
