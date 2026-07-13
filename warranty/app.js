@@ -2075,32 +2075,55 @@
       </section>
     `;
 
-    // Fetch real stats after DOM insert
-    setTimeout(fetchPublicStats, 50);
+    // Fetch real stats after DOM is painted
+    requestAnimationFrame(() => {
+      requestAnimationFrame(fetchPublicStats);
+    });
 
     return hero + renderPage(steps);
   }
 
   async function fetchPublicStats() {
+    const ids = ["hero-warranty-total", "hero-unique-vehicles", "hero-active-dealers", "hero-covered-countries"];
+    const els = ids.map(id => document.getElementById(id));
+    if (!els[0]) {
+      console.warn("Hero elements not in DOM yet, retrying...");
+      requestAnimationFrame(fetchPublicStats);
+      return;
+    }
+
     try {
       const res = await fetch("/api/public/stats");
+      if (!res.ok) throw new Error("HTTP " + res.status);
       const json = await res.json();
-      if (json.ok) {
-        const totalEl = document.getElementById("hero-warranty-total");
-        if (totalEl) totalEl.textContent = (json.displayWarrantyTotal || json.historicalWarrantyBaseline || 1717).toLocaleString();
+      if (!json.ok) throw new Error("API not ok");
 
-        const vehEl = document.getElementById("hero-unique-vehicles");
-        if (vehEl) vehEl.textContent = (json.uniqueVehicleCount ?? 0).toLocaleString();
+      console.log("Public stats loaded:", json);
 
-        const dealEl = document.getElementById("hero-active-dealers");
-        if (dealEl) dealEl.textContent = (json.activeDealerCount ?? 0).toLocaleString();
+      const totalEl = document.getElementById("hero-warranty-total");
+      if (totalEl) totalEl.textContent = (json.displayWarrantyTotal || json.historicalWarrantyBaseline || 1717).toLocaleString();
 
-        const countryEl = document.getElementById("hero-covered-countries");
-        if (countryEl) countryEl.textContent = (json.coveredCountryCount ?? 0).toLocaleString();
-      }
+      const vehEl = document.getElementById("hero-unique-vehicles");
+      if (vehEl) vehEl.textContent = (json.uniqueVehicleCount ?? 0).toLocaleString();
+
+      const dealEl = document.getElementById("hero-active-dealers");
+      if (dealEl) dealEl.textContent = (json.activeDealerCount ?? 0).toLocaleString();
+
+      const countryEl = document.getElementById("hero-covered-countries");
+      if (countryEl) countryEl.textContent = (json.coveredCountryCount ?? 0).toLocaleString();
     } catch (e) {
       console.error("Failed to fetch public stats:", e);
     }
+  }
+
+  // Refresh stats on page visibility change (user returns to tab)
+  let _statsInterval;
+  function setupStatsRefresh() {
+    if (_statsInterval) clearInterval(_statsInterval);
+    _statsInterval = setInterval(fetchPublicStats, 60000);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") fetchPublicStats();
+    });
   }
 
   function renderVerify() {
@@ -5466,6 +5489,7 @@
     data = await loadData();
     ui.loading = false;
     render();
+    setupStatsRefresh();
   }
   boot();
 })();
