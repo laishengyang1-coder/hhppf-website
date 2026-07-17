@@ -3610,7 +3610,6 @@
   }
 
   async function handleAdminDealerSave() {
-    console.log("[dealer-save] handler triggered");
     const idField = document.getElementById("admin-dealer-edit-idx");
     const editIdx = idField.value !== "" ? parseInt(idField.value, 10) : -1;
     const code = document.getElementById("admin-dealer-code").value.trim();
