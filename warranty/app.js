@@ -3139,6 +3139,259 @@
     });
   }
 
+  /* ---------- World Map ---------- */
+
+  let worldMapGeoJSON = null;
+  let worldMapChart = null;
+
+  // Map dealer country names to GeoJSON feature names
+  const COUNTRY_MAP = {
+    "Russia": "Russia",
+    "Russian Federation": "Russia",
+    "USA": "United States",
+    "United States of America": "United States",
+    "US": "United States",
+    "UK": "United Kingdom",
+    "United Kingdom": "United Kingdom",
+    "Great Britain": "United Kingdom",
+    "England": "United Kingdom",
+    "UAE": "United Arab Emirates",
+    "South Korea": "Korea",
+    "Korea, Republic of": "Korea",
+    "Republic of Korea": "Korea",
+    "North Korea": "Dem. Rep. Korea",
+    "DPRK": "Dem. Rep. Korea",
+    "Germany": "Germany",
+    "France": "France",
+    "Japan": "Japan",
+    "China": "China",
+    "PRC": "China",
+    "Brazil": "Brazil",
+    "India": "India",
+    "Canada": "Canada",
+    "Australia": "Australia",
+    "Italy": "Italy",
+    "Spain": "Spain",
+    "Netherlands": "Netherlands",
+    "Holland": "Netherlands",
+    "Switzerland": "Switzerland",
+    "Sweden": "Sweden",
+    "Norway": "Norway",
+    "Denmark": "Denmark",
+    "Finland": "Finland",
+    "Poland": "Poland",
+    "Czech Republic": "Czech Rep.",
+    "Czechia": "Czech Rep.",
+    "Slovakia": "Slovakia",
+    "Hungary": "Hungary",
+    "Austria": "Austria",
+    "Belgium": "Belgium",
+    "Portugal": "Portugal",
+    "Greece": "Greece",
+    "Turkey": "Turkey",
+    "Türkiye": "Turkey",
+    "Saudi Arabia": "Saudi Arabia",
+    "Singapore": "Singapore",
+    "Malaysia": "Malaysia",
+    "Thailand": "Thailand",
+    "Vietnam": "Vietnam",
+    "Indonesia": "Indonesia",
+    "Philippines": "Philippines",
+    "Mexico": "Mexico",
+    "Argentina": "Argentina",
+    "Chile": "Chile",
+    "Colombia": "Colombia",
+    "Peru": "Peru",
+    "Egypt": "Egypt",
+    "South Africa": "South Africa",
+    "Nigeria": "Nigeria",
+    "Kenya": "Kenya",
+    "Morocco": "Morocco",
+    "New Zealand": "New Zealand",
+    "Ukraine": "Ukraine",
+    "Belarus": "Belarus",
+    "Kazakhstan": "Kazakhstan",
+    "Uzbekistan": "Uzbekistan",
+    "Mongolia": "Mongolia",
+    "Iran": "Iran",
+    "Iraq": "Iraq",
+    "Pakistan": "Pakistan",
+    "Bangladesh": "Bangladesh",
+    "Myanmar": "Myanmar",
+    "Cambodia": "Cambodia",
+    "Laos": "Lao PDR",
+    "Romania": "Romania",
+    "Bulgaria": "Bulgaria",
+    "Croatia": "Croatia",
+    "Serbia": "Serbia",
+    "Slovenia": "Slovenia",
+    "Estonia": "Estonia",
+    "Latvia": "Latvia",
+    "Lithuania": "Lithuania",
+    "Ireland": "Ireland",
+    "Luxembourg": "Luxembourg",
+    "Iceland": "Iceland",
+    "Cyprus": "Cyprus",
+    "Malta": "Malta",
+    "Qatar": "Qatar",
+    "Kuwait": "Kuwait",
+    "Oman": "Oman",
+    "Bahrain": "Bahrain",
+    "Jordan": "Jordan",
+    "Lebanon": "Lebanon",
+    "Israel": "Israel",
+    "Palestine": "Palestine",
+    "Syria": "Syria",
+    "Yemen": "Yemen",
+    "Sri Lanka": "Sri Lanka",
+    "Nepal": "Nepal",
+    "Bhutan": "Bhutan",
+    "Maldives": "Maldives",
+    "Afghanistan": "Afghanistan",
+    "Tajikistan": "Tajikistan",
+    "Kyrgyzstan": "Kyrgyzstan",
+    "Turkmenistan": "Turkmenistan",
+    "Azerbaijan": "Azerbaijan",
+    "Georgia": "Georgia",
+    "Armenia": "Armenia",
+    "Moldova": "Moldova",
+    "Albania": "Albania",
+    "Macedonia": "Macedonia",
+    "Montenegro": "Montenegro",
+    "Bosnia and Herzegovina": "Bosnia and Herz.",
+    "Bosnia": "Bosnia and Herz.",
+  };
+
+  function mapCountryName(dealerCountry) {
+    if (!dealerCountry) return null;
+    const t = dealerCountry.trim();
+    if (COUNTRY_MAP[t]) return COUNTRY_MAP[t];
+    return t;
+  }
+
+  async function loadWorldGeoJSON() {
+    if (worldMapGeoJSON) return worldMapGeoJSON;
+    const res = await fetch(
+      "https://cdn.jsdelivr.net/gh/tower1229/echarts-world-map-jeojson@master/worldEN.json",
+    );
+    worldMapGeoJSON = await res.json();
+    return worldMapGeoJSON;
+  }
+
+  function disposeWorldMap() {
+    if (worldMapChart && !worldMapChart.isDisposed()) {
+      worldMapChart.dispose();
+    }
+    worldMapChart = null;
+  }
+
+  async function initWorldMap(route) {
+    if (route !== "admin/dashboard") {
+      disposeWorldMap();
+      return;
+    }
+
+    if (typeof echarts === "undefined") {
+      setTimeout(() => initWorldMap(route), 400);
+      return;
+    }
+
+    const container = document.getElementById("dashboard-world-map");
+    if (!container) return;
+
+    // Already initialized with the right size
+    if (worldMapChart && !worldMapChart.isDisposed()) {
+      worldMapChart.resize();
+      return;
+    }
+
+    try {
+      const geoJSON = await loadWorldGeoJSON();
+      echarts.registerMap("world", geoJSON);
+
+      const dealersByCountry = {};
+      (data.dealers || []).forEach((d) => {
+        if (d.status !== "Active") return;
+        const geoName = mapCountryName(d.country);
+        if (!geoName) return;
+        if (!dealersByCountry[geoName]) dealersByCountry[geoName] = [];
+        dealersByCountry[geoName].push(d);
+      });
+
+      const mapData = Object.entries(dealersByCountry).map(
+        ([name, dealers]) => ({ name, value: dealers.length, dealers }),
+      );
+      const maxVal = Math.max(1, ...mapData.map((d) => d.value));
+
+      disposeWorldMap();
+      worldMapChart = echarts.init(container);
+
+      worldMapChart.setOption({
+        backgroundColor: "transparent",
+        tooltip: {
+          trigger: "item",
+          backgroundColor: "rgba(26,26,24,0.95)",
+          borderColor: "#E9481A",
+          borderWidth: 1,
+          padding: [10, 14],
+          textStyle: { color: "#F9F2EC", fontSize: 13 },
+          formatter(params) {
+            if (!params.data || !params.data.dealers) {
+              return `<strong>${params.name}</strong><br/><span style="color:#C8BCB5;">No active dealers</span>`;
+            }
+            const list = params.data.dealers;
+            let h = `<strong style="font-size:14px;">${params.name}</strong>`;
+            h += `<div style="color:#E9481A;font-size:15px;font-weight:700;margin:4px 0 6px;">${list.length} dealer${list.length > 1 ? "s" : ""}</div>`;
+            list.slice(0, 8).forEach((d) => {
+              h += `<div style="font-size:12px;color:#C8BCB5;line-height:1.5;">${escapeHtml(d.name)} · ${escapeHtml(d.city || "—")}</div>`;
+            });
+            if (list.length > 8)
+              h += `<div style="font-size:11px;color:#888;margin-top:2px;">…and ${list.length - 8} more</div>`;
+            return h;
+          },
+        },
+        series: [
+          {
+            type: "map",
+            map: "world",
+            roam: true,
+            zoom: 1.25,
+            center: [15, 20],
+            aspectScale: 0.75,
+            layoutSize: "106%",
+            label: { show: false },
+            emphasis: {
+              label: {
+                show: true,
+                color: "#121211",
+                fontSize: 10,
+                fontWeight: 600,
+              },
+              itemStyle: { areaColor: "#FF8A5C" },
+            },
+            itemStyle: {
+              areaColor: "#E6DDD5",
+              borderColor: "#FFFFFF",
+              borderWidth: 0.5,
+            },
+            data: mapData,
+            nameMap: COUNTRY_MAP,
+          },
+        ],
+        visualMap: {
+          show: false,
+          min: 0,
+          max: maxVal,
+          inRange: { color: ["#FDE8E0", "#E9481A"] },
+        },
+      });
+    } catch (e) {
+      console.error("World map failed:", e);
+      container.innerHTML =
+        '<div style="text-align:center;padding:60px 20px;color:var(--soft);">Map unavailable</div>';
+    }
+  }
+
   function renderAdminDashboard() {
     const pending = data.warrantyRecords.filter((record) => record.status === "Pending Review").length;
     const issuedPoints = data.pointsLedger.reduce((sum, entry) => sum + Number(entry.change), 0);
@@ -3150,6 +3403,13 @@
           <article class="metric-card"><strong>${pending}</strong><span>Pending reviews</span></article>
           <article class="metric-card"><strong>${issuedPoints}</strong><span>Points issued</span></article>
           <article class="metric-card"><strong>${data.redemptions.length}</strong><span>Redemption requests</span></article>
+        </section>
+        <section class="panel" style="padding:0;overflow:hidden;">
+          <div style="padding:16px 20px 0;">
+            <h3 style="margin:0;">Global Dealer Map</h3>
+            <p style="margin:4px 0 0;font-size:12px;color:var(--soft);">Countries with active dealers are highlighted in orange.</p>
+          </div>
+          <div id="dashboard-world-map" style="width:100%;height:420px;"></div>
         </section>
         <section class="panel"><h3>Dealer Ranking</h3>${dealerRankingTable()}</section>
         <section class="panel"><h3>Product Type Split</h3>${productSplitTable()}</section>
@@ -4661,6 +4921,11 @@
     if (route === "admin/records") initRecFilters();
     if (shouldResetScroll) {
       resetPageScroll();
+    }
+    if (route === "admin/dashboard") {
+      window.requestAnimationFrame(() => initWorldMap(route));
+    } else {
+      disposeWorldMap();
     }
     lastRenderedRoute = route;
   }

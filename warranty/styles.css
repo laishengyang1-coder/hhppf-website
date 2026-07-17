@@ -434,6 +434,36 @@ a {
   font-size: clamp(28px, 3.5vw, 40px);
 }
 
+/* ── Dashboard World Map ── */
+#dashboard-world-map {
+  position: relative;
+  min-height: 360px;
+}
+
+#dashboard-world-map .map-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 360px;
+  color: var(--soft);
+  font-size: 14px;
+}
+
+/* ECharts tooltip override for map */
+#dashboard-world-map .echarts-tooltip {
+  max-width: 260px;
+}
+
+@media (max-width: 768px) {
+  #dashboard-world-map {
+    height: 300px;
+    min-height: 260px;
+  }
+  #dashboard-world-map .map-loading {
+    height: 260px;
+  }
+}
+
 .workspace-content .metric-card span {
   color: var(--soft);
   font-size: 13px;
