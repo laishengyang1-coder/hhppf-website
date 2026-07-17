@@ -575,6 +575,9 @@
       "Warranty code created.": "质保码已创建。",
       "Warranty record updated.": "质保记录已更新。",
       "All registered warranties. Click a record to view full details, or edit to correct information entered by dealers.": "所有已登记的质保记录。点击记录查看完整详情，或编辑以更正经销商填写的信息。",
+      "Save failed. Please retry.": "保存失败，请重试。",
+      "No reviews to display.": "没有需要审核的记录。",
+      "Pending": "审核中",
     },
     ru: {
       "Warranty System": "Система гарантии",
@@ -1577,6 +1580,9 @@
   }
 
   function lang() {
+    // Admin routes are always Chinese
+    const route = getRoute();
+    if (route && route.startsWith("admin")) return "zh";
     return localStorage.getItem("hhWarrantyLang") || "en";
   }
 
@@ -1965,12 +1971,13 @@
   }
 
   function renderWorkspaceShell({ active, content, items, lead, logoutAction, title, kicker }) {
+    const isAdmin = active.startsWith("admin/");
     return `
       <main class="workspace-page">
         <aside class="workspace-sidebar">
           <a class="workspace-brand" href="${href("home")}" aria-label="H&H Warranty home">
             <strong>H&amp;H</strong>
-            <span>Warranty OS V1</span>
+            <span>${isAdmin ? "总部后台" : "Warranty OS V1"}</span>
           </a>
           <nav class="workspace-nav" aria-label="${escapeHtml(kicker)} navigation">
             ${items
@@ -1978,27 +1985,25 @@
                 ([route, label]) => `
                   <a class="${active === route ? "is-active" : ""}" href="${href(route)}">
                     <span class="workspace-nav-mark" aria-hidden="true"></span>
-                    ${translateValue(label)}
+                    ${isAdmin ? escapeHtml(label) : translateValue(label)}
                   </a>
                 `,
               )
               .join("")}
           </nav>
           <div class="workspace-sidebar-footer">
-            <a href="../index.html">${escapeHtml(t("back"))}</a>
-            <button data-action="${logoutAction}" type="button">${translateValue("Log out")}</button>
+            <a href="../index.html">${escapeHtml(isAdmin ? "返回官网" : t("back"))}</a>
+            <button data-action="${logoutAction}" type="button">${isAdmin ? "退出登录" : translateValue("Log out")}</button>
           </div>
         </aside>
         <section class="workspace-main">
           <header class="workspace-topbar">
             <div>
-              <p class="section-kicker">${translateValue(kicker)}</p>
-              <h1>${translateValue(title)}</h1>
-              <p>${translateValue(lead)}</p>
+              <p class="section-kicker">${isAdmin ? escapeHtml(kicker) : translateValue(kicker)}</p>
+              <h1>${isAdmin ? escapeHtml(title) : translateValue(title)}</h1>
+              <p>${isAdmin ? escapeHtml(lead) : translateValue(lead)}</p>
             </div>
-            <div class="workspace-actions">
-              ${renderLanguageSelect("workspace-language-select")}
-            </div>
+            ${isAdmin ? "" : `<div class="workspace-actions">${renderLanguageSelect("workspace-language-select")}</div>`}
           </header>
           <div class="workspace-content">
             ${content}
@@ -3116,25 +3121,25 @@
 
   function adminShell(active, content) {
     const items = [
-      ["admin/dashboard", "Dashboard"],
-      ["admin/products", "Products"],
-      ["admin/dealers", "Dealers"],
-      ["admin/warranty-codes", "Warranty Codes"],
-      ["admin/import", "Import"],
-      ["admin/allocation", "Allocation"],
-      ["admin/reviews", "Reviews"],
-      ["admin/records", "Warranty Records"],
-      ["admin/points", "Points"],
-      ["admin/rewards", "Rewards"],
-      ["admin/export", "Export"],
+      ["admin/dashboard", "看板"],
+      ["admin/products", "产品管理"],
+      ["admin/dealers", "经销商管理"],
+      ["admin/warranty-codes", "质保码管理"],
+      ["admin/import", "批量导入"],
+      ["admin/allocation", "质保码分配"],
+      ["admin/reviews", "质保审核"],
+      ["admin/records", "质保记录"],
+      ["admin/points", "积分管理"],
+      ["admin/rewards", "兑换管理"],
+      ["admin/export", "数据导出"],
     ];
     return renderWorkspaceShell({
       active,
       content,
       items,
-      kicker: "HQ Admin Console",
-      title: "Warranty Operations",
-      lead: "Central control for product setup, dealer setup, code import, allocation, review, points, reward inventory, and exports.",
+      kicker: "总部管理后台",
+      title: "质保运营中心",
+      lead: "产品配置、经销商管理、质保码导入与分配、质保审核、积分与兑换管理、数据导出。",
       logoutAction: "admin-logout",
     });
   }
@@ -3337,16 +3342,16 @@
           textStyle: { color: "#F9F2EC", fontSize: 13 },
           formatter(params) {
             if (!params.data || !params.data.dealers) {
-              return `<strong>${params.name}</strong><br/><span style="color:#C8BCB5;">No active dealers</span>`;
+              return `<strong>${params.name}</strong><br/><span style="color:#C8BCB5;">暂无经销商</span>`;
             }
             const list = params.data.dealers;
             let h = `<strong style="font-size:14px;">${params.name}</strong>`;
-            h += `<div style="color:#E9481A;font-size:15px;font-weight:700;margin:4px 0 6px;">${list.length} dealer${list.length > 1 ? "s" : ""}</div>`;
+            h += `<div style="color:#E9481A;font-size:15px;font-weight:700;margin:4px 0 6px;">${list.length} 家经销商</div>`;
             list.slice(0, 8).forEach((d) => {
               h += `<div style="font-size:12px;color:#C8BCB5;line-height:1.5;">${escapeHtml(d.name)} · ${escapeHtml(d.city || "—")}</div>`;
             });
             if (list.length > 8)
-              h += `<div style="font-size:11px;color:#888;margin-top:2px;">…and ${list.length - 8} more</div>`;
+              h += `<div style="font-size:11px;color:#888;margin-top:2px;">…等 ${list.length - 8} 家</div>`;
             return h;
           },
         },
@@ -3388,7 +3393,7 @@
     } catch (e) {
       console.error("World map failed:", e);
       container.innerHTML =
-        '<div style="text-align:center;padding:60px 20px;color:var(--soft);">Map unavailable</div>';
+        '<div style="text-align:center;padding:60px 20px;color:var(--soft);">地图加载失败</div>';
     }
   }
 
@@ -3399,20 +3404,20 @@
       "admin/dashboard",
       `
         <section class="metric-grid">
-          <article class="metric-card"><strong>${data.warrantyRecords.length}</strong><span>Total warranty records</span></article>
-          <article class="metric-card"><strong>${pending}</strong><span>Pending reviews</span></article>
-          <article class="metric-card"><strong>${issuedPoints}</strong><span>Points issued</span></article>
-          <article class="metric-card"><strong>${data.redemptions.length}</strong><span>Redemption requests</span></article>
+          <article class="metric-card"><strong>${data.warrantyRecords.length}</strong><span>质保记录总数</span></article>
+          <article class="metric-card"><strong>${pending}</strong><span>待审核</span></article>
+          <article class="metric-card"><strong>${issuedPoints}</strong><span>已发放积分</span></article>
+          <article class="metric-card"><strong>${data.redemptions.length}</strong><span>兑换申请</span></article>
         </section>
         <section class="panel" style="padding:0;overflow:hidden;">
           <div style="padding:16px 20px 0;">
-            <h3 style="margin:0;">Global Dealer Map</h3>
-            <p style="margin:4px 0 0;font-size:12px;color:var(--soft);">Countries with active dealers are highlighted in orange.</p>
+            <h3 style="margin:0;">全球经销商分布</h3>
+            <p style="margin:4px 0 0;font-size:12px;color:var(--soft);">橙色高亮地区表示有活跃经销商，鼠标悬停查看详情。</p>
           </div>
           <div id="dashboard-world-map" style="width:100%;height:420px;"></div>
         </section>
-        <section class="panel"><h3>Dealer Ranking</h3>${dealerRankingTable()}</section>
-        <section class="panel"><h3>Product Type Split</h3>${productSplitTable()}</section>
+        <section class="panel"><h3>经销商排名</h3>${dealerRankingTable()}</section>
+        <section class="panel"><h3>产品类型分布</h3>${productSplitTable()}</section>
       `,
     );
   }
@@ -3499,32 +3504,32 @@
     overlay.innerHTML = `
       <div class="wc-detail-card" style="max-width:640px;">
         <button class="lightbox-close" aria-label="Close">&times;</button>
-        <h3>${isEdit ? translateValue("Add / Edit Product") : translateValue("Add Product")}</h3>
+        <h3>${isEdit ? "编辑产品" : "新增产品"}</h3>
         <div class="form-grid">
-          <label>${translateValue("Product Type")} <select id="admin-product-type">
-            <option value="PPF" ${product && product.type === "PPF" ? "selected" : ""}>PPF (Paint Protection Film)</option>
-            <option value="WINDOW_FILM" ${product && product.type === "WINDOW_FILM" ? "selected" : ""}>Window Film</option>
-            <option value="TPU_COLOR_PPF" ${product && product.type === "TPU_COLOR_PPF" ? "selected" : ""}>TPU Color PPF</option>
-            <option value="SPECIAL_FILM" ${product && product.type === "SPECIAL_FILM" ? "selected" : ""}>Specialty Film</option>
-            <option value="MANUAL_PARTIAL" ${product && product.type === "MANUAL_PARTIAL" ? "selected" : ""}>Manual / Partial</option>
+          <label>产品类型 <select id="admin-product-type">
+            <option value="PPF" ${product && product.type === "PPF" ? "selected" : ""}>PPF（隐形车衣）</option>
+            <option value="WINDOW_FILM" ${product && product.type === "WINDOW_FILM" ? "selected" : ""}>窗膜</option>
+            <option value="TPU_COLOR_PPF" ${product && product.type === "TPU_COLOR_PPF" ? "selected" : ""}>TPU 改色膜</option>
+            <option value="SPECIAL_FILM" ${product && product.type === "SPECIAL_FILM" ? "selected" : ""}>特种膜</option>
+            <option value="MANUAL_PARTIAL" ${product && product.type === "MANUAL_PARTIAL" ? "selected" : ""}>手工 / 局部</option>
           </select></label>
-          <label>${translateValue("Product Name")} <input id="admin-product-name" placeholder="e.g. HEHE PPF Classic 190" value="${escapeHtml(product ? product.name : "")}" /></label>
-          <label>${translateValue("External Model")} <input id="admin-product-external" placeholder="e.g. HH Classic 190" value="${escapeHtml(product ? product.externalModel : "")}" /></label>
-          <label>Warranty Years <input id="admin-product-years" type="number" min="1" max="15" value="${product ? product.warrantyYears : 5}" placeholder="5" /></label>
-          <label>Usage Type <select id="admin-product-usage">
-            <option value="Single" ${(!product || product.usageType === "Single") ? "selected" : ""}>Single</option>
-            <option value="Multi" ${product && product.usageType === "Multi" ? "selected" : ""}>Multi</option>
+          <label>产品名称 <input id="admin-product-name" placeholder="如 HEHE PPF Classic 190" value="${escapeHtml(product ? product.name : "")}" /></label>
+          <label>外部型号 <input id="admin-product-external" placeholder="如 HH Classic 190" value="${escapeHtml(product ? product.externalModel : "")}" /></label>
+          <label>质保年限 <input id="admin-product-years" type="number" min="1" max="15" value="${product ? product.warrantyYears : 5}" placeholder="5" /></label>
+          <label>使用类型 <select id="admin-product-usage">
+            <option value="Single" ${(!product || product.usageType === "Single") ? "selected" : ""}>单次</option>
+            <option value="Multi" ${product && product.usageType === "Multi" ? "selected" : ""}>多次</option>
           </select></label>
-          <label>Default Usage Limit <input id="admin-product-limit" type="number" min="1" max="999" value="${product ? product.defaultUsageLimit : 1}" /></label>
-          <label>Status <select id="admin-product-status">
-            <option value="Active" ${(!product || product.status === "Active") ? "selected" : ""}>Active</option>
-            <option value="Reserved" ${product && product.status === "Reserved" ? "selected" : ""}>Reserved</option>
+          <label>默认使用次数 <input id="admin-product-limit" type="number" min="1" max="999" value="${product ? product.defaultUsageLimit : 1}" /></label>
+          <label>状态 <select id="admin-product-status">
+            <option value="Active" ${(!product || product.status === "Active") ? "selected" : ""}>启用</option>
+            <option value="Reserved" ${product && product.status === "Reserved" ? "selected" : ""}>预留</option>
           </select></label>
-          <label class="full">Remark <input id="admin-product-remark" placeholder="Brief product description" value="${escapeHtml(product ? product.remark : "")}" /></label>
+          <label class="full">备注 <input id="admin-product-remark" placeholder="简要产品描述" value="${escapeHtml(product ? product.remark : "")}" /></label>
         </div>
         <div class="inline-actions" style="margin-top:18px;">
-          <button class="button" data-action="admin-product-save">${isEdit ? translateValue("Update Product") : translateValue("Save Product")}</button>
-          <button class="ghost-button" data-action="admin-product-reset">${translateValue("Reset Form")}</button>
+          <button class="button" data-action="admin-product-save">${isEdit ? "更新产品" : "保存产品"}</button>
+          <button class="ghost-button" data-action="admin-product-reset">重置表单</button>
         </div>
         <input type="hidden" id="admin-product-edit-id" value="${isEdit ? editIdx : ""}" />
       </div>
@@ -3563,17 +3568,17 @@
       "admin/dealers",
       `
         <section class="panel">
-          <h2>Dealer Management</h2>
-          <p>Create and manage dealer accounts. Each dealer will use the assigned username and password to log into the Dealer Portal.</p>
+          <h2>经销商管理</h2>
+          <p>创建和管理经销商账号。每个经销商使用分配的用户名和密码登录经销商后台。</p>
         </section>
         <section class="panel">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-            <h3 style="margin:0;">Dealer List (${data.dealers.length})</h3>
-            <button class="button" data-action="open-dealer-modal">+ ${translateValue("Add Dealer")}</button>
+            <h3 style="margin:0;">经销商列表 (${data.dealers.length})</h3>
+            <button class="button" data-action="open-dealer-modal">+ 新增经销商</button>
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Code</th><th>Username</th><th>Name</th><th>Country</th><th>City</th><th>Level</th><th>Parent</th><th>Points</th><th>Status</th><th>Actions</th></tr></thead>
+              <thead><tr><th>编号</th><th>用户名</th><th>名称</th><th>国家</th><th>城市</th><th>等级</th><th>上级</th><th>积分</th><th>状态</th><th>操作</th></tr></thead>
               <tbody>
                 ${data.dealers
                   .map(
@@ -3589,8 +3594,8 @@
                         <td>${escapeHtml(dealer.points)}</td>
                         <td>${statusBadge(dealer.status)}</td>
                         <td>
-                          <button class="text-button" data-action="admin-dealer-edit" data-idx="${idx}">Edit</button>
-                          <button class="text-button danger-button" data-action="admin-dealer-delete" data-idx="${idx}" style="color:var(--red);">Delete</button>
+                          <button class="text-button" data-action="admin-dealer-edit" data-idx="${idx}">编辑</button>
+                          <button class="text-button danger-button" data-action="admin-dealer-delete" data-idx="${idx}" style="color:var(--red);">删除</button>
                         </td>
                       </tr>
                     `,
@@ -3662,32 +3667,32 @@
     overlay.innerHTML = `
       <div class="wc-detail-card" style="max-width:640px;">
         <button class="lightbox-close" aria-label="Close">&times;</button>
-        <h3>${isEdit ? translateValue("Create / Edit Dealer") : translateValue("Add Dealer")}</h3>
+        <h3>${isEdit ? "编辑经销商" : "新增经销商"}</h3>
         <div class="form-grid">
-          <label>${translateValue("Dealer Code")} <input id="admin-dealer-code" placeholder="e.g. RU-MSK-001" value="${escapeHtml(dealer ? dealer.code : "")}" /></label>
-          <label>${translateValue("Dealer Name")} <input id="admin-dealer-name" placeholder="e.g. Moscow Auto Studio" value="${escapeHtml(dealer ? dealer.name : "")}" /></label>
-          <label>Username <input id="admin-dealer-username" placeholder="Login username" value="${escapeHtml(dealer ? dealer.username : "")}" /></label>
-          <label>Password <input id="admin-dealer-password" type="text" placeholder="${isEdit ? translateValue("Leave blank to keep current") : "Login password"}" value="" /></label>
-          <label>Country <input id="admin-dealer-country" placeholder="e.g. Russia" value="${escapeHtml(dealer ? dealer.country : "")}" /></label>
-          <label>City <input id="admin-dealer-city" placeholder="e.g. Moscow" value="${escapeHtml(dealer ? dealer.city : "")}" /></label>
-          <label>Level <select id="admin-dealer-level">
-            <option value="Country Partner" ${(!dealer || dealer.level === "Country Partner") ? "selected" : ""}>Country Partner</option>
-            <option value="Regional Dealer" ${dealer && dealer.level === "Regional Dealer" ? "selected" : ""}>Regional Dealer</option>
-            <option value="City Dealer" ${dealer && dealer.level === "City Dealer" ? "selected" : ""}>City Dealer</option>
-            <option value="Shop" ${dealer && dealer.level === "Shop" ? "selected" : ""}>Shop</option>
+          <label>经销商编号 <input id="admin-dealer-code" placeholder="如 RU-MSK-001" value="${escapeHtml(dealer ? dealer.code : "")}" /></label>
+          <label>经销商名称 <input id="admin-dealer-name" placeholder="如 Moscow Auto Studio" value="${escapeHtml(dealer ? dealer.name : "")}" /></label>
+          <label>用户名 <input id="admin-dealer-username" placeholder="登录用户名" value="${escapeHtml(dealer ? dealer.username : "")}" /></label>
+          <label>密码 <input id="admin-dealer-password" type="text" placeholder="${isEdit ? "留空则不修改" : "登录密码"}" value="" /></label>
+          <label>国家 <input id="admin-dealer-country" placeholder="如 Russia" value="${escapeHtml(dealer ? dealer.country : "")}" /></label>
+          <label>城市 <input id="admin-dealer-city" placeholder="如 Moscow" value="${escapeHtml(dealer ? dealer.city : "")}" /></label>
+          <label>等级 <select id="admin-dealer-level">
+            <option value="Country Partner" ${(!dealer || dealer.level === "Country Partner") ? "selected" : ""}>国家级合作</option>
+            <option value="Regional Dealer" ${dealer && dealer.level === "Regional Dealer" ? "selected" : ""}>区域经销商</option>
+            <option value="City Dealer" ${dealer && dealer.level === "City Dealer" ? "selected" : ""}>城市经销商</option>
+            <option value="Shop" ${dealer && dealer.level === "Shop" ? "selected" : ""}>门店</option>
           </select></label>
-          <label>Parent Dealer <select id="admin-dealer-parent">
-            <option value="HQ" ${(!dealer || dealer.parentCode === "HQ") ? "selected" : ""}>HQ</option>
+          <label>上级经销商 <select id="admin-dealer-parent">
+            <option value="HQ" ${(!dealer || dealer.parentCode === "HQ") ? "selected" : ""}>总部</option>
             ${data.dealers.map((d) => `<option value="${d.code}" ${dealer && dealer.parentCode === d.code ? "selected" : ""}>${d.code} - ${d.name}</option>`).join("")}
           </select></label>
-          <label>Status <select id="admin-dealer-status">
-            <option value="Active" ${(!dealer || dealer.status === "Active") ? "selected" : ""}>Active</option>
-            <option value="Inactive" ${dealer && dealer.status === "Inactive" ? "selected" : ""}>Inactive</option>
+          <label>状态 <select id="admin-dealer-status">
+            <option value="Active" ${(!dealer || dealer.status === "Active") ? "selected" : ""}>启用</option>
+            <option value="Inactive" ${dealer && dealer.status === "Inactive" ? "selected" : ""}>停用</option>
           </select></label>
         </div>
         <div class="inline-actions" style="margin-top:18px;">
-          <button class="button" data-action="admin-dealer-save">${isEdit ? translateValue("Update Dealer") : translateValue("Save Dealer")}</button>
-          <button class="ghost-button" data-action="admin-dealer-reset">${translateValue("Reset Form")}</button>
+          <button class="button" data-action="admin-dealer-save">${isEdit ? "更新经销商" : "保存经销商"}</button>
+          <button class="ghost-button" data-action="admin-dealer-reset">重置表单</button>
         </div>
         <input type="hidden" id="admin-dealer-edit-idx" value="${isEdit ? editIdx : ""}" />
       </div>
@@ -3736,35 +3741,35 @@
         <section class="panel">
           <div class="panel-head-row">
             <div>
-              <h2>Warranty Code Management</h2>
-              <p>Factory warranty code is the system warranty code and certificate number. Click a code to view full details and linked warranty records.</p>
+              <h2>质保码管理</h2>
+              <p>工厂质保码即系统质保码和质保证书编号。点击质保码可查看完整详情和关联质保记录。</p>
             </div>
-            <button class="button" data-action="open-wc-create">+ Create Warranty Code</button>
+            <button class="button" data-action="open-wc-create">+ 创建质保码</button>
           </div>
         </section>
         <section class="panel">
-          <h3>Warranty Codes (${data.warrantyCodes.length})</h3>
+          <h3>质保码列表 (${data.warrantyCodes.length})</h3>
           <div class="wc-filter-bar">
             <label class="wc-search-label">
-              <span>Search</span>
-              <input id="wc-search" type="search" placeholder="Code / product / batch / dealer..." autocomplete="off" />
+              <span>搜索</span>
+              <input id="wc-search" type="search" placeholder="质保码 / 产品 / 批次 / 经销商..." autocomplete="off" />
             </label>
             <label class="wc-status-label">
-              <span>Status</span>
+              <span>状态</span>
               <select id="wc-status-filter">
-                <option value="All">All</option>
-                <option value="Unallocated">Unallocated</option>
-                <option value="Allocated">Allocated</option>
-                <option value="Pending Review">Pending Review</option>
-                <option value="Active">Active</option>
-                <option value="Void">Void</option>
+                <option value="All">全部</option>
+                <option value="Unallocated">未划拨</option>
+                <option value="Allocated">已划拨</option>
+                <option value="Pending Review">待审核</option>
+                <option value="Active">有效</option>
+                <option value="Void">作废</option>
               </select>
             </label>
             <span class="small wc-count" id="wc-count"></span>
           </div>
           <div class="table-wrap">
             <table id="wc-table">
-              <thead><tr><th>Warranty Code</th><th>Product</th><th>Dealer</th><th>Usage</th><th>Remaining</th><th>Batch</th><th>Status</th><th>Actions</th></tr></thead>
+              <thead><tr><th>质保码</th><th>产品</th><th>经销商</th><th>使用</th><th>剩余</th><th>批次</th><th>状态</th><th>操作</th></tr></thead>
               <tbody>
                 ${data.warrantyCodes
                   .map((code, idx) => {
@@ -3773,12 +3778,12 @@
                       <tr class="wc-row" data-idx="${idx}" data-code="${escapeHtml(code.code)}" data-product="${escapeHtml(code.productType + " " + code.productName)}" data-dealer="${escapeHtml(code.dealerCode || "")}" data-batch="${escapeHtml(code.importBatch || "")}" data-status="${escapeHtml(code.status)}">
                         <td><button class="wc-code-btn" data-action="wc-view-detail" data-idx="${idx}"><strong>${escapeHtml(code.code)}</strong></button></td>
                         <td>${productLabel(code.productType)}<br><span class="small">${escapeHtml(code.productName)}</span></td>
-                        <td>${escapeHtml(code.dealerCode || "Unallocated")}</td>
+                        <td>${escapeHtml(code.dealerCode || "未划拨")}</td>
                         <td>${escapeHtml(code.usageType)} / ${escapeHtml(code.usageLimit)}</td>
                         <td>${remaining}</td>
                         <td>${escapeHtml(code.importBatch || "-")}</td>
                         <td>${statusBadge(code.status)}</td>
-                        <td><button class="text-button danger-button" data-action="admin-wc-delete" data-idx="${idx}" style="color:var(--red);">Delete</button></td>
+                        <td><button class="text-button danger-button" data-action="admin-wc-delete" data-idx="${idx}" style="color:var(--red);">删除</button></td>
                       </tr>
                     `;
                   })
@@ -3786,7 +3791,7 @@
               </tbody>
             </table>
           </div>
-          <p class="notice wc-empty" id="wc-empty" style="display:none;">No warranty codes match your filter.</p>
+          <p class="notice wc-empty" id="wc-empty" style="display:none;">没有匹配的质保码。</p>
         </section>
       `,
     );
@@ -3799,26 +3804,26 @@
       .join("");
     return `
       <div class="form-grid">
-        <label>Warranty Code <input id="wc-code" placeholder="e.g. HH-PPF-2026-0001" /></label>
-        <label>Product <select id="wc-product">${productOpts}</select></label>
-        <label>Factory Roll No. <input id="wc-roll" placeholder="e.g. FR-PPF-8891" /></label>
-        <label>Batch No. <input id="wc-batch" placeholder="e.g. B-PPF-2026-07" /></label>
-        <label>Shipment No. <input id="wc-shipment" placeholder="e.g. HH-RU-2026-07-A" /></label>
-        <label>Dealer <select id="wc-dealer">
-          <option value="">— Unallocated —</option>
+        <label>质保码 <input id="wc-code" placeholder="如 HH-PPF-2026-0001" /></label>
+        <label>产品 <select id="wc-product">${productOpts}</select></label>
+        <label>工厂卷号 <input id="wc-roll" placeholder="如 FR-PPF-8891" /></label>
+        <label>批次号 <input id="wc-batch" placeholder="如 B-PPF-2026-07" /></label>
+        <label>发货号 <input id="wc-shipment" placeholder="如 HH-RU-2026-07-A" /></label>
+        <label>经销商 <select id="wc-dealer">
+          <option value="">— 未划拨 —</option>
           ${data.dealers.map((d) => `<option value="${d.code}">${d.code} - ${escapeHtml(d.name)}</option>`).join("")}
         </select></label>
-        <label>Warranty Years <input id="wc-years" type="number" min="1" max="15" value="5" /></label>
-        <label>Usage Type <select id="wc-usage">
-          <option value="Single">Single</option>
-          <option value="Multi">Multi</option>
+        <label>质保年限 <input id="wc-years" type="number" min="1" max="15" value="5" /></label>
+        <label>使用类型 <select id="wc-usage">
+          <option value="Single">单次</option>
+          <option value="Multi">多次</option>
         </select></label>
-        <label>Usage Limit <input id="wc-limit" type="number" min="1" max="999" value="1" /></label>
-        <label class="full">Remark <input id="wc-remark" placeholder="Optional note" /></label>
+        <label>使用次数 <input id="wc-limit" type="number" min="1" max="999" value="1" /></label>
+        <label class="full">备注 <input id="wc-remark" placeholder="选填" /></label>
       </div>
       <div class="inline-actions" style="margin-top:18px;">
-        <button class="button" data-action="admin-wc-create">Create Warranty Code</button>
-        <button class="ghost-button" data-action="admin-wc-reset">Reset Form</button>
+        <button class="button" data-action="admin-wc-create">创建质保码</button>
+        <button class="ghost-button" data-action="admin-wc-reset">重置表单</button>
       </div>
     `;
   }
@@ -3961,18 +3966,18 @@
         </div>
         <h3>${productLabel(code.productType)} — ${escapeHtml(code.productName)}</h3>
         <div class="wc-detail-grid">
-          ${fieldRow("Warranty Years", code.warrantyYears)}
-          ${fieldRow("Usage Type", code.usageType)}
-          ${fieldRow("Usage Limit", code.usageLimit)}
-          ${fieldRow("Used", code.usedCount)}
-          ${fieldRow("Remaining", remaining)}
-          ${fieldRow("Factory Roll No.", code.factoryRollNo)}
-          ${fieldRow("Batch No.", code.batchNo)}
-          ${fieldRow("Import Batch", code.importBatch)}
-          ${fieldRow("Shipment No.", code.shipmentNo)}
-          ${fieldRow("Dealer Code", code.dealerCode)}
-          ${fieldRow("Dealer Name", dealer ? dealer.name : "")}
-          ${fieldRow("Remark", code.remark)}
+          ${fieldRow("质保年限", code.warrantyYears)}
+          ${fieldRow("使用类型", code.usageType)}
+          ${fieldRow("使用次数", code.usageLimit)}
+          ${fieldRow("已用", code.usedCount)}
+          ${fieldRow("剩余", remaining)}
+          ${fieldRow("工厂卷号", code.factoryRollNo)}
+          ${fieldRow("批次号", code.batchNo)}
+          ${fieldRow("导入批次", code.importBatch)}
+          ${fieldRow("发货号", code.shipmentNo)}
+          ${fieldRow("经销商编号", code.dealerCode)}
+          ${fieldRow("经销商名称", dealer ? dealer.name : "")}
+          ${fieldRow("备注", code.remark)}
         </div>
         <h4 class="wc-section-title">${translateValue("Linked Warranty Records")} (${records.length})</h4>
         ${records.length
@@ -4192,7 +4197,7 @@
     });
     saveData();
     ui.importPending = null;
-    showToast(`Imported ${rows.length} warranty codes.`);
+    showToast(`已导入 ${rows.length} 个质保码。`);
     renderPage("admin/import");
   }
 
@@ -4204,30 +4209,30 @@
       "admin/allocation",
       `
         <section class="panel">
-          <h2>Warranty Code Allocation</h2>
-          <p>Select warranty codes from the list below, then choose a dealer to allocate. Only unallocated codes can be allocated.</p>
+          <h2>质保码分配</h2>
+          <p>从下方列表中勾选质保码，然后选择经销商进行划拨。只有未划拨的质保码可以划拨。</p>
         </section>
         <section class="panel">
-          <h3>Allocate to Dealer</h3>
+          <h3>划拨给经销商</h3>
           <div class="form-grid">
             <label>
-              Dealer
+              经销商
               <select id="alloc-dealer" required>
                 ${data.dealers.map((dealer) => `<option value="${dealer.code}">${dealer.code} - ${escapeHtml(dealer.name)}</option>`).join("")}
               </select>
             </label>
           </div>
           <div class="inline-actions" style="margin-top:14px;">
-            <button class="button" data-action="allocate-selected">Allocate Selected Codes</button>
-            <span class="small" id="alloc-count">0 codes selected</span>
+            <button class="button" data-action="allocate-selected">划拨选中质保码</button>
+            <span class="small" id="alloc-count">0 个质保码已选中</span>
           </div>
         </section>
         <section class="panel allocation-section">
-          <h3>Unallocated Codes (${unallocated.length})</h3>
+          <h3>未划拨质保码 (${unallocated.length})</h3>
           ${unallocated.length ? `
             <div class="table-wrap allocation-table">
               <table>
-                <thead><tr><th style="width:32px;"><input type="checkbox" id="alloc-select-all" data-action="alloc-select-all" /></th><th>Warranty Code</th><th>Product</th><th>Batch</th><th>Usage</th><th>Remaining</th></tr></thead>
+                <thead><tr><th style="width:32px;"><input type="checkbox" id="alloc-select-all" data-action="alloc-select-all" /></th><th>质保码</th><th>产品</th><th>批次</th><th>使用</th><th>剩余</th></tr></thead>
                 <tbody>
                   ${unallocated.map(({ code, idx }) => {
                     const remaining = Number(code.usageLimit) - Number(code.usedCount);
@@ -4245,13 +4250,13 @@
                 </tbody>
               </table>
             </div>
-          ` : `<p class="notice">No unallocated codes. All codes have been allocated.</p>`}
+          ` : `<p class="notice">没有未划拨的质保码。所有质保码已被划拨。</p>`}
         </section>
         <section class="panel allocation-section">
-          <h3>Allocated Codes (${allocated.length})</h3>
+          <h3>已划拨质保码 (${allocated.length})</h3>
           <div class="table-wrap allocation-table">
             <table>
-              <thead><tr><th>Warranty Code</th><th>Product</th><th>Dealer</th><th>Usage</th><th>Remaining</th><th>Status</th></tr></thead>
+              <thead><tr><th>质保码</th><th>产品</th><th>经销商</th><th>使用</th><th>剩余</th><th>状态</th></tr></thead>
               <tbody>
                 ${allocated.length ? allocated.map((code) => {
                   const remaining = Number(code.usageLimit) - Number(code.usedCount);
@@ -4265,7 +4270,7 @@
                       <td>${statusBadge(code.status)}</td>
                     </tr>
                   `;
-                }).join("") : `<tr><td colspan="6" style="text-align:center;color:var(--soft);">No allocated codes yet.</td></tr>`}
+                }).join("") : `<tr><td colspan="6" style="text-align:center;color:var(--soft);">暂无已划拨的质保码。</td></tr>`}
               </tbody>
             </table>
           </div>
@@ -4280,9 +4285,9 @@
       "admin/reviews",
       `
         <section class="panel">
-          <h2>Warranty Review</h2>
-          <p>Approval activates the warranty, calculates expiry date, generates the certificate, awards dealer points, and updates window-film usage count.</p>
-          ${pending.length ? pending.map(renderReviewCard).join("") : `<p class="notice">No pending reviews right now.</p>`}
+          <h2>质保审核</h2>
+          <p>审核通过后激活质保、计算到期日期、生成证书、发放经销商积分，并更新窗膜使用次数。</p>
+          ${pending.length ? pending.map(renderReviewCard).join("") : `<p class="notice">当前没有待审核的质保。</p>`}
         </section>
       `,
     );
@@ -4298,21 +4303,21 @@
             <span class="badge">${record.id}</span>
             <h3>${escapeHtml(record.warrantyCode)} - ${productLabel(record.productType)}</h3>
             <p>${escapeHtml(record.vehicleMake)} ${escapeHtml(record.vehicleModel)} / VIN ${escapeHtml(maskVin(record.vin))}</p>
-            <p>Dealer: ${escapeHtml(record.dealerName)}</p>
+            <p>经销商: ${escapeHtml(record.dealerName)}</p>
           </div>
           <div class="notice">
-            Checklist: valid code, allocated dealer, VIN filled, product match, photo uploaded, remaining uses ${remaining}, notes reviewed.
+            检查项：质保码有效、已分配到经销商、VIN 已填写、产品匹配、已上传图片、剩余次数 ${remaining}、备注已审核。
           </div>
         </div>
         <div class="review-photos">
-          <p class="photo-label">${translateValue("Installation photos")}</p>
+          <p class="photo-label">施工照片</p>
           <div class="thumb-grid">
             ${renderPhotos(record.photos)}
           </div>
         </div>
         <div class="form-actions" style="margin-top: 14px;">
-          <button class="button" data-action="approve-review" data-id="${record.id}">Approve</button>
-          <button class="danger-button" data-action="reject-review" data-id="${record.id}">Reject</button>
+          <button class="button" data-action="approve-review" data-id="${record.id}">通过审核</button>
+          <button class="danger-button" data-action="reject-review" data-id="${record.id}">驳回</button>
         </div>
       </article>
     `;
@@ -4339,29 +4344,29 @@
         <section class="panel">
           <div class="panel-head-row">
             <div>
-              <h2>Warranty Records</h2>
-              <p>All registered warranties. Click a record to view full details, or edit to correct information entered by dealers.</p>
+              <h2>质保记录</h2>
+              <p>所有已登记的质保记录。点击记录查看完整详情，或编辑以更正经销商填写的信息。</p>
             </div>
           </div>
           <div class="wc-filter-bar">
             <label class="wc-search-label">
-              <span>Search</span>
-              <input id="rec-search" type="search" placeholder="ID / code / VIN / dealer / vehicle..." autocomplete="off" />
+              <span>搜索</span>
+              <input id="rec-search" type="search" placeholder="ID / 质保码 / VIN / 经销商 / 车辆..." autocomplete="off" />
             </label>
             <label class="wc-status-label">
-              <span>Status</span>
+              <span>状态</span>
               <select id="rec-status-filter">
-                <option value="All">All</option>
-                <option value="Pending Review">Pending Review</option>
-                <option value="Active">Active</option>
-                <option value="Rejected">Rejected</option>
+                <option value="All">全部</option>
+                <option value="Pending Review">待审核</option>
+                <option value="Active">有效</option>
+                <option value="Rejected">已驳回</option>
               </select>
             </label>
             <span class="small wc-count" id="rec-count"></span>
           </div>
           <div class="table-wrap">
             <table id="rec-table">
-              <thead><tr><th>ID</th><th>Code</th><th>VIN</th><th>Vehicle</th><th>Product</th><th>Dealer</th><th>Install Date</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
+              <thead><tr><th>ID</th><th>质保码</th><th>VIN</th><th>车辆</th><th>产品</th><th>经销商</th><th>安装日期</th><th>到期</th><th>状态</th><th>操作</th></tr></thead>
               <tbody>
                 ${data.warrantyRecords
                   .map((record, idx) => {
@@ -4374,11 +4379,11 @@
                         <td>${productLabel(record.productType)}<br><span class="small">${escapeHtml(record.productName)}</span></td>
                         <td>${escapeHtml(record.dealerName)}</td>
                         <td>${escapeHtml(record.installationDate)}</td>
-                        <td>${escapeHtml(record.warrantyExpiryDate || "Pending")}</td>
+                        <td>${escapeHtml(record.warrantyExpiryDate || "审核中")}</td>
                         <td>${statusBadge(record.status)}</td>
                         <td>
-                          <button class="text-button" data-action="rec-view" data-idx="${idx}">View</button>
-                          <button class="text-button" data-action="rec-edit" data-idx="${idx}">Edit</button>
+                          <button class="text-button" data-action="rec-view" data-idx="${idx}">查看</button>
+                          <button class="text-button" data-action="rec-edit" data-idx="${idx}">编辑</button>
                         </td>
                       </tr>
                     `;
@@ -4387,7 +4392,7 @@
               </tbody>
             </table>
           </div>
-          <p class="notice wc-empty" id="rec-empty" style="display:none;">No warranty records match your filter.</p>
+          <p class="notice wc-empty" id="rec-empty" style="display:none;">没有匹配的质保记录。</p>
         </section>
       `,
     );
@@ -4547,55 +4552,55 @@
       `
         <section class="two-column">
           <article class="panel">
-            <h2>Points Settings</h2>
+            <h2>积分设置</h2>
             <form class="form-grid" data-form="points-settings">
               <label>
-                Default Warranty Approval Points
+                默认质保审核积分
                 <input name="defaultWarrantyPoints" type="number" min="0" value="${data.settings.defaultWarrantyPoints}" />
               </label>
               <label>
-                Reserved Validity Months
+                积分有效期（月）
                 <input name="pointsValidityMonths" type="number" min="0" value="${data.settings.pointsValidityMonths}" />
               </label>
               <label class="full">
-                ${translateValue("Historical Warranty Baseline")}
+                历史质保基数
                 <input name="historicalWarrantyBaseline" type="number" min="0" value="${data.settings.historicalWarrantyBaseline ?? 7654}" />
-                <small style="color:var(--soft);font-size:12px;">${translateValue("System launch前已确认但未逐条导入数据库的历史质保数量。首页累计质保总数 = 该基数 + 系统内 Active 质保数量。")}</small>
+                <small style="color:var(--soft);font-size:12px;">系统上线前已确认但未逐条导入数据库的历史质保数量。首页累计质保总数 = 该基数 + 系统内有效质保数量。</small>
               </label>
               <label class="full">
-                ${translateValue("Historical Vehicle Baseline")}
+                历史车辆基数
                 <input name="historicalVehicleBaseline" type="number" min="0" value="${data.settings.historicalVehicleBaseline ?? 0}" />
-                <small style="color:var(--soft);font-size:12px;">${translateValue("Historical vehicle baseline description.")}</small>
+                <small style="color:var(--soft);font-size:12px;">系统上线前已确认但未逐条导入的历史服务车辆数量。首页累计服务车辆 = 该基数 + 系统内有效质保去重 VIN 数量。</small>
               </label>
               <label class="full">
-                ${translateValue("Historical Dealer Baseline")}
+                历史经销商基数
                 <input name="historicalDealerBaseline" type="number" min="0" value="${data.settings.historicalDealerBaseline ?? 0}" />
-                <small style="color:var(--soft);font-size:12px;">${translateValue("Historical dealer baseline description.")}</small>
+                <small style="color:var(--soft);font-size:12px;">系统上线前已合作的授权经销商数量。首页累计经销商 = 该基数 + 系统内 Active 经销商数量。</small>
               </label>
-              <div class="form-actions full"><button class="button" type="submit">Save Settings</button></div>
+              <div class="form-actions full"><button class="button" type="submit">保存设置</button></div>
             </form>
           </article>
           <article class="panel">
-            <h2>Manual Points Adjustment</h2>
+            <h2>手动积分调整</h2>
             <form class="form-grid" data-form="manual-points">
               <label>
-                Dealer
+                经销商
                 <select name="dealerCode">${data.dealers.map((dealer) => `<option value="${dealer.code}">${dealer.name}</option>`).join("")}</select>
               </label>
               <label>
-                Points Change
+                积分变动
                 <input name="pointsChange" type="number" value="50" />
               </label>
               <label class="full">
-                Reason
-                <input name="reason" value="Campaign activity reward" />
+                原因
+                <input name="reason" value="活动奖励" />
               </label>
-              <div class="form-actions full"><button class="button" type="submit">Apply Adjustment</button></div>
+              <div class="form-actions full"><button class="button" type="submit">确认调整</button></div>
             </form>
           </article>
         </section>
         <section class="panel" style="margin-top: 18px;">
-          <h2>Points Ledger</h2>
+          <h2>积分流水</h2>
           ${pointsTable(data.pointsLedger)}
         </section>
       `,
@@ -4609,10 +4614,10 @@
         <section class="panel">
           <div class="panel-head-row">
             <div>
-              <h2>Rewards Management</h2>
-              <p>HQ controls points cost and internal inventory. Dealer-facing portal only shows Available, Out of Stock, or Coming Soon.</p>
+              <h2>兑换物料管理</h2>
+              <p>总部控制积分价格和内部库存。经销商端仅显示"可兑换"、"已抢完"或"即将上线"。</p>
             </div>
-            <button class="button" data-action="open-reward-modal">+ ${translateValue("Add Reward")}</button>
+            <button class="button" data-action="open-reward-modal">+ 新增物料</button>
           </div>
           <div class="reward-grid">
             ${data.rewards
@@ -4622,19 +4627,19 @@
                     <div class="reward-image-upload" data-reward-id="${reward.id}">
                       ${reward.image
                         ? `<img src="${reward.image}" alt="${escapeHtml(reward.name)}" class="reward-thumb" />`
-                        : `<div class="reward-image-placeholder">${translateValue("No image")}<br><span class="small">16:9</span></div>`
+                        : `<div class="reward-image-placeholder">暂无图片<br><span class="small">16:9</span></div>`
                       }
                       <div class="reward-image-actions">
                         <input type="file" accept="image/png,image/jpeg,image/webp" class="reward-file-input" data-action="reward-upload" data-id="${reward.id}" />
-                        <button class="ghost-button reward-upload-btn" data-reward-id="${reward.id}">${translateValue("Upload Image")}</button>
+                        <button class="ghost-button reward-upload-btn" data-reward-id="${reward.id}">上传图片</button>
                       </div>
                     </div>
                     <span class="badge">${escapeHtml(reward.category)}</span>
                     <h3>${escapeHtml(reward.name)}</h3>
-                    <p>${reward.points} points</p>
+                    <p>${reward.points} 积分</p>
                     ${statusBadge(reward.status)}
                     <div class="form-actions" style="margin-top: 14px;">
-                      <button class="ghost-button" data-action="cycle-reward-status" data-id="${reward.id}">Change Status</button>
+                      <button class="ghost-button" data-action="cycle-reward-status" data-id="${reward.id}">切换状态</button>
                     </div>
                   </article>
                 `,
@@ -4643,7 +4648,7 @@
           </div>
         </section>
         <section class="panel">
-          <h2>Redemption Requests</h2>
+          <h2>兑换申请</h2>
           ${redemptionsTable(true)}
         </section>
       `,
@@ -4659,12 +4664,12 @@
       "admin/export",
       `
         <section class="panel">
-          <h2>Data Export</h2>
-          <p>Production export should generate Excel files. This static preview downloads CSV files with the same field groups.</p>
+          <h2>数据导出</h2>
+          <p>生产环境应生成 Excel 文件。此预览版下载包含相同字段组的 CSV 文件。</p>
           <div class="form-actions">
-            <button class="button" data-action="export-warranties">Export Warranty Records</button>
-            <button class="ghost-button" data-action="export-points">Export Points Ledger</button>
-            <button class="ghost-button" data-action="export-redemptions">Export Redemption Requests</button>
+            <button class="button" data-action="export-warranties">导出质保记录</button>
+            <button class="ghost-button" data-action="export-points">导出积分流水</button>
+            <button class="ghost-button" data-action="export-redemptions">导出兑换申请</button>
           </div>
         </section>
       `,
@@ -4833,7 +4838,7 @@
     return `
       <div class="table-wrap compact-table">
         <table>
-          <thead><tr><th>Dealer</th><th>Country</th><th>Records</th><th>Points</th></tr></thead>
+          <thead><tr><th>经销商</th><th>国家</th><th>记录数</th><th>积分</th></tr></thead>
           <tbody>${rows
             .map(
               (row) => `
@@ -4855,7 +4860,7 @@
     return `
       <div class="table-wrap compact-table">
         <table>
-          <thead><tr><th>Product Type</th><th>Records</th></tr></thead>
+          <thead><tr><th>产品类型</th><th>记录数</th></tr></thead>
           <tbody>${rows.map((type) => `<tr><td>${productLabel(type)}</td><td>${counts[type]}</td></tr>`).join("")}</tbody>
         </table>
       </div>
@@ -4901,7 +4906,7 @@
       return;
     }
     if (!data) {
-      app.innerHTML = `<div class="portal-shell"><div class="panel" style="text-align:center;padding:60px 20px;"><h2>System not initialized</h2><p style="color:var(--soft);">The warranty database has not been set up yet. Please contact your administrator or run setup.</p><button class="button" data-action="run-setup">Initialize System</button></div></div>`;
+      app.innerHTML = `<div class="portal-shell"><div class="panel" style="text-align:center;padding:60px 20px;"><h2>系统未初始化</h2><p style="color:var(--soft);">质保数据库尚未设置。请联系管理员或运行初始化设置。</p><button class="button" data-action="run-setup">初始化系统</button></div></div>`;
       return;
     }
     const workspace = isWorkspaceRoute(route);
