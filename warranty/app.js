@@ -1085,6 +1085,7 @@
         type: "PPF",
         name: "HEHE PPF Classic 190",
         externalModel: "HH Classic 190",
+        stockCode: "PPF-MS8-Z",
         warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
@@ -1095,6 +1096,7 @@
         type: "PPF",
         name: "HEHE PPF Plus 190",
         externalModel: "HH Plus 190",
+        stockCode: "",
         warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
@@ -1105,7 +1107,8 @@
         type: "PPF",
         name: "HEHE PPF Pro 210",
         externalModel: "HH Pro 210",
-        warrantyYears: 12,
+
+        stockCode: "",        warrantyYears: 12,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1115,7 +1118,8 @@
         type: "PPF",
         name: "HEHE PPF Ultra 240",
         externalModel: "HH Ultra 240",
-        warrantyYears: 10,
+
+        stockCode: "",        warrantyYears: 10,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1125,7 +1129,8 @@
         type: "PPF",
         name: "HEHE Matte PPF",
         externalModel: "HH Matte",
-        warrantyYears: 5,
+
+        stockCode: "",        warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1136,7 +1141,8 @@
         type: "WINDOW_FILM",
         name: "HEHE Dual Silver Series DS 70",
         externalModel: "HH DS70",
-        warrantyYears: 10,
+
+        stockCode: "",        warrantyYears: 10,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1146,7 +1152,8 @@
         type: "WINDOW_FILM",
         name: "HEHE Dual Silver Series DS 20",
         externalModel: "HH DS20",
-        warrantyYears: 10,
+
+        stockCode: "",        warrantyYears: 10,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1157,7 +1164,8 @@
         type: "WINDOW_FILM",
         name: "HEHE UV Shield Series UV70",
         externalModel: "HH UV70",
-        warrantyYears: 10,
+
+        stockCode: "",        warrantyYears: 10,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1167,7 +1175,8 @@
         type: "WINDOW_FILM",
         name: "HEHE UV Shield Series UV15",
         externalModel: "HH UV15",
-        warrantyYears: 10,
+
+        stockCode: "",        warrantyYears: 10,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1178,7 +1187,8 @@
         type: "WINDOW_FILM",
         name: "HEHE Ceramic IR CIR70",
         externalModel: "HH CIR70",
-        warrantyYears: 10,
+
+        stockCode: "",        warrantyYears: 10,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1188,7 +1198,8 @@
         type: "WINDOW_FILM",
         name: "HEHE Ceramic IR CIR15",
         externalModel: "HH CIR15",
-        warrantyYears: 10,
+
+        stockCode: "",        warrantyYears: 10,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1199,7 +1210,8 @@
         type: "WINDOW_FILM",
         name: "HEHE Color Shift GQCM70",
         externalModel: "HH GQCM70",
-        warrantyYears: 8,
+
+        stockCode: "",        warrantyYears: 8,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1209,7 +1221,8 @@
         type: "WINDOW_FILM",
         name: "HEHE Color Shift QCM75",
         externalModel: "HH QCM75",
-        warrantyYears: 8,
+
+        stockCode: "",        warrantyYears: 8,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1220,7 +1233,8 @@
         type: "TPU_COLOR_PPF",
         name: "TPU Color PPF Crystal Series",
         externalModel: "HH TPU Color Crystal",
-        warrantyYears: 5,
+
+        stockCode: "",        warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1230,7 +1244,8 @@
         type: "TPU_COLOR_PPF",
         name: "TPU Color PPF Metallic Series",
         externalModel: "HH TPU Color Metallic",
-        warrantyYears: 5,
+
+        stockCode: "",        warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1240,7 +1255,8 @@
         type: "TPU_COLOR_PPF",
         name: "TPU Color PPF Satin Series",
         externalModel: "HH TPU Color Satin",
-        warrantyYears: 5,
+
+        stockCode: "",        warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1250,7 +1266,8 @@
         type: "TPU_COLOR_PPF",
         name: "TPU Color PPF Color Shift Series",
         externalModel: "HH TPU Color Shift",
-        warrantyYears: 5,
+
+        stockCode: "",        warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1261,7 +1278,8 @@
         type: "SPECIAL_FILM",
         name: "HEHE Architectural Film",
         externalModel: "HH Architectural Film",
-        warrantyYears: 10,
+
+        stockCode: "",        warrantyYears: 10,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1271,7 +1289,8 @@
         type: "SPECIAL_FILM",
         name: "HEHE Interior Film",
         externalModel: "HH Interior Film",
-        warrantyYears: 10,
+
+        stockCode: "",        warrantyYears: 10,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1281,7 +1300,8 @@
         type: "SPECIAL_FILM",
         name: "HEHE Skylight Armor",
         externalModel: "HH Skylight Armor",
-        warrantyYears: 3,
+
+        stockCode: "",        warrantyYears: 3,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1291,7 +1311,8 @@
         type: "SPECIAL_FILM",
         name: "HEHE Safety Shield",
         externalModel: "HH Safety Shield",
-        warrantyYears: 1,
+
+        stockCode: "",        warrantyYears: 1,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -3437,7 +3458,7 @@
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>${translateValue("Type")}</th><th>${translateValue("Name")}</th><th>${translateValue("External")}</th><th>${translateValue("Years")}</th><th>${translateValue("Usage")}</th><th>${translateValue("Limit")}</th><th>${translateValue("Status")}</th><th>${translateValue("Actions")}</th></tr></thead>
+              <thead><tr><th>${translateValue("Type")}</th><th>${translateValue("Name")}</th><th>${translateValue("External")}</th><th>存货编码</th><th>${translateValue("Years")}</th><th>${translateValue("Usage")}</th><th>${translateValue("Limit")}</th><th>${translateValue("Status")}</th><th>${translateValue("Actions")}</th></tr></thead>
               <tbody>
                 ${data.products
                   .map(
@@ -3446,6 +3467,7 @@
                         <td>${escapeHtml(productLabel(product.type))}</td>
                         <td><strong>${escapeHtml(product.name)}</strong></td>
                         <td>${escapeHtml(product.externalModel || "-")}</td>
+                        <td>${escapeHtml(product.stockCode || "-")}</td>
                         <td>${escapeHtml(product.warrantyYears)}</td>
                         <td>${escapeHtml(product.usageType)}</td>
                         <td>${escapeHtml(product.defaultUsageLimit)}</td>
@@ -3473,6 +3495,7 @@
       type: document.getElementById("admin-product-type").value,
       name: document.getElementById("admin-product-name").value.trim(),
       externalModel: document.getElementById("admin-product-external").value.trim(),
+      stockCode: document.getElementById("admin-product-stockcode").value.trim(),
       warrantyYears: parseInt(document.getElementById("admin-product-years").value, 10) || 5,
       usageType: document.getElementById("admin-product-usage").value,
       defaultUsageLimit: parseInt(document.getElementById("admin-product-limit").value, 10) || 1,
@@ -3515,6 +3538,7 @@
           </select></label>
           <label>产品名称 <input id="admin-product-name" placeholder="如 HEHE PPF Classic 190" value="${escapeHtml(product ? product.name : "")}" /></label>
           <label>外部型号 <input id="admin-product-external" placeholder="如 HH Classic 190" value="${escapeHtml(product ? product.externalModel : "")}" /></label>
+          <label>存货编码 <input id="admin-product-stockcode" placeholder="如 PPF-MS8-Z" value="${escapeHtml(product ? (product.stockCode || "") : "")}" /></label>
           <label>质保年限 <input id="admin-product-years" type="number" min="1" max="15" value="${product ? product.warrantyYears : 5}" placeholder="5" /></label>
           <label>使用类型 <select id="admin-product-usage">
             <option value="Single" ${(!product || product.usageType === "Single") ? "selected" : ""}>单次</option>
@@ -3554,6 +3578,7 @@
     document.getElementById("admin-product-type").value = "PPF";
     document.getElementById("admin-product-name").value = "";
     document.getElementById("admin-product-external").value = "";
+    document.getElementById("admin-product-stockcode").value = "";
     document.getElementById("admin-product-years").value = "5";
     document.getElementById("admin-product-usage").value = "Single";
     document.getElementById("admin-product-limit").value = "1";
@@ -4026,20 +4051,20 @@
       "admin/import",
       `
         <section class="panel">
-          <h2>${translateValue("Import Warranty Codes")}</h2>
-          <p>${translateValue("Upload a CSV file with warranty codes. Only 4 columns are required: warranty code, batch number, product type, and product name. The system automatically fills in warranty years, usage type, and usage limit from the product catalog.")}</p>
+          <h2>批量导入质保码</h2>
+          <p>直接上传工厂发货表格（.xls / .xlsx / .csv），系统自动识别 3 列：<strong>批号</strong>（即质保码）、<strong>存货名称</strong>（产品编码）、<strong>发货单号</strong>。存货名称与产品库中的「存货编码」匹配后，自动补全产品类型、质保年限、使用规则。</p>
           <div class="form-actions">
-            <button class="button" data-action="download-template">${translateValue("Download CSV Template")}</button>
+            <button class="button" data-action="download-template">下载标准模板</button>
           </div>
           <div class="divider"></div>
           <label class="full upload-box" style="margin-bottom:16px;">
-            ${translateValue("Select CSV File")}
-            <input type="file" id="import-file" accept=".csv,text/csv" data-action="import-file-select" />
+            选择工厂发货表格
+            <input type="file" id="import-file" accept=".xls,.xlsx,.csv,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" data-action="import-file-select" />
           </label>
           <div id="import-preview"></div>
         </section>
         <section class="panel">
-          <h3>${translateValue("Import Batches")}</h3>
+          <h3>导入历史</h3>
           ${importBatchTable()}
         </section>
       `,
@@ -4073,85 +4098,121 @@
     return { headers, rows };
   }
 
+  /* ── Factory-format import (批号 / 存货名称 / 发货单号) ── */
+
+  function parseFactoryHeaders(headers) {
+    // Map Chinese column headers to internal fields
+    const map = {};
+    headers.forEach((h, i) => {
+      const lower = h.toLowerCase().replace(/\s+/g, "");
+      if (lower.includes("批号") || lower.includes("batchno") || lower === "code") map.warrantyCode = i;
+      else if (lower.includes("存货名称") || lower.includes("存货编码") || lower.includes("productname") || lower.includes("productcode") || lower.includes("stockcode") || lower.includes("model")) map.stockCode = i;
+      else if (lower.includes("发货单号") || lower.includes("shipment") || lower.includes("order")) map.shipmentNo = i;
+    });
+    return map;
+  }
+
+  function parseFactoryRow(row, colMap) {
+    return {
+      warrantyCode: (colMap.warrantyCode !== undefined ? row[colMap.warrantyCode] : "") || "",
+      stockCode: (colMap.stockCode !== undefined ? row[colMap.stockCode] : "") || "",
+      shipmentNo: (colMap.shipmentNo !== undefined ? row[colMap.shipmentNo] : "") || "",
+    };
+  }
+
+  function matchProductByStockCode(stockCode) {
+    if (!stockCode) return null;
+    const code = stockCode.trim();
+    return data.products.find((p) => p.status === "Active" && p.stockCode && p.stockCode.trim().toUpperCase() === code.toUpperCase());
+  }
+
   function handleImportFileSelect(input) {
     const file = input.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target.result;
-      const { headers, rows } = parseCsv(text);
-      const colMap = {};
-      headers.forEach((h, i) => {
-        const lower = h.toLowerCase().replace(/\s+/g, "");
-        if (lower.includes("warranty") && lower.includes("code")) colMap.warrantyCode = i;
-        else if (lower.includes("batch")) colMap.batchNo = i;
-        else if (lower.includes("producttype") || lower === "producttype") colMap.productType = i;
-        else if (lower.includes("productname") || lower.includes("productmodel")) colMap.productName = i;
-        else if (lower.includes("factory") && lower.includes("roll")) colMap.factoryRollNo = i;
-        else if (lower.includes("shipment")) colMap.shipmentNo = i;
-        else if (lower.includes("warranty") && lower.includes("year")) colMap.warrantyYears = i;
-        else if (lower.includes("usagetype")) colMap.usageType = i;
-        else if (lower.includes("usagelimit")) colMap.usageLimit = i;
-        else if (lower.includes("dealer")) colMap.dealerCode = i;
-        else if (lower.includes("remark")) colMap.remark = i;
-      });
-      const parsed = rows.map((r) => {
-        const row = {};
-        if (colMap.warrantyCode !== undefined) row.warrantyCode = r[colMap.warrantyCode] || "";
-        if (colMap.batchNo !== undefined) row.batchNo = r[colMap.batchNo] || "";
-        if (colMap.productType !== undefined) row.productType = r[colMap.productType] || "";
-        if (colMap.productName !== undefined) row.productName = r[colMap.productName] || "";
-        if (colMap.factoryRollNo !== undefined) row.factoryRollNo = r[colMap.factoryRollNo] || "";
-        if (colMap.shipmentNo !== undefined) row.shipmentNo = r[colMap.shipmentNo] || "";
-        if (colMap.warrantyYears !== undefined) row.warrantyYears = r[colMap.warrantyYears] || "";
-        if (colMap.usageType !== undefined) row.usageType = r[colMap.usageType] || "";
-        if (colMap.usageLimit !== undefined) row.usageLimit = r[colMap.usageLimit] || "";
-        if (colMap.dealerCode !== undefined) row.dealerCode = r[colMap.dealerCode] || "";
-        if (colMap.remark !== undefined) row.remark = r[colMap.remark] || "";
-        return row;
-      });
+
+    const ext = file.name.split(".").pop().toLowerCase();
+    const isExcel = ext === "xls" || ext === "xlsx";
+
+    function processRows(headers, rows) {
+      const colMap = parseFactoryHeaders(headers);
+      const parsed = rows.map((r) => parseFactoryRow(r, colMap));
       showImportPreview(parsed, file.name);
-    };
-    reader.readAsText(file);
+    }
+
+    const reader = new FileReader();
+
+    if (isExcel) {
+      reader.onload = (e) => {
+        try {
+          const wb = XLSX.read(new Uint8Array(e.target.result), { type: "array" });
+          const sheet = wb.Sheets[wb.SheetNames[0]];
+          const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+          if (!data.length) return;
+          const headers = data[0].map((c) => String(c || ""));
+          const rows = data.slice(1).filter((r) => r.some((c) => String(c || "").trim()));
+          processRows(headers, rows.map((r) => r.map((c) => String(c || "").trim())));
+        } catch (err) {
+          document.getElementById("import-preview").innerHTML = `<p class="notice" style="color:var(--red);">文件解析失败，请确认是有效的 Excel 文件。</p>`;
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      // CSV fallback
+      reader.onload = (e) => {
+        const { headers, rows } = parseCsv(e.target.result);
+        processRows(headers, rows);
+      };
+      reader.readAsText(file);
+    }
   }
 
   function showImportPreview(rows, filename) {
     const preview = document.getElementById("import-preview");
     if (!preview) return;
     const validated = rows.map((row) => {
-      const filled = fillWarrantyCodeFromProduct(row);
       const errors = [];
-      if (!filled.warrantyCode) errors.push("Missing warranty code");
-      if (!filled.productType) errors.push("Missing product type");
-      if (!filled.productName) errors.push("Missing product name");
-      if (!filled.warrantyYears) errors.push("Product not found in catalog");
-      if (data.warrantyCodes.some((c) => c.code === filled.warrantyCode)) errors.push("Duplicate code");
-      return { ...filled, errors };
+      if (!row.warrantyCode) errors.push("缺少批号");
+      else if (data.warrantyCodes.some((c) => c.code === row.warrantyCode)) errors.push("重复");
+
+      const product = matchProductByStockCode(row.stockCode);
+      if (!row.stockCode) errors.push("缺少存货名称");
+      else if (!product) errors.push("存货编码未匹配");
+
+      return {
+        ...row,
+        productType: product ? product.type : "",
+        productName: product ? product.name : "",
+        productLabel: product ? productLabel(product.type) : "",
+        warrantyYears: product ? product.warrantyYears : "",
+        usageType: product ? product.usageType : "",
+        usageLimit: product ? product.defaultUsageLimit : "",
+        errors,
+      };
     });
     const valid = validated.filter((r) => r.errors.length === 0);
-    const invalid = validated.filter((r) => r.errors.length > 0);
+    const invalidCount = validated.filter((r) => r.errors.length > 0).length;
     preview.innerHTML = `
       <div class="notice" style="margin-bottom:14px;">
-        <strong>${filename}</strong> — ${validated.length} rows: ${valid.length} valid, ${invalid.length} invalid
+        <strong>${filename}</strong> — ${validated.length} 条：${valid.length} 条有效，${invalidCount} 条异常
       </div>
       ${valid.length > 0 ? `
         <div class="inline-actions" style="margin-bottom:14px;">
-          <button class="button" data-action="confirm-import">Import ${valid.length} Valid Codes</button>
+          <button class="button" data-action="confirm-import">导入 ${valid.length} 条有效质保码</button>
         </div>
       ` : ""}
       <div class="table-wrap" style="margin-bottom:14px;">
         <table>
-          <thead><tr><th>Warranty Code</th><th>Batch</th><th>Product Type</th><th>Product Name</th><th>Years</th><th>Usage</th><th>Validation</th></tr></thead>
+          <thead><tr><th>批号(质保码)</th><th>存货名称</th><th>发货单号</th><th>匹配产品</th><th>质保年限</th><th>使用规则</th><th>验证</th></tr></thead>
           <tbody>
             ${validated.map((r) => `
               <tr style="${r.errors.length ? "opacity:.6;" : ""}">
                 <td><strong>${escapeHtml(r.warrantyCode || "-")}</strong></td>
-                <td>${escapeHtml(r.batchNo || "-")}</td>
-                <td>${escapeHtml(r.productType || "-")}</td>
-                <td>${escapeHtml(r.productName || "-")}</td>
-                <td>${escapeHtml(r.warrantyYears || "-")}</td>
-                <td>${escapeHtml(r.usageType || "-")} / ${escapeHtml(r.usageLimit || "-")}</td>
-                <td>${r.errors.length ? `<span style="color:var(--red);">${r.errors.join("; ")}</span>` : '<span style="color:var(--green);">OK</span>'}</td>
+                <td>${escapeHtml(r.stockCode || "-")}</td>
+                <td>${escapeHtml(r.shipmentNo || "-")}</td>
+                <td>${r.productName ? `<span style="color:var(--orange);">${escapeHtml(r.productLabel)} — ${escapeHtml(r.productName)}</span>` : "-"}</td>
+                <td>${escapeHtml(String(r.warrantyYears || "-"))}</td>
+                <td>${escapeHtml(r.usageType || "-")} / ${escapeHtml(String(r.usageLimit || "-"))}</td>
+                <td>${r.errors.length ? `<span style="color:var(--red);">${r.errors.join("；")}</span>` : '<span style="color:var(--green);">OK</span>'}</td>
               </tr>
             `).join("")}
           </tbody>
@@ -4165,12 +4226,12 @@
     const rows = ui.importPending;
     if (!rows || !rows.length) return;
     const batchId = `IMP-${new Date().getFullYear()}-${String(data.importBatches.length + 1).padStart(4, "0")}`;
-    const productTypes = [...new Set(rows.map((r) => r.productType))];
+    const products = [...new Set(rows.map((r) => r.productType))];
     rows.forEach((row) => {
       data.warrantyCodes.unshift({
         code: row.warrantyCode,
-        factoryRollNo: row.factoryRollNo || "",
-        batchNo: row.batchNo || "",
+        factoryRollNo: "",
+        batchNo: "",
         shipmentNo: row.shipmentNo || "",
         productType: row.productType,
         productName: row.productName,
@@ -4178,22 +4239,22 @@
         usageType: row.usageType,
         usageLimit: Number(row.usageLimit),
         usedCount: 0,
-        dealerCode: row.dealerCode || "",
+        dealerCode: "",
         importBatch: batchId,
-        status: row.dealerCode ? "Allocated" : "Unallocated",
-        remark: row.remark || "",
+        status: "Unallocated",
+        remark: "",
       });
     });
     data.importBatches.unshift({
       id: batchId,
-      name: `Import ${rows.length} codes`,
+      name: `导入 ${rows.length} 个质保码`,
       time: nowLabel(),
-      operator: "HQ Admin",
+      operator: "总部",
       totalCodes: rows.length,
-      productTypes: productTypes.join(", "),
-      dealer: "Unallocated",
-      status: "Imported",
-      remark: `Imported from file, ${rows.length} codes.`,
+      productTypes: products.join(", "),
+      dealer: "未分配",
+      status: "已导入",
+      remark: `从文件导入，${rows.length} 个质保码。`,
     });
     saveData();
     ui.importPending = null;
@@ -4805,7 +4866,7 @@
     return `
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Batch</th><th>Time</th><th>Operator</th><th>Total</th><th>Products</th><th>Dealer</th><th>Status</th></tr></thead>
+          <thead><tr><th>批次号</th><th>时间</th><th>操作人</th><th>数量</th><th>产品</th><th>经销商</th><th>状态</th></tr></thead>
           <tbody>
             ${data.importBatches
               .map(
@@ -5639,15 +5700,16 @@
   }
 
   function downloadTemplate() {
-    const rows = [
-      fillWarrantyCodeFromProduct({
-        warrantyCode: "HH-PPF-2026-0100",
-        batchNo: "B-PPF-2026-08",
-        productType: "PPF",
-        productName: "HEHE PPF Pro 210",
-      }),
-    ];
-    downloadCsv("hh-warranty-code-template.csv", rows);
+    // Generate factory-format template CSV
+    const header = "批号,存货名称,发货单号";
+    const example1 = `HA2661410-839,PPF-MS8-Z,XF202607130818`;
+    const example2 = `HA2661410-840,PPF-MS8-Z,XF202607130818`;
+    const csv = header + "\n" + example1 + "\n" + example2;
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "质保码导入模板.csv";
+    a.click();
   }
 
   function runImportDemo() {
