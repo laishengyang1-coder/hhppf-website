@@ -5207,7 +5207,6 @@
     if (action === "approve-review") handleReview(target.getAttribute("data-id"), true);
     if (action === "reject-review") handleReview(target.getAttribute("data-id"), false);
     if (action === "download-template") downloadTemplate();
-    if (action === "run-import-demo") runImportDemo();
     if (action === "reset-demo") resetDemoData();
     if (action === "cycle-reward-status") cycleRewardStatus(target.getAttribute("data-id"));
     if (action === "approve-redemption") handleRedemption(target.getAttribute("data-id"), "Approved, Waiting for Next Shipment");
@@ -5674,6 +5673,23 @@
   }
 
   function fillWarrantyCodeFromProduct(row) {
+    // First, try matching by stockCode
+    const byStock = matchProductByStockCode(row.stockCode || row.productName);
+    if (byStock) {
+      return {
+        ...row,
+        factoryRollNo: row.factoryRollNo || "",
+        productType: byStock.type,
+        productName: byStock.name,
+        warrantyYears: row.warrantyYears || String(byStock.warrantyYears),
+        usageType: row.usageType || byStock.usageType,
+        usageLimit: row.usageLimit || String(byStock.defaultUsageLimit),
+        dealerCode: row.dealerCode || "",
+        shipmentNo: row.shipmentNo || "",
+        remark: row.remark || "",
+      };
+    }
+    // Fallback: match by product type/name
     const typeMatch = (p) =>
       p.status === "Active" && (p.type === row.productType || productLabel(p.type) === row.productType);
     const nameMatch = (p) =>
@@ -5712,45 +5728,7 @@
     a.click();
   }
 
-  function runImportDemo() {
-    const id = `IMP-${new Date().getFullYear()}-${String(data.importBatches.length + 1).padStart(4, "0")}`;
-    const baseRow = {
-      warrantyCode: `HH-PPF-${new Date().getFullYear()}-${String(1000 + data.warrantyCodes.length)}`,
-      batchNo: "B-DEMO",
-      productType: "PPF",
-      productName: "HEHE PPF Pro 210",
-    };
-    const filled = fillWarrantyCodeFromProduct(baseRow);
-    data.importBatches.unshift({
-      id,
-      name: "Validation demo import",
-      time: nowLabel(),
-      operator: "HQ Admin",
-      totalCodes: 1,
-      productTypes: filled.productType,
-      dealer: "Unallocated",
-      status: "Imported",
-      remark: "All rows passed validation.",
-    });
-    data.warrantyCodes.unshift({
-      code: filled.warrantyCode,
-      factoryRollNo: filled.factoryRollNo,
-      batchNo: filled.batchNo,
-      shipmentNo: filled.shipmentNo,
-      productType: filled.productType,
-      productName: filled.productName,
-      warrantyYears: Number(filled.warrantyYears),
-      usageType: filled.usageType,
-      usageLimit: Number(filled.usageLimit),
-      usedCount: 0,
-      dealerCode: "",
-      importBatch: id,
-      status: "Unallocated",
-      remark: "Created by validation demo.",
-    });
-    saveData();
-    showToast("Import validation passed and one demo code was added.");
-  }
+
 
   async function resetDemoData() {
     data = await loadData();
