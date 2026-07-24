@@ -1085,7 +1085,7 @@
         type: "PPF",
         name: "HEHE PPF Classic 190",
         externalModel: "HH Classic 190",
-        stockCode: "PPF-MS8-Z",
+        stockCode: "",
         warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
@@ -1108,7 +1108,8 @@
         name: "HEHE PPF Pro 210",
         externalModel: "HH Pro 210",
 
-        stockCode: "",        warrantyYears: 12,
+        stockCode: "",
+        warrantyYears: 12,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1119,7 +1120,8 @@
         name: "HEHE PPF Ultra 240",
         externalModel: "HH Ultra 240",
 
-        stockCode: "",        warrantyYears: 10,
+        stockCode: "",
+        warrantyYears: 10,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1130,11 +1132,23 @@
         name: "HEHE Matte PPF",
         externalModel: "HH Matte",
 
-        stockCode: "",        warrantyYears: 5,
+        stockCode: "",
+        warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
         remark: "Matte finish, 7.5mil, silky surface, excellent strength & workability. 5-year warranty.",
+      },
+      {
+        type: "PPF",
+        name: "HEHE PPF MS8-Z",
+        externalModel: "HH MS8-Z",
+        stockCode: "PPF-MS8-Z",
+        warrantyYears: 5,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "MS8-Z series. 5-year warranty.",
       },
       /* ── Dual Silver Window Film 双银安全系列 ── */
       {
@@ -1142,7 +1156,8 @@
         name: "HEHE Dual Silver Series DS 70",
         externalModel: "HH DS70",
 
-        stockCode: "",        warrantyYears: 10,
+        stockCode: "",
+        warrantyYears: 10,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1153,7 +1168,8 @@
         name: "HEHE Dual Silver Series DS 20",
         externalModel: "HH DS20",
 
-        stockCode: "",        warrantyYears: 10,
+        stockCode: "",
+        warrantyYears: 10,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1165,7 +1181,8 @@
         name: "HEHE UV Shield Series UV70",
         externalModel: "HH UV70",
 
-        stockCode: "",        warrantyYears: 10,
+        stockCode: "",
+        warrantyYears: 10,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1176,7 +1193,8 @@
         name: "HEHE UV Shield Series UV15",
         externalModel: "HH UV15",
 
-        stockCode: "",        warrantyYears: 10,
+        stockCode: "",
+        warrantyYears: 10,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1188,7 +1206,8 @@
         name: "HEHE Ceramic IR CIR70",
         externalModel: "HH CIR70",
 
-        stockCode: "",        warrantyYears: 10,
+        stockCode: "",
+        warrantyYears: 10,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1199,7 +1218,8 @@
         name: "HEHE Ceramic IR CIR15",
         externalModel: "HH CIR15",
 
-        stockCode: "",        warrantyYears: 10,
+        stockCode: "",
+        warrantyYears: 10,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1211,7 +1231,8 @@
         name: "HEHE Color Shift GQCM70",
         externalModel: "HH GQCM70",
 
-        stockCode: "",        warrantyYears: 8,
+        stockCode: "",
+        warrantyYears: 8,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1222,7 +1243,8 @@
         name: "HEHE Color Shift QCM75",
         externalModel: "HH QCM75",
 
-        stockCode: "",        warrantyYears: 8,
+        stockCode: "",
+        warrantyYears: 8,
         usageType: "Multi",
         defaultUsageLimit: 24,
         status: "Active",
@@ -1234,7 +1256,8 @@
         name: "TPU Color PPF Crystal Series",
         externalModel: "HH TPU Color Crystal",
 
-        stockCode: "",        warrantyYears: 5,
+        stockCode: "",
+        warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1245,7 +1268,8 @@
         name: "TPU Color PPF Metallic Series",
         externalModel: "HH TPU Color Metallic",
 
-        stockCode: "",        warrantyYears: 5,
+        stockCode: "",
+        warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1256,7 +1280,8 @@
         name: "TPU Color PPF Satin Series",
         externalModel: "HH TPU Color Satin",
 
-        stockCode: "",        warrantyYears: 5,
+        stockCode: "",
+        warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1267,7 +1292,8 @@
         name: "TPU Color PPF Color Shift Series",
         externalModel: "HH TPU Color Shift",
 
-        stockCode: "",        warrantyYears: 5,
+        stockCode: "",
+        warrantyYears: 5,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1279,7 +1305,8 @@
         name: "HEHE Architectural Film",
         externalModel: "HH Architectural Film",
 
-        stockCode: "",        warrantyYears: 10,
+        stockCode: "",
+        warrantyYears: 10,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1290,7 +1317,8 @@
         name: "HEHE Interior Film",
         externalModel: "HH Interior Film",
 
-        stockCode: "",        warrantyYears: 10,
+        stockCode: "",
+        warrantyYears: 10,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1301,7 +1329,8 @@
         name: "HEHE Skylight Armor",
         externalModel: "HH Skylight Armor",
 
-        stockCode: "",        warrantyYears: 3,
+        stockCode: "",
+        warrantyYears: 3,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
@@ -1312,7 +1341,8 @@
         name: "HEHE Safety Shield",
         externalModel: "HH Safety Shield",
 
-        stockCode: "",        warrantyYears: 1,
+        stockCode: "",
+        warrantyYears: 1,
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
