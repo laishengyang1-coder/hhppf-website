@@ -24,7 +24,7 @@ async function saveBlob(env, blob) {
 export async function onRequestPost(context) {
   const { env, request } = context;
   const body = await readBody(request);
-  const { code, username, password, name, country, city, level, status, points, parentCode } = body;
+  const { code, username, password, name, country, city, phone, address, contact, level, status, points, parentCode } = body;
   if (!code || !username || !name) {
     return json({ ok: false, error: "missing_fields" }, 400);
   }
@@ -48,6 +48,7 @@ export async function onRequestPost(context) {
     blob.dealers = blob.dealers || [];
     blob.dealers.push({
       code, username, name, country: country || "", city: city || "",
+      phone: phone || "", address: address || "", contact: contact || "",
       level: level || "City Dealer", status: status || "Active",
       points: Number(points) || 0, parentCode: parentCode || "HQ",
     });
@@ -60,7 +61,7 @@ export async function onRequestPost(context) {
 export async function onRequestPut(context) {
   const { env, request } = context;
   const body = await readBody(request);
-  const { code, username, password, name, country, city, level, status, points, parentCode } = body;
+  const { code, username, password, name, country, city, phone, address, contact, level, status, points, parentCode } = body;
   if (!code) return json({ ok: false, error: "missing_code" }, 400);
   // Update users table if password provided
   if (password) {
@@ -84,6 +85,9 @@ export async function onRequestPut(context) {
         name: name || blob.dealers[idx].name,
         country: country !== undefined ? country : blob.dealers[idx].country,
         city: city !== undefined ? city : blob.dealers[idx].city,
+        phone: phone !== undefined ? phone : blob.dealers[idx].phone,
+        address: address !== undefined ? address : blob.dealers[idx].address,
+        contact: contact !== undefined ? contact : blob.dealers[idx].contact,
         level: level || blob.dealers[idx].level,
         status: status || blob.dealers[idx].status,
         points: Number(points !== undefined ? points : blob.dealers[idx].points),

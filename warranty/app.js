@@ -3633,7 +3633,7 @@
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>编号</th><th>用户名</th><th>名称</th><th>国家</th><th>城市</th><th>等级</th><th>上级</th><th>积分</th><th>状态</th><th>操作</th></tr></thead>
+              <thead><tr><th>编号</th><th>用户名</th><th>名称</th><th>国家</th><th>城市</th><th>联系电话</th><th>详细地址</th><th>等级</th><th>上级</th><th>积分</th><th>状态</th><th>操作</th></tr></thead>
               <tbody>
                 ${data.dealers
                   .map(
@@ -3644,6 +3644,8 @@
                         <td>${escapeHtml(dealer.name)}</td>
                         <td>${escapeHtml(dealer.country)}</td>
                         <td>${escapeHtml(dealer.city)}</td>
+                        <td>${escapeHtml(dealer.phone || "-")}</td>
+                        <td class="cell-ellipsis" title="${escapeHtml(dealer.address || "")}">${escapeHtml(dealer.address || "-")}</td>
                         <td>${escapeHtml(dealer.level)}</td>
                         <td>${escapeHtml(dealer.parentCode)}</td>
                         <td>${escapeHtml(dealer.points)}</td>
@@ -3682,6 +3684,9 @@
       name,
       country: document.getElementById("admin-dealer-country").value.trim(),
       city: document.getElementById("admin-dealer-city").value.trim(),
+      phone: document.getElementById("admin-dealer-phone").value.trim(),
+      address: document.getElementById("admin-dealer-address").value.trim(),
+      contact: document.getElementById("admin-dealer-contact").value.trim(),
       level: document.getElementById("admin-dealer-level").value,
       parentCode: document.getElementById("admin-dealer-parent").value,
       status: document.getElementById("admin-dealer-status").value,
@@ -3728,8 +3733,11 @@
           <label>经销商名称 <input id="admin-dealer-name" placeholder="如 Moscow Auto Studio" value="${escapeHtml(dealer ? dealer.name : "")}" /></label>
           <label>用户名 <input id="admin-dealer-username" placeholder="登录用户名" value="${escapeHtml(dealer ? dealer.username : "")}" /></label>
           <label>密码 <input id="admin-dealer-password" type="text" placeholder="${isEdit ? "留空则不修改" : "登录密码"}" value="" /></label>
-          <label>国家 <input id="admin-dealer-country" placeholder="如 Russia" value="${escapeHtml(dealer ? dealer.country : "")}" /></label>
-          <label>城市 <input id="admin-dealer-city" placeholder="如 Moscow" value="${escapeHtml(dealer ? dealer.city : "")}" /></label>
+          <label>国家 <input id="admin-dealer-country" placeholder="如 France" value="${escapeHtml(dealer ? dealer.country : "")}" /></label>
+          <label>城市 <input id="admin-dealer-city" placeholder="如 Fréjus" value="${escapeHtml(dealer ? dealer.city : "")}" /></label>
+          <label>联系人 <input id="admin-dealer-contact" placeholder="如 张先生 / Polorenocar" value="${escapeHtml(dealer ? dealer.contact || "" : "")}" /></label>
+          <label>联系电话 <input id="admin-dealer-phone" type="tel" placeholder="如 +33 07.60.09.64.74" value="${escapeHtml(dealer ? dealer.phone || "" : "")}" /></label>
+          <label class="full">详细地址 <input id="admin-dealer-address" placeholder="如 90 impasse Joseph Louis Vicat, 83600 Fréjus, France" value="${escapeHtml(dealer ? dealer.address || "" : "")}" /></label>
           <label>等级 <select id="admin-dealer-level">
             <option value="Country Partner" ${(!dealer || dealer.level === "Country Partner") ? "selected" : ""}>国家级合作</option>
             <option value="Regional Dealer" ${dealer && dealer.level === "Regional Dealer" ? "selected" : ""}>区域经销商</option>
@@ -3782,6 +3790,9 @@
     document.getElementById("admin-dealer-password").value = "";
     document.getElementById("admin-dealer-country").value = "";
     document.getElementById("admin-dealer-city").value = "";
+    document.getElementById("admin-dealer-contact").value = "";
+    document.getElementById("admin-dealer-phone").value = "";
+    document.getElementById("admin-dealer-address").value = "";
     document.getElementById("admin-dealer-level").value = "Country Partner";
     document.getElementById("admin-dealer-parent").value = "HQ";
     document.getElementById("admin-dealer-status").value = "Active";

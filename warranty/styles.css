@@ -516,6 +516,14 @@ a {
   color: var(--soft);
 }
 
+/* 长文本单元格（如经销商详细地址）：超宽省略，hover 显示完整内容 */
+.workspace-content .cell-ellipsis {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ============================================================
    Hero
    ============================================================ */
