@@ -9,5 +9,6 @@ export async function onRequestPost(context) {
   if (token) {
     await env.DB.prepare("DELETE FROM sessions WHERE token = ?").bind(token).run();
   }
-  return json({ ok: true }, 200, { "Set-Cookie": clearSessionCookie() });
+  const isSecure = new URL(request.url).protocol === "https:";
+  return json({ ok: true }, 200, { "Set-Cookie": clearSessionCookie(isSecure) });
 }

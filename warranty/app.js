@@ -1113,7 +1113,18 @@
         usageType: "Single",
         defaultUsageLimit: 1,
         status: "Active",
-        remark: "Mid-high, 8.5mil, high transparency & elongation, polycarbon hydrophobic coating. 12-year warranty.",
+        remark: "Upper-mid, 8.5mil, high transparency & elongation, polycarbonate hydrophobic coating. 12-year warranty.",
+      },
+      {
+        type: "PPF",
+        name: "HEHE PPF APEX 190",
+        externalModel: "HH APEX 190",
+        stockCode: "",
+        warrantyYears: 15,
+        usageType: "Single",
+        defaultUsageLimit: 1,
+        status: "Active",
+        remark: "High-end global debut, 7.5mil, Dual-Polycarbonate PPF, 143GU, extreme anti-aging. 15-year warranty.",
       },
       {
         type: "PPF",
@@ -1226,6 +1237,28 @@
         remark: "Side/rear windows, VLT 20%, UV block ≥99%, IR rejection 94%, TSER 63%. 10-year warranty.",
       },
       /* ── Color Shift Window Film 千层炫彩系列 ── */
+      {
+        type: "WINDOW_FILM",
+        name: "HEHE Blush Gold",
+        externalModel: "HH Blush Gold",
+        stockCode: "",
+        warrantyYears: 8,
+        usageType: "Multi",
+        defaultUsageLimit: 24,
+        status: "Active",
+        remark: "Rose-gold chameleon nano-ceramic tint, VLT 70%, IRR 94%, TSER 47%, 2mil. 8-year warranty.",
+      },
+      {
+        type: "WINDOW_FILM",
+        name: "HEHE Sky Cyan",
+        externalModel: "HH Sky Cyan",
+        stockCode: "",
+        warrantyYears: 8,
+        usageType: "Multi",
+        defaultUsageLimit: 24,
+        status: "Active",
+        remark: "Multi-layer optical micro-structure chameleon film, VLT 75%, IRR 92%, TSER 49%, 3mil. 8-year warranty.",
+      },
       {
         type: "WINDOW_FILM",
         name: "HEHE Color Shift GQCM70",
@@ -1602,20 +1635,58 @@
     selectedRecordId: "",
     toast: "",
     loading: true,
+    publicVerifyVin: "",
+    publicVerifyResults: null,
+    inquiries: null,
+    inquiriesLoading: false,
   };
   let lastRenderedRoute = "";
 
   async function loadData() {
     try {
       const res = await fetch("/api/data");
-      const json = await res.json();
-      if (json.ok && json.data) {
-        return json.data;
+      if (res.ok) {
+        const json = await res.json();
+        if (json.ok && json.data) {
+          return json.data;
+        }
       }
     } catch (error) {
-      // network error
+      // fallback to local seedData preview when running without API
     }
-    return null;
+    return JSON.parse(JSON.stringify(seedData));
+  }
+
+  async function fetchPublicVerify(vin) {
+    const cleanVin = String(vin || "").trim().toUpperCase();
+    ui.publicVerifyVin = cleanVin;
+    if (!cleanVin) {
+      ui.publicVerifyResults = [];
+      return;
+    }
+    try {
+      const res = await fetch(`/api/public/verify?vin=${encodeURIComponent(cleanVin)}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.ok && Array.isArray(json.records)) {
+          ui.publicVerifyResults = json.records;
+          return;
+        }
+      }
+    } catch (_) {
+      // static preview fallback below
+    }
+    const localPool = [
+      ...((data && data.warrantyRecords) || []),
+      ...(seedData.warrantyRecords || []),
+    ];
+    const seen = new Set();
+    ui.publicVerifyResults = localPool.filter((r) => {
+      if (!r || r.status !== "Active" || String(r.vin || "").toUpperCase() !== cleanVin) return false;
+      if (seen.has(r.id)) return false;
+      seen.add(r.id);
+      return true;
+    });
   }
 
   async function saveData() {
@@ -1631,14 +1702,21 @@
   }
 
   function lang() {
-    // Admin routes are always Chinese
+    // Authenticated HQ Admin workspace uses Chinese; public Admin Login respects selected language
     const route = getRoute();
-    if (route && route.startsWith("admin")) return "zh";
+    if (route && route.startsWith("admin") && route !== "admin/login") return "zh";
     return localStorage.getItem("hhWarrantyLang") || "en";
   }
 
   function t(key) {
-    return (copy[lang()] && copy[lang()][key]) || copy.en[key] || key;
+    const current = lang();
+    if (copy[current] && Object.prototype.hasOwnProperty.call(copy[current], key)) {
+      return copy[current][key];
+    }
+    if (Object.prototype.hasOwnProperty.call(copy.en, key)) {
+      return copy.en[key];
+    }
+    return key;
   }
 
   function isAuthenticated(role) {
@@ -1671,6 +1749,7 @@
       if (role === "dealer" && result.dealerCode) {
         sessionStorage.setItem(AUTH.dealer.codeKey, result.dealerCode);
       }
+      data = await loadData();
       setRoute(account.dashboardRoute);
     } catch (error) {
       showToast("Network error. Please retry.");
@@ -2066,27 +2145,27 @@
 
   function renderHome() {
     const s = data?.settings || {};
+    const ps = data?.publicStats || null;
     const warrantyBaseline = s.historicalWarrantyBaseline ?? 7654;
-    const vehicleBaseline = s.historicalVehicleBaseline ?? 0;
-    const dealerBaseline = s.historicalDealerBaseline ?? 0;
+    const vehicleBaseline = s.historicalVehicleBaseline ?? 4567;
+    const dealerBaseline = s.historicalDealerBaseline ?? 234;
 
-    // Compute stats directly from loaded data (no API dependency for initial render)
     const activeRecords = (data?.warrantyRecords || []).filter((r) => r.status === "Active");
     const activeWarrantyCount = activeRecords.length;
-    const displayTotal = warrantyBaseline + activeWarrantyCount;
+    const displayTotal = ps ? ps.displayWarrantyTotal : warrantyBaseline + activeWarrantyCount;
 
     const vinSet = new Set(
       activeRecords.map((r) => (r.vin || "").toUpperCase().trim()).filter(Boolean),
     );
-    const displayVehicle = vehicleBaseline + vinSet.size;
+    const displayVehicle = ps ? ps.displayVehicleTotal : vehicleBaseline + vinSet.size;
 
     const activeDealers = (data?.dealers || []).filter((d) => d.status === "Active");
-    const displayDealer = dealerBaseline + activeDealers.length;
+    const displayDealer = ps ? ps.displayDealerTotal : dealerBaseline + activeDealers.length;
 
     const countrySet = new Set(
       activeDealers.map((d) => (d.country || "").trim()).filter(Boolean),
     );
-    const countryCount = countrySet.size;
+    const countryCount = ps ? ps.coveredCountryCount : (countrySet.size || 1);
 
     const hero = `
       <section class="hero-section">
@@ -2180,7 +2259,7 @@
     }
 
     try {
-      const res = await fetch("/api/public/stats");
+      const res = await fetch("/api/public-stats");
       if (!res.ok) throw new Error("HTTP " + res.status);
       const json = await res.json();
       if (!json.ok) throw new Error("API not ok");
@@ -2220,10 +2299,15 @@
   function renderVerifyContent() {
     const query = sessionStorage.getItem("hhVerifyVin") || "";
     const normalized = query.trim().toUpperCase();
+    if (normalized && ui.publicVerifyVin !== normalized) {
+      fetchPublicVerify(normalized).then(() => render());
+    }
     const results = normalized
-      ? data.warrantyRecords.filter(
-          (record) => record.vin.toUpperCase() === normalized && record.status === "Active",
-        )
+      ? (ui.publicVerifyVin === normalized && Array.isArray(ui.publicVerifyResults)
+          ? ui.publicVerifyResults
+          : (data?.warrantyRecords || []).filter(
+              (record) => record.vin.toUpperCase() === normalized && record.status === "Active",
+            ))
       : [];
     const selected =
       results.find((record) => record.id === ui.selectedRecordId) || results[0] || null;
@@ -3182,6 +3266,7 @@
       ["admin/records", "质保记录"],
       ["admin/points", "积分管理"],
       ["admin/rewards", "兑换管理"],
+      ["admin/inquiries", "官网询盘"],
       ["admin/export", "数据导出"],
     ];
     return renderWorkspaceShell({
@@ -3189,8 +3274,8 @@
       content,
       items,
       kicker: "总部管理后台",
-      title: "质保运营中心",
-      lead: "产品配置、经销商管理、质保码导入与分配、质保审核、积分与兑换管理、数据导出。",
+      title: "质保与渠道运营中心",
+      lead: "产品配置、经销商管理、质保码导入与分配、质保审核、积分兑换、官网合作询盘及数据导出。",
       logoutAction: "admin-logout",
     });
   }
@@ -4761,6 +4846,163 @@
     return renderAdminRewards();
   }
 
+  async function loadAdminInquiries(force) {
+    if (ui.inquiriesLoading) return;
+    if (Array.isArray(ui.inquiries) && !force) return;
+    ui.inquiriesLoading = true;
+    try {
+      const res = await fetch("/api/inquiries");
+      if (res.ok) {
+        const json = await res.json();
+        ui.inquiries = (json && json.inquiries) || [];
+      } else {
+        ui.inquiries = ui.inquiries || [];
+      }
+    } catch (_) {
+      ui.inquiries = ui.inquiries || [];
+    }
+    ui.inquiriesLoading = false;
+    if (getRoute() === "admin/inquiries") render();
+  }
+
+  async function toggleInquiryStatus(id, currentStatus) {
+    const nextStatus = currentStatus === "Contacted" ? "Pending" : "Contacted";
+    try {
+      await fetch("/api/inquiries", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: Number(id), status: nextStatus }),
+      });
+      if (Array.isArray(ui.inquiries)) {
+        const item = ui.inquiries.find((x) => Number(x.id) === Number(id));
+        if (item) item.status = nextStatus;
+      }
+      showToast(nextStatus === "Contacted" ? "已标记为已跟进" : "已恢复为待跟进");
+    } catch (_) {
+      showToast("更新失败，请重试");
+    }
+  }
+
+  async function deleteInquiry(id) {
+    if (!window.confirm("确认删除该条官网询盘记录吗？")) return;
+    try {
+      await fetch(`/api/inquiries?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      if (Array.isArray(ui.inquiries)) {
+        ui.inquiries = ui.inquiries.filter((x) => Number(x.id) !== Number(id));
+      }
+      showToast("询盘记录已删除");
+    } catch (_) {
+      showToast("删除失败，请重试");
+    }
+  }
+
+  function exportInquiriesCsv() {
+    const list = ui.inquiries || [];
+    if (!list.length) {
+      showToast("暂无官网询盘数据可导出");
+      return;
+    }
+    const rows = [
+      ["ID", "提交时间(UTC)", "跟进状态", "姓名", "公司/门店", "国家/城市", "合作类型", "意向产品", "联系方式(Email/WhatsApp/TG)", "留言说明", "来源语言"],
+      ...list.map((item) => [
+        item.id,
+        item.created_at || "",
+        item.status === "Contacted" ? "已跟进" : "待跟进",
+        item.name || "",
+        item.company || "",
+        item.country || "",
+        item.business_type || "",
+        item.interest || "",
+        item.contact || "",
+        item.message || "",
+        item.lang || "",
+      ]),
+    ];
+    const csv = "\uFEFF" + rows.map((r) => r.map((c) => `"${String(c ?? "").replace(/"/g, '""')}"`).join(",")).join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `HH-Website-Inquiries-${today()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function renderAdminInquiries() {
+    if (ui.inquiries === null && !ui.inquiriesLoading) {
+      loadAdminInquiries(false);
+    }
+    const list = ui.inquiries || [];
+    const pendingCount = list.filter((x) => x.status !== "Contacted").length;
+    return adminShell(
+      "admin/inquiries",
+      `
+        <section class="panel">
+          <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;">
+            <div>
+              <h2 style="margin:0 0 6px;">官网合作与样品询盘 (${list.length} 条 · 待跟进 ${pendingCount} 条)</h2>
+              <p style="margin:0;color:var(--soft);">来自 hhppf.com 中/英/俄三语首页底部“申请渠道报价与样品套装”表单的客户留资记录。</p>
+            </div>
+            <div class="form-actions" style="margin:0;">
+              <button class="ghost-button" type="button" data-action="refresh-inquiries">刷新列表</button>
+              <button class="button" type="button" data-action="export-inquiries">导出询盘 CSV</button>
+            </div>
+          </div>
+          ${
+            ui.inquiriesLoading
+              ? `<p class="notice">正在加载官网询盘记录…</p>`
+              : !list.length
+                ? `<p class="notice">暂无官网客户询盘记录。客户在官网首页底部提交合作/拿样表单后将实时显示在此处。</p>`
+                : `
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>提交时间</th>
+                          <th>状态</th>
+                          <th>客户 / 公司</th>
+                          <th>国家与城市</th>
+                          <th>身份与意向系列</th>
+                          <th>联系方式</th>
+                          <th>补充留言</th>
+                          <th>操作</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${list
+                          .map((item) => {
+                            const isDone = item.status === "Contacted";
+                            return `
+                              <tr>
+                                <td style="white-space:nowrap;">${escapeHtml(item.created_at || "")}<br><span class="small">语言: ${escapeHtml((item.lang || "en").toUpperCase())}</span></td>
+                                <td><span class="status ${isDone ? "status-active" : "status-pending"}">${isDone ? "已跟进" : "待跟进"}</span></td>
+                                <td><strong>${escapeHtml(item.name || "")}</strong><br><span class="small">${escapeHtml(item.company || "")}</span></td>
+                                <td>${escapeHtml(item.country || "")}</td>
+                                <td>${escapeHtml(item.business_type || "-")}<br><span class="small">${escapeHtml(item.interest || "-")}</span></td>
+                                <td><strong>${escapeHtml(item.contact || "")}</strong></td>
+                                <td style="max-width:260px;white-space:pre-wrap;">${escapeHtml(item.message || "-")}</td>
+                                <td style="white-space:nowrap;">
+                                  <div class="inline-actions">
+                                    <button class="text-button" type="button" data-action="toggle-inquiry" data-id="${item.id}" data-status="${escapeHtml(item.status || "Pending")}">${isDone ? "标为待跟进" : "标为已跟进"}</button>
+                                    <button class="text-button" type="button" data-action="delete-inquiry" data-id="${item.id}">删除</button>
+                                  </div>
+                                </td>
+                              </tr>
+                            `;
+                          })
+                          .join("")}
+                      </tbody>
+                    </table>
+                  </div>
+                `
+          }
+        </section>
+      `,
+    );
+  }
+
   function renderAdminExport() {
     return adminShell(
       "admin/export",
@@ -4772,6 +5014,7 @@
             <button class="button" data-action="export-warranties">导出质保记录</button>
             <button class="ghost-button" data-action="export-points">导出积分流水</button>
             <button class="ghost-button" data-action="export-redemptions">导出兑换申请</button>
+            <button class="ghost-button" data-action="export-inquiries">导出官网询盘</button>
           </div>
         </section>
       `,
@@ -4997,6 +5240,7 @@
     if (route === "admin/points") return renderAdminPoints();
     if (route === "admin/rewards") return renderAdminRewards();
     if (route === "admin/redemptions") return renderAdminRedemptions();
+    if (route === "admin/inquiries") return renderAdminInquiries();
     if (route === "admin/export") return renderAdminExport();
     return renderHome();
   }
@@ -5231,13 +5475,16 @@
     if (!target || target.matches("select")) return;
     const action = target.getAttribute("data-action");
     if (action === "sample-vin") {
-      sessionStorage.setItem("hhVerifyVin", "XTA210990R1234567");
+      const sampleVin = "XTA210990R1234567";
+      sessionStorage.setItem("hhVerifyVin", sampleVin);
       ui.selectedRecordId = "";
-      if (getRoute() === "verify") {
-        render();
-      } else {
-        setRoute("verify");
-      }
+      fetchPublicVerify(sampleVin).then(() => {
+        if (getRoute() === "verify") {
+          render();
+        } else {
+          setRoute("verify");
+        }
+      });
     }
     if (action === "select-record") {
       ui.selectedRecordId = target.getAttribute("data-id");
@@ -5256,6 +5503,12 @@
     if (action === "export-warranties") exportWarranties();
     if (action === "export-points") exportPoints();
     if (action === "export-redemptions") exportRedemptions();
+    if (action === "export-inquiries") {
+      loadAdminInquiries(false).then(() => exportInquiriesCsv());
+    }
+    if (action === "refresh-inquiries") loadAdminInquiries(true);
+    if (action === "toggle-inquiry") toggleInquiryStatus(target.getAttribute("data-id"), target.getAttribute("data-status"));
+    if (action === "delete-inquiry") deleteInquiry(target.getAttribute("data-id"));
     if (action === "dealer-logout") signOut("dealer");
     if (action === "admin-logout") signOut("admin");
     if (action === "admin-product-save") handleAdminProductSave();
@@ -5287,10 +5540,11 @@
     if (action === "confirm-import") handleConfirmImport();
   });
 
-  function handleVerify(form) {
+  async function handleVerify(form) {
     const vin = new FormData(form).get("vin").trim().toUpperCase();
     sessionStorage.setItem("hhVerifyVin", vin);
     ui.selectedRecordId = "";
+    await fetchPublicVerify(vin);
     if (getRoute() === "verify") {
       render();
     } else {
@@ -5542,7 +5796,9 @@
   }
 
   function handleReview(recordId, approved) {
-    const record = data.warrantyRecords.find((item) => item.id === recordId);
+    const record =
+      ((data && data.warrantyRecords) || []).find((item) => item.id === recordId) ||
+      (ui.publicVerifyResults || []).find((item) => item.id === recordId);
     if (!record) return;
     const code = codeByValue(record.warrantyCode);
     const dealer = dealerByCode(record.dealerCode);
@@ -5827,7 +6083,9 @@
   }
 
   function printCertificate(recordId) {
-    const record = data.warrantyRecords.find((item) => item.id === recordId);
+    const record =
+      ((data && data.warrantyRecords) || []).find((item) => item.id === recordId) ||
+      (ui.publicVerifyResults || []).find((item) => item.id === recordId);
     if (!record || record.status !== "Active") {
       showToast("Certificate is available after HQ approval.");
       return;

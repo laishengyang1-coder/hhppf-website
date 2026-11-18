@@ -1,50 +1,59 @@
-import { hashPassword, json } from "./_lib.js";
+import { hashPassword, json, readBody } from "./_lib.js";
 import { SEED_ADMIN, SEED_DEALERS, buildSeedBlob } from "./_seed.js";
 
-const DATA_VERSION = 4;
+const DATA_VERSION = 5;
 
-// POST /api/setup — one-time initialization (idempotent: only seeds if empty)
+// POST /api/setup — one-time initialization (requires INIT_SECRET or body.initialPassword if DB is empty)
 export async function onRequestPost(context) {
-  const { env } = context;
+  const { env, request } = context;
 
-  // Check if already initialized
   const existing = await env.DB.prepare("SELECT COUNT(*) as cnt FROM users").first();
   if (existing && existing.cnt > 0) {
     return json({ ok: true, alreadyInitialized: true, message: "System already initialized." });
   }
 
-  // 1. Create admin user
-  const adminHash = await hashPassword(SEED_ADMIN.password);
+  const body = await readBody(request);
+  const initPassword = String(env.INIT_ADMIN_PASSWORD || body.initialPassword || "").trim();
+  if (!initPassword || initPassword.length < 8) {
+    return json(
+      {
+        ok: false,
+        error: "initial_password_required",
+        message: "Provide INIT_ADMIN_PASSWORD env secret or initialPassword (>= 8 chars) to initialize empty database.",
+      },
+      400,
+    );
+  }
+
+  const adminHash = await hashPassword(initPassword);
   await env.DB
     .prepare("INSERT INTO users (role, username, password_hash, dealer_code) VALUES ('admin', ?, ?, NULL)")
     .bind(SEED_ADMIN.username, adminHash)
     .run();
 
-  // 2. Create dealer users
   for (const dealer of SEED_DEALERS) {
-    const hash = await hashPassword(dealer.password);
+    const hash = await hashPassword(initPassword);
     await env.DB
       .prepare("INSERT INTO users (role, username, password_hash, dealer_code) VALUES ('dealer', ?, ?, ?)")
       .bind(dealer.username, hash, dealer.code)
       .run();
   }
 
-  // 3. Seed app_data blob
   const blob = buildSeedBlob(DATA_VERSION);
-  const serialized = JSON.stringify(blob);
   await env.DB
-    .prepare("INSERT INTO app_data (key, value, updated_at) VALUES ('main', ?, datetime('now')) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at")
-    .bind(serialized)
+    .prepare(
+      "INSERT INTO app_data (key, value, updated_at) VALUES ('main', ?, datetime('now')) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at",
+    )
+    .bind(JSON.stringify(blob))
     .run();
 
   return json({
     ok: true,
     initialized: true,
-    message: "System initialized. Admin login: anhuiheheppf / hhppf. Dealer demo: moscow / hhppf.",
+    message: "System initialized successfully.",
   });
 }
 
-// GET /api/setup — check initialization status
 export async function onRequestGet(context) {
   const { env } = context;
   try {
