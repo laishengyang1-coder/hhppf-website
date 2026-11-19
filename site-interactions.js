@@ -4,6 +4,12 @@
 (function () {
   "use strict";
 
+  const pageUrl = new URL(window.location.href);
+  if (pageUrl.searchParams.get("lang") === "ru") {
+    pageUrl.searchParams.set("lang", document.documentElement.lang === "zh" ? "zh" : "en");
+    window.history.replaceState(window.history.state, "", pageUrl);
+  }
+
   const SPEC_CSV_ROWS = [
     ["Category", "Series / Tier", "Model", "Application", "Thickness", "Tensile / VLT", "Elongation / IRR", "Gloss / UVR", "Peel / TSER", "Roll Size", "Warranty", "Key Highlights"],
     ["Clear & Matte PPF", "Entry", "HH Classic 190", "Clear Gloss PPF", "7.5±0.3 mil", "26 MPa / VLT 91.4%", "360% (3.6x)", "140 GU (Class A)", "20min:14N/25mm, 24h:17N/25mm", "1.52m x 15m", "5 Years", "High initial tack, easy installation, lotus hydrophobic effect, fast self-healing, crack-free coating"],

@@ -26,3 +26,6 @@
 
 /color-studio/models/tesla-model-y.glb
   Content-Encoding: gzip
+
+/color-studio/reopen.js
+  Cache-Control: no-cache, must-revalidate
