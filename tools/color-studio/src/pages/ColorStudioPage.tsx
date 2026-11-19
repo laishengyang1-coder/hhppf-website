@@ -19,6 +19,8 @@ import {
   COLOR_STUDIO_SWATCHES,
   FINISH_FILTERS,
   AIOC_SPEC,
+  studioText,
+  type StudioLanguage,
   LIGHTING_PRESETS,
   STUDIO_VEHICLES,
   findColorSwatchByCode,
@@ -35,44 +37,68 @@ import { ColorCatalogDrawer } from '../components/color-studio/ColorCatalogDrawe
 import { ColorCardModal } from '../components/color-studio/ColorCardModal';
 import { cn } from '../lib/cn';
 
-const ColorStudioCanvas = lazy(() => import('../components/color-studio/ColorStudioCanvas')
+const loadColorStudioCanvas = () => import('../components/color-studio/ColorStudioCanvas');
+const ColorStudioCanvas = lazy(() => loadColorStudioCanvas()
   .then(module => ({ default: module.ColorStudioCanvas })));
+
+function prefetchStudio3D(modelUrl: string) {
+  const connection = (navigator as Navigator & {
+    connection?: { saveData?: boolean; effectiveType?: string };
+  }).connection;
+  if (connection?.saveData || /(^|-)2g$/.test(connection?.effectiveType ?? '')) return;
+
+  const idleWindow = window as Window & {
+    requestIdleCallback?: (callback: () => void, options: { timeout: number }) => number;
+    cancelIdleCallback?: (handle: number) => void;
+  };
+  let cancelled = false;
+  let idleHandle: number | undefined;
+  const prefetch = () => {
+    if (cancelled) return;
+    loadColorStudioCanvas().catch(() => {});
+    fetch(modelUrl, { credentials: 'same-origin' }).catch(() => {});
+  };
+  const timer = window.setTimeout(() => {
+    if (idleWindow.requestIdleCallback) idleHandle = idleWindow.requestIdleCallback(prefetch, { timeout: 4000 });
+    else prefetch();
+  }, 2500);
+  return () => {
+    cancelled = true;
+    window.clearTimeout(timer);
+    if (idleHandle !== undefined) idleWindow.cancelIdleCallback?.(idleHandle);
+  };
+}
 
 const VIEW_MODES: Array<{
   key: StudioViewMode;
   label: string;
   shortLabel: string;
   labelEn: string;
-  labelRu: string;
-  shortLabelRu: string;
 }> = [
-  { key: 'swatch', label: '流光样板', shortLabel: '样板', labelEn: 'Swatches', labelRu: 'Веер образцов', shortLabelRu: 'Веер' },
-  { key: 'car', label: '实车整车', shortLabel: '整车', labelEn: 'Vehicle', labelRu: 'Автомобиль', shortLabelRu: 'Авто' },
-  { key: 'closeup', label: '腰线近景', shortLabel: '近景', labelEn: 'Detail', labelRu: 'Деталь кузова', shortLabelRu: 'Деталь' },
-  { key: 'macro', label: '微距肌理', shortLabel: '微距', labelEn: 'Macro', labelRu: 'Макрофактура', shortLabelRu: 'Макро' },
-  { key: 'sphere', label: '光影球体', shortLabel: '球体', labelEn: 'Sphere', labelRu: 'Сфера', shortLabelRu: 'Сфера' },
+  { key: 'swatch', label: '流光样板', shortLabel: '样板', labelEn: 'Swatches' },
+  { key: 'car', label: '实车整车', shortLabel: '整车', labelEn: 'Vehicle' },
+  { key: 'closeup', label: '腰线近景', shortLabel: '近景', labelEn: 'Detail' },
+  { key: 'macro', label: '微距肌理', shortLabel: '微距', labelEn: 'Macro' },
+  { key: 'sphere', label: '光影球体', shortLabel: '球体', labelEn: 'Sphere' },
 ];
 
-type Language = 'zh' | 'en' | 'ru';
+function initialLanguage(query: URLSearchParams): StudioLanguage {
+  const normalize = (value: string | null): StudioLanguage => value === 'zh' ? 'zh' : 'en';
+  if (query.has('lang')) return normalize(query.get('lang'));
 
-function initialLanguage(query: URLSearchParams): Language {
-  const requested = query.get('lang');
-  if (requested === 'en' || requested === 'zh' || requested === 'ru') return requested;
   if (document.referrer) {
     const from = new URL(document.referrer);
     if (from.origin === location.origin) {
-      const home = from.pathname.match(/^\/index-(zh|ru)(?:\.html)?\/?$/);
-      if (home) return home[1] as Language;
-      if (from.pathname === '/' || from.pathname === '/index.html') return 'en';
-      const fromLang = from.searchParams.get('lang');
-      if (fromLang === 'en' || fromLang === 'zh' || fromLang === 'ru') return fromLang;
+      if (/^\/index-zh(?:\.html)?\/?$/.test(from.pathname)) return 'zh';
+      if (/^\/(?:index(?:-[a-z]{2})?(?:\.html)?)?\/?$/.test(from.pathname)) return 'en';
+      if (from.searchParams.has('lang')) return normalize(from.searchParams.get('lang'));
     }
   }
   try {
-    const stored = localStorage.getItem('hhColorStudioLang');
-    if (stored === 'en' || stored === 'zh' || stored === 'ru') return stored;
-  } catch { /* Embedded browsers can disable storage. */ }
-  return 'en';
+    return normalize(localStorage.getItem('hhColorStudioLang'));
+  } catch {
+    return 'en';
+  }
 }
 
 export default function ColorStudioPage() {
@@ -112,12 +138,12 @@ export default function ColorStudioPage() {
     });
   const [railFinish, setRailFinish] = useState<'all' | FilmFinishType>(() => {
     const filter = searchParams.get('finish');
-    return filter === initialSwatch.finish ? initialSwatch.finish : 'all';
+    return FINISH_FILTERS.find(option => option.key === filter)?.key ?? 'all';
   });
   const [vehicleId, setVehicleId] = useState<StudioVehicleId>(initialVehicle);
-  const [lang, setLang] = useState<Language>(() => initialLanguage(searchParams));
-  const tr = (zh: string, en: string, ru: string) => lang === 'zh' ? zh : lang === 'ru' ? ru : en;
-  const selectedName = tr(activeSwatch.name, activeSwatch.nameEn, activeSwatch.nameRu);
+  const [lang, setLang] = useState<StudioLanguage>(() => initialLanguage(searchParams));
+  const tr = studioText.bind(null, lang);
+  const selectedName = tr(activeSwatch.name, activeSwatch.nameEn);
   const alternateName = lang === 'en' ? activeSwatch.name : activeSwatch.nameEn;
   const alternateLang = lang === 'en' ? 'zh' : 'en';
   const homeUrl = lang === 'en' ? '/' : `/index-${lang}.html`;
@@ -125,12 +151,12 @@ export default function ColorStudioPage() {
 
   useEffect(() => {
     document.documentElement.lang = lang;
-    document.title = { en: 'Color Studio', zh: '高定选色工坊', ru: 'Студия цвета' }[lang] + ' | H&H Automotive Films';
+    document.title = studioText(lang, '高定选色工坊', 'Color Studio') + ' | H&H Automotive Films';
+    try { localStorage.setItem('hhColorStudioLang', lang); } catch { /* The URL works without storage. */ }
   }, [lang]);
 
-  function changeLanguage(next: Language) {
+  function changeLanguage(next: StudioLanguage) {
     setLang(next);
-    try { localStorage.setItem('hhColorStudioLang', next); } catch { /* Keep the URL usable without storage. */ }
   }
   const [pickedUp, setPickedUp] = useState<boolean>(false);
   const [playing, setPlaying] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -148,6 +174,13 @@ export default function ColorStudioPage() {
     [railFinish],
   );
 
+  // Shared links can carry a rail filter from a different 3D selection.
+  const fanSwatches = useMemo(
+    () => railFinish !== 'all' && activeSwatch.finish !== railFinish
+      ? [activeSwatch, ...railSwatches] : railSwatches,
+    [activeSwatch, railFinish, railSwatches],
+  );
+
   const activeGlobalIndex = useMemo(() => {
     const idx = COLOR_STUDIO_SWATCHES.findIndex((s) => s.code === activeSwatch.code);
     return idx === -1 ? 0 : idx;
@@ -159,11 +192,17 @@ export default function ColorStudioPage() {
     params.set('mode', viewMode);
     params.set('car', vehicleId);
     params.set('lang', lang);
-    if (lightingPreset === 'studio') params.delete('light'); else params.set('light', lightingPreset);
-    if (railFinish === 'all') params.delete('finish'); else params.set('finish', railFinish);
+    if (lightingPreset !== 'studio' || params.has('light')) params.set('light', lightingPreset);
+    if (railFinish !== 'all' || params.has('finish')) params.set('finish', railFinish);
     const nextUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
     window.history.replaceState(window.history.state, '', nextUrl);
   }, [activeSwatch.code, viewMode, vehicleId, lang, lightingPreset, railFinish]);
+
+  useEffect(() => {
+    if (viewMode !== 'swatch') return;
+    const vehicle = STUDIO_VEHICLES.find(v => v.id === vehicleId) ?? STUDIO_VEHICLES[0];
+    return prefetchStudio3D(vehicle.modelUrl);
+  }, [viewMode, vehicleId]);
 
   useEffect(() => {
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -246,25 +285,25 @@ export default function ColorStudioPage() {
           {!isEmbed && (
             <a
               href={productUrl}
-              aria-label={tr('返回官网', 'Back', 'К продукции H&H')}
+              aria-label={tr('返回官网', 'Back')}
               className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-full bg-[#0a0b0f]/92 hover:bg-[#14161e] border border-white/12 text-xs text-white/80 transition-colors flex-shrink-0"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{tr('返回', 'Back', 'Назад')}</span>
+              <span className="hidden sm:inline">{tr('返回', 'Back')}</span>
             </a>
           )}
-          <a href={homeUrl} aria-label={tr('H&H 官网', 'H&H home', 'На главную H&H')} className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-full bg-[#0a0b0f]/92 border border-white/10">
+          <a href={homeUrl} aria-label={tr('H&H 官网', 'H&H home')} className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-full bg-[#0a0b0f]/92 border border-white/10">
             <img src="/assets/hh-logo.png" alt="H&H" width="43" height="20" className="h-4 w-auto md:h-5" />
             <span className="hidden sm:inline-block w-px h-3 bg-[#e9481a]/35" />
             <span className="hidden sm:inline text-[11px] tracking-widest text-white/60">
-              {tr('高定选色工坊', 'ATELIER STUDIO', 'СТУДИЯ ЦВЕТА')}
+              {tr('高定选色工坊', 'ATELIER STUDIO')}
             </span>
           </a>
         </div>
 
         {/* 桌面端居中：5 大视角分段控制器 */}
         <nav
-          aria-label={tr('展示模式', 'View mode', 'Режим просмотра')}
+          aria-label={tr('展示模式', 'View mode')}
           className="hidden lg:inline-flex items-center p-1 rounded-full bg-[#090a0e]/92 border border-[#e9481a]/25 shadow-2xl pointer-events-auto"
         >
           {VIEW_MODES.map((m) => {
@@ -282,7 +321,7 @@ export default function ColorStudioPage() {
                     : 'text-white/70 hover:text-[#F7F3EB]',
                 )}
               >
-                {tr(m.label, m.labelEn, m.labelRu)}
+                {tr(m.label, m.labelEn)}
               </button>
             );
           })}
@@ -292,7 +331,7 @@ export default function ColorStudioPage() {
         <div className="flex items-center gap-1 md:gap-2 pointer-events-auto flex-shrink-0">
           <div
             role="group"
-            aria-label={tr('影棚光影切换', 'Studio Lighting', 'Освещение студии')}
+            aria-label={tr('影棚光影切换', 'Studio Lighting')}
             className="inline-flex items-center p-0.5 rounded-full bg-[#090a0e]/92 border border-white/12"
           >
             {LIGHTING_PRESETS.map((preset) => {
@@ -303,7 +342,7 @@ export default function ColorStudioPage() {
                   aria-pressed={active}
                   type="button"
                   onClick={() => setLightingPreset(preset.key)}
-                  title={tr(preset.label, preset.labelEn, preset.labelRu)}
+                  title={tr(preset.label, preset.labelEn)}
                   className={cn(
                     'inline-flex items-center gap-1 px-1.5 sm:px-2 md:px-2.5 py-1.5 rounded-full text-[11px] font-medium transition-all whitespace-nowrap',
                     active
@@ -313,7 +352,7 @@ export default function ColorStudioPage() {
                 >
                   {renderLightIcon(preset.key)}
                   <span className="hidden sm:inline">
-                    {tr(preset.shortLabel, preset.shortLabelEn, preset.shortLabelRu)}
+                    {tr(preset.shortLabel, preset.shortLabelEn)}
                   </span>
                 </button>
               );
@@ -321,25 +360,24 @@ export default function ColorStudioPage() {
           </div>
 
           <select
-            aria-label={tr('语言', 'Language', 'Язык')}
+            aria-label={tr('语言', 'Language')}
             value={lang}
-            onChange={event => changeLanguage(event.target.value as Language)}
+            onChange={event => changeLanguage(event.target.value as StudioLanguage)}
             className="studio-language w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#090a0e]/92 hover:bg-[#14161e] border border-white/15 text-[11px] font-mono font-semibold transition-colors"
           >
             <option value="en" lang="en">EN</option>
             <option value="zh" lang="zh">中</option>
-            <option value="ru" lang="ru">RU</option>
           </select>
 
           <button
             type="button"
             onClick={() => setCardModalOpen(true)}
             className="h-8 w-8 sm:w-auto sm:px-3 md:h-9 md:px-3.5 rounded-full bg-[#090a0e]/92 hover:bg-[#171922] border border-[#e9481a]/55 text-[#ffab81] text-xs font-semibold flex items-center justify-center gap-1.5 transition-all whitespace-nowrap"
-            aria-label={tr('定制选色单', 'Spec Card', 'Карточка цвета')}
+            aria-label={tr('定制选色单', 'Spec Card')}
           >
             <Info className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">
-              {tr('定制选色单', 'Spec Card', 'Карточка цвета')}
+              {tr('定制选色单', 'Spec Card')}
             </span>
           </button>
         </div>
@@ -347,9 +385,9 @@ export default function ColorStudioPage() {
 
       {viewMode === 'swatch' ? (
         <>
-          <section className="studio-fan-toolbar" aria-label={tr('当前色卡', 'Current swatch', 'Текущий образец')}>
+          <section className="studio-fan-toolbar" aria-label={tr('当前色卡', 'Current swatch')}>
             <div className="studio-fan-identity">
-              <div className="studio-fan-meta"><span>{activeSwatch.code}</span><span>{tr(activeSwatch.seriesName.split(' ')[0], activeSwatch.finishLabelEn, activeSwatch.finishLabelRu)}</span></div>
+              <div className="studio-fan-meta"><span>{activeSwatch.code}</span><span>{tr(activeSwatch.seriesName.split(' ')[0], activeSwatch.finishLabelEn)}</span></div>
               <div className="studio-fan-title">
                 <h1>{selectedName}</h1>
                 <span lang={alternateLang}>{alternateName}</span>
@@ -357,33 +395,33 @@ export default function ColorStudioPage() {
             </div>
             {pickedUp && (
               <div className="studio-fan-optics">
-                <span>{tr('镜面清漆', 'Gloss', 'Глянец')} <b>{activeSwatch.optics.gloss}</b></span>
-                <span>{tr('金属微粒', 'Flake', 'Зерно')} <b>{activeSwatch.optics.metallic}</b></span>
-                <span>{tr('折光幻彩', 'Shift', 'Перелив')} <b>{activeSwatch.optics.shift}</b></span>
+                <span>{tr('镜面清漆', 'Gloss')} <b>{activeSwatch.optics.gloss}</b></span>
+                <span>{tr('金属微粒', 'Flake')} <b>{activeSwatch.optics.metallic}</b></span>
+                <span>{tr('折光幻彩', 'Shift')} <b>{activeSwatch.optics.shift}</b></span>
               </div>
             )}
             <div className="studio-fan-actions">
-              <button type="button" className="fan-play" disabled={pickedUp} aria-label={playing ? tr('暂停轮播', 'Pause playback', 'Приостановить показ') : tr('开始轮播', 'Start playback', 'Включить показ')} title={playing ? tr('暂停轮播', 'Pause', 'Пауза') : tr('开始轮播', 'Play', 'Пуск')} onClick={() => setPlaying(on => !on)}>
+              <button type="button" className="fan-play" disabled={pickedUp} aria-label={playing ? tr('暂停轮播', 'Pause playback') : tr('开始轮播', 'Start playback')} title={playing ? tr('暂停轮播', 'Pause') : tr('开始轮播', 'Play')} onClick={() => setPlaying(on => !on)}>
                 {playing && !pickedUp ? <Pause size={15} /> : <Play size={15} />}
               </button>
               <button type="button" className="fan-handle" aria-pressed={pickedUp} onClick={() => setPickedUp(on => !on)}>
                 {pickedUp ? <Undo2 size={15} /> : <Hand size={15} />}
-                {pickedUp ? tr('放回色卡', 'Return', 'Вернуть') : tr('拿起色卡', 'Pick up', 'Взять')}
+                {pickedUp ? tr('放回色卡', 'Return') : tr('拿起色卡', 'Pick up')}
               </button>
               <button type="button" className="fan-vehicle" onClick={() => handleChangeViewMode('car')}>
-                <Car size={15} />{tr('装车预览', 'On car', 'На авто')}
+                <Car size={15} />{tr('装车预览', 'On car')}
               </button>
             </div>
           </section>
-          <main className="studio-fan-stage" aria-label={tr('流光样板', 'Swatch gallery', 'Веер образцов')}>
-            <SwatchFan swatches={railSwatches} activeSwatch={activeSwatch} lightingPreset={lightingPreset}
+          <main className="studio-fan-stage" aria-label={tr('流光样板', 'Swatch gallery')}>
+            <SwatchFan swatches={fanSwatches} activeSwatch={activeSwatch} lightingPreset={lightingPreset}
               lang={lang} pickedUp={pickedUp} paused={!playing || drawerOpen || cardModalOpen}
               onSelect={setActiveSwatch} onPickedUpChange={setPickedUp} />
           </main>
         </>
       ) : (
         <div className="absolute inset-0">
-          <Suspense fallback={<div className="grid h-full place-items-center"><Loader2 aria-label={tr('载入 3D 展台', 'Loading 3D studio', 'Загрузка 3D-студии')} className="text-[#e9481a] animate-spin" /></div>}>
+          <Suspense fallback={<div className="grid h-full place-items-center"><Loader2 aria-label={tr('载入 3D 展台', 'Loading 3D studio')} className="text-[#e9481a] animate-spin" /></div>}>
             <ColorStudioCanvas lang={lang} activeSwatch={activeSwatch} viewMode={viewMode} lightingPreset={lightingPreset}
               vehicleId={vehicleId} onStepSwatch={handleStepSwatch} onModelStatusChange={handleModelStatusChange} />
           </Suspense>
@@ -419,7 +457,7 @@ export default function ColorStudioPage() {
               </h1>
               <p className="text-[11px] text-white/50 font-mono truncate">
                 {alternateName} ·{' '}
-                {tr(activeSwatch.finishLabel, activeSwatch.finishLabelEn, activeSwatch.finishLabelRu)}
+                {tr(activeSwatch.finishLabel, activeSwatch.finishLabelEn)}
               </p>
             </div>
           </div>
@@ -427,21 +465,21 @@ export default function ColorStudioPage() {
           {/* 桌面端：质感短评 + 3 项光学指标进度条 */}
           <div className="hidden md:block mt-3 pt-3 border-t border-white/10 space-y-2.5">
             <p className="text-xs text-white/70 leading-relaxed">
-              {tr(activeSwatch.tagline, activeSwatch.taglineEn, activeSwatch.taglineRu)}
+              {tr(activeSwatch.tagline, activeSwatch.taglineEn)}
             </p>
 
             <div className="space-y-1.5 pt-1">
               {[
                 {
-                  k: tr('镜面清漆', 'Clearcoat Gloss', 'Блеск лака'),
+                  k: tr('镜面清漆', 'Clearcoat Gloss'),
                   v: activeSwatch.optics.gloss,
                 },
                 {
-                  k: tr('金属微粒', 'Metallic Flake', 'Зерно'),
+                  k: tr('金属微粒', 'Metallic Flake'),
                   v: activeSwatch.optics.metallic,
                 },
                 {
-                  k: tr('折光幻彩', 'Color Shift', 'Перелив'),
+                  k: tr('折光幻彩', 'Color Shift'),
                   v: activeSwatch.optics.shift,
                 },
               ].map((metric) => (
@@ -470,12 +508,12 @@ export default function ColorStudioPage() {
                 className="w-full h-8 md:h-9 rounded-xl bg-white/10 hover:bg-[#e9481a] hover:text-[#090A0D] border border-white/15 hover:border-[#e9481a] text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
               >
                 <Car className="w-3.5 h-3.5" />
-                <span>{tr('装车实看 3D 效果', 'Preview on 3D Car', 'На 3D-модели')}</span>
+                <span>{tr('装车实看 3D 效果', 'Preview on 3D Car')}</span>
               </button>
             ) : (
               <div
                 role="group"
-                aria-label={tr('展车车型切换', 'Vehicle Selector', 'Выбор модели')}
+                aria-label={tr('展车车型切换', 'Vehicle Selector')}
                 className="w-full grid grid-cols-2 p-0.5 rounded-xl bg-black/50 border border-white/12"
               >
                 {STUDIO_VEHICLES.map((vehicle) => {
@@ -493,7 +531,7 @@ export default function ColorStudioPage() {
                           : 'text-white/65 hover:text-white',
                       )}
                     >
-                      {tr(vehicle.name, vehicle.shortName, vehicle.shortName)}
+                      {tr(vehicle.name, vehicle.shortName)}
                     </button>
                   );
                 })}
@@ -505,7 +543,7 @@ export default function ColorStudioPage() {
                 <div className="w-full flex items-center justify-center gap-1.5 text-[11px] text-[#ffab81] py-0.5">
                   <Loader2 className="w-3 h-3 animate-spin" />
                   <span>
-                    {tr('加载', 'Loading', 'Загрузка')} {vehicleId === 'modely' ? 'Model Y' : 'Model 3'} · {modelProgress}%
+                    {tr('加载', 'Loading')} {vehicleId === 'modely' ? 'Model Y' : 'Model 3'} · {modelProgress}%
                   </span>
                 </div>
               )}
@@ -513,7 +551,7 @@ export default function ColorStudioPage() {
             {(viewMode === 'car' || viewMode === 'closeup') &&
               modelStatus === 'error' && (
                 <div className="w-full text-[11px] text-red-300 text-center">
-                  {tr('3D 车模加载失败，请刷新重试', 'Failed to load car model', 'Не удалось загрузить модель. Обновите страницу.')}
+                  {tr('3D 车模加载失败，请刷新重试', 'Failed to load car model')}
                 </div>
               )}
           </div>
@@ -525,13 +563,13 @@ export default function ColorStudioPage() {
         {viewMode === 'swatch' && (
           <p className="studio-fan-hint">
             {pickedUp
-              ? tr('拖动色卡看折光 · 双击放回', 'Drag to tilt · Double-tap to return', 'Поворачивайте образец · Двойное нажатие вернёт его на место')
-              : tr('滑动切色 · 双击拿起色卡', 'Swipe to browse · Double-tap to pick up', 'Листайте в стороны · Двойное нажатие поднимет образец')}
+              ? tr('拖动色卡看折光 · 双击放回', 'Drag to tilt · Double-tap to return')
+              : tr('滑动切色 · 双击拿起色卡', 'Swipe to browse · Double-tap to pick up')}
           </p>
         )}
         {/* 小屏模式切换器 */}
         <nav
-          aria-label={tr('展示模式切换', 'Switch view', 'Выбрать режим')}
+          aria-label={tr('展示模式切换', 'Switch view')}
           className="lg:hidden inline-flex items-center p-1 rounded-full bg-[#090a0e]/92 border border-[#e9481a]/25 pointer-events-auto max-w-full overflow-x-auto no-scrollbar"
         >
           {VIEW_MODES.map((m) => {
@@ -549,7 +587,7 @@ export default function ColorStudioPage() {
                     : 'text-white/70 hover:text-white',
                 )}
               >
-                {tr(m.shortLabel, m.labelEn, m.shortLabelRu)}
+                {tr(m.shortLabel, m.labelEn)}
               </button>
             );
           })}
@@ -575,14 +613,14 @@ export default function ColorStudioPage() {
                         : 'text-white/55 hover:text-white border border-transparent',
                     )}
                   >
-                    {tr(f.label, f.labelEn, f.labelRu)}
+                    {tr(f.label, f.labelEn)}
                   </button>
                 );
               })}
             </div>
 
             {viewMode !== 'swatch' && <p className="hidden lg:block text-[11px] text-white/40 truncate">
-              {tr('拖动 360° 旋转 · 滚轮或双指缩放漆面细节', 'Drag to orbit 360° · Pinch or scroll to zoom', 'Вращайте на 360° · Приближайте колёсиком или двумя пальцами')}
+              {tr('拖动 360° 旋转 · 滚轮或双指缩放漆面细节', 'Drag to orbit 360° · Pinch or scroll to zoom')}
             </p>}
 
             <button
@@ -591,7 +629,7 @@ export default function ColorStudioPage() {
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#e9481a]/15 hover:bg-[#e9481a]/25 border border-[#e9481a]/40 text-[11px] font-medium text-[#ffab81] whitespace-nowrap transition-colors flex-shrink-0"
             >
               <Sparkles className="w-3 h-3" />
-              <span>{tr('全系色谱典藏', 'Archive', 'Каталог')}</span>
+              <span>{tr('全系色谱典藏', 'Archive')}</span>
               <ArrowUpRight className="w-3 h-3" />
             </button>
           </div>
@@ -604,8 +642,8 @@ export default function ColorStudioPage() {
               return (
                 <button
                   key={swatch.code}
-                  title={tr(swatch.name, swatch.nameEn, swatch.nameRu)}
-                  aria-label={tr(swatch.name, swatch.nameEn, swatch.nameRu) + ' · ' + swatch.code}
+                  title={tr(swatch.name, swatch.nameEn)}
+                  aria-label={tr(swatch.name, swatch.nameEn) + ' · ' + swatch.code}
                   type="button"
                   aria-pressed={selected}
                   onClick={() => selectFromControls(swatch)}

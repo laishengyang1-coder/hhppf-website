@@ -152,9 +152,7 @@
           const prefix =
             lang.startsWith("zh")
               ? `意向咨询型号/系列：${product}\n`
-              : lang.startsWith("ru")
-                ? `Интересующая серия/модель: ${product}\n`
-                : `Interested Model / Series: ${product}\n`;
+              : `Interested Model / Series: ${product}\n`;
           messageInput.value = prefix + messageInput.value;
         }
         if (partnerSection) {
@@ -269,16 +267,12 @@
           feedback.textContent =
             lang === "zh"
               ? "感谢您的提交！我们已收到您的合作/样品申请，H&H 海外业务团队将在 24 小时内与您联系。"
-              : lang === "ru"
-                ? "Спасибо! Ваша заявка успешно отправлена. Команда H&H свяжется с вами в течение 24 часов."
-                : "Thank you! Your inquiry has been recorded. Our H&H Global Partnership team will reach out within 24 hours.";
+              : "Thank you! Your inquiry has been recorded. Our H&H Global Partnership team will reach out within 24 hours.";
         } else {
           feedback.textContent =
             lang === "zh"
               ? "已为您生成结构化合作邮件并唤起邮件客户端（目标邮箱：anhui@heheppf.com），发送后团队将在 24 小时内响应。"
-              : lang === "ru"
-                ? "Заявка сформирована для отправки на anhui@heheppf.com — подтвердите отправку в почтовом клиенте."
-                : "Your structured inquiry is ready for anhui@heheppf.com — please confirm send in your mail client, or email us directly.";
+              : "Your structured inquiry is ready for anhui@heheppf.com — please confirm send in your mail client, or email us directly.";
           window.location.href = `mailto:anhui@heheppf.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines)}`;
         }
         feedback.classList.add("is-visible");

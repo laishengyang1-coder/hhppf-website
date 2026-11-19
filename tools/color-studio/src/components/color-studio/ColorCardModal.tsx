@@ -17,20 +17,19 @@ export interface ColorCardModalProps {
 function specification(swatch: ColorFilmItem, lang: StudioLanguage) {
   const t = studioText.bind(null, lang);
   return {
-    name: t(swatch.name, swatch.nameEn, swatch.nameRu),
-    secondaryName: t(swatch.nameEn, swatch.name, swatch.nameEn),
-    finish: t(swatch.finishLabel, swatch.finishLabelEn, swatch.finishLabelRu),
-    series: t(swatch.seriesName, swatch.seriesNameEn, swatch.seriesNameRu),
-    description: t(swatch.tagline, swatch.taglineEn, swatch.taglineRu),
-    model: t(AIOC_SPEC.modelName, AIOC_SPEC.modelNameEn, AIOC_SPEC.modelNameRu),
-    substrate: t(AIOC_SPEC.substrate, AIOC_SPEC.substrateEn, AIOC_SPEC.substrateRu),
-    modelLabel: t('所属产品型号', 'Product Model', 'Продукт'),
-    substrateLabel: t('基材与膜厚', 'Substrate & Thickness', 'Основа и толщина'),
-    finishLabel: t('表面工艺', 'Surface Finish', 'Покрытие'),
-    rollLabel: t('整卷规格', 'Roll size', 'Размер рулона'),
+    name: t(swatch.name, swatch.nameEn),
+    secondaryName: t(swatch.nameEn, swatch.name),
+    finish: t(swatch.finishLabel, swatch.finishLabelEn),
+    series: t(swatch.seriesName, swatch.seriesNameEn),
+    description: t(swatch.tagline, swatch.taglineEn),
+    model: t(AIOC_SPEC.modelName, AIOC_SPEC.modelNameEn),
+    substrate: t(AIOC_SPEC.substrate, AIOC_SPEC.substrateEn),
+    modelLabel: t('所属产品型号', 'Product Model'),
+    substrateLabel: t('基材与膜厚', 'Substrate & Thickness'),
+    finishLabel: t('表面工艺', 'Surface Finish'),
+    rollLabel: t('整卷规格', 'Roll size'),
     note: t('屏幕显示仅供参考，建议在自然光下对比 H&H 实物色板后选色。',
-      'For the final color, compare physical H&H swatches in daylight.',
-      'Перед выбором цвета сравните образцы H&H при дневном свете.'),
+      'For the final color, compare physical H&H swatches in daylight.'),
   };
 }
 
@@ -70,8 +69,7 @@ function generateSwatchPosterPng(swatch: ColorFilmItem, lang: StudioLanguage, lo
 
   ctx.fillStyle = '#e9481a';
   ctx.font = '600 18px ui-monospace, SFMono-Regular, monospace';
-  ctx.fillText(t('高定选色工坊 · 电子选色卡', 'ATELIER COLOR STUDIO · COLOR SPECIFICATION',
-    'СТУДИЯ ЦВЕТА · КАРТОЧКА ОТТЕНКА'), 64, 124, w - 128);
+  ctx.fillText(t('高定选色工坊 · 电子选色卡', 'ATELIER COLOR STUDIO · COLOR SPECIFICATION'), 64, 124, w - 128);
 
   ctx.strokeStyle = 'rgba(233, 72, 26, 0.65)';
   ctx.lineWidth = 2;
@@ -221,7 +219,7 @@ export function ColorCardModal({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={t('定制选色单', 'Bespoke Color Specification', 'Карточка цвета')}
+        aria-label={t('定制选色单', 'Bespoke Color Specification')}
         className="w-full max-w-lg max-h-[100dvh] md:max-h-[calc(100dvh-2rem)] rounded-t-3xl md:rounded-2xl bg-[#0c0d12] border border-[#e9481a]/30 text-[#F7F3EB] overflow-y-auto overscroll-contain shadow-[0_32px_80px_rgba(0,0,0,0.85)]"
         onClick={(e) => e.stopPropagation()}
       >
@@ -243,7 +241,7 @@ export function ColorCardModal({
               type="button"
               onClick={onClose}
               className="w-8 h-8 rounded-full bg-black/55 hover:bg-black/80 border border-white/15 text-white flex items-center justify-center transition-colors"
-              aria-label={t('关闭', 'Close', 'Закрыть')}
+              aria-label={t('关闭', 'Close')}
             >
               <X className="w-4 h-4" />
             </button>
@@ -300,7 +298,7 @@ export function ColorCardModal({
           </div>
 
           <div className="flex flex-wrap gap-1.5">
-            {({zh: AIOC_SPEC.features, en: AIOC_SPEC.featuresEn, ru: AIOC_SPEC.featuresRu}[lang]).map((feat) => (
+            {(lang === 'zh' ? AIOC_SPEC.features : AIOC_SPEC.featuresEn).map((feat) => (
               <span
                 key={feat}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs text-white/80"
@@ -323,8 +321,8 @@ export function ColorCardModal({
             >
               {saved ? <Check className="w-4 h-4" /> : <Download className="w-4 h-4" />}
               {saved
-                ? t('已下载高清选色单', 'Color Card Saved', 'Карточка сохранена')
-                : t('生成选色卡图片', 'Save Color Card', 'Скачать карточку')}
+                ? t('已下载高清选色单', 'Color Card Saved')
+                : t('生成选色卡图片', 'Save Color Card')}
             </button>
 
             {isEmbed ? (
@@ -334,15 +332,15 @@ export function ColorCardModal({
                 className="flex-1 h-11 rounded-xl bg-brand hover:bg-brand-hover text-white font-semibold text-sm flex items-center justify-center gap-2 transition-colors"
               >
                 <MapPin className="w-4 h-4" />
-                {t('确认所选颜色', 'Confirm Color', 'Подтвердить цвет')}
+                {t('确认所选颜色', 'Confirm Color')}
               </button>
             ) : (
               <a
-                href={t('/index-zh.html#partner', '/#partner', '/index-ru.html#partner')}
+                href={t('/index-zh.html#partner', '/#partner')}
                 className="flex-1 h-11 rounded-xl bg-brand hover:bg-brand-hover text-white font-semibold text-sm flex items-center justify-center gap-2 transition-colors"
               >
                 <MapPin className="w-4 h-4" />
-                {t('申领实物样品', 'Request a sample', 'Запросить образец')}
+                {t('申领实物样品', 'Request a sample')}
               </a>
             )}
           </div>

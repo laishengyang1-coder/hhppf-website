@@ -1,8 +1,8 @@
 // H&H · AIOC™ color studio. Finish and hue groups retain the electronic catalog order.
-export type StudioLanguage = 'zh' | 'en' | 'ru';
+export type StudioLanguage = 'zh' | 'en';
 
-export function studioText(lang: StudioLanguage, zh: string, en: string, ru: string): string {
-  return lang === 'zh' ? zh : lang === 'ru' ? ru : en;
+export function studioText(lang: StudioLanguage, zh: string, en: string): string {
+  return lang === 'zh' ? zh : en;
 }
 
 export type FilmFinishType =
@@ -23,10 +23,8 @@ export interface StudioVehicleOption {
   name: string;
   shortName: string;
   nameEn: string;
-  nameRu: string;
   subtitle: string;
   subtitleEn: string;
-  subtitleRu: string;
   modelUrl: string;
   targetLength: number;
   rotationY: number;
@@ -38,11 +36,9 @@ export const STUDIO_VEHICLES: StudioVehicleOption[] = [
     name: 'Model 3 焕新版',
     shortName: 'Model 3',
     nameEn: 'Model 3 Highland',
-    nameRu: 'Model 3 Highland',
     subtitle: '轿跑流线车身',
     subtitleEn: 'Sport Sedan',
-    subtitleRu: 'Спортивный седан',
-    modelUrl: '/color-studio/models/tesla-model-3.glb',
+    modelUrl: '/color-studio/models/tesla-model-3.glb?v=20261119',
     targetLength: 4.15,
     rotationY: 0,
   },
@@ -51,11 +47,9 @@ export const STUDIO_VEHICLES: StudioVehicleOption[] = [
     name: 'Model Y 焕新版',
     shortName: 'Model Y',
     nameEn: 'Model Y Juniper',
-    nameRu: 'Model Y Juniper',
     subtitle: 'SUV 宽体曲面',
     subtitleEn: 'SUV Fastback',
-    subtitleRu: 'Купе-кроссовер',
-    modelUrl: '/color-studio/models/tesla-model-y.glb',
+    modelUrl: '/color-studio/models/tesla-model-y.glb?v=20261119',
     targetLength: 4.25,
     rotationY: Math.PI,
   },
@@ -95,14 +89,11 @@ export interface ColorFilmItem {
   code: string;
   name: string;
   nameEn: string;
-  nameRu: string;
   finish: FilmFinishType;
   finishLabel: string;
   finishLabelEn: string;
-  finishLabelRu: string;
   seriesName: string;
   seriesNameEn: string;
-  seriesNameRu: string;
   hex: string;
   shiftHex?: string;
   hue: number;
@@ -111,7 +102,6 @@ export interface ColorFilmItem {
   isNew?: boolean;
   tagline: string;
   taglineEn: string;
-  taglineRu: string;
   optics: FilmOpticsMetrics;
   material: FilmMaterialParams;
 }
@@ -119,16 +109,13 @@ export interface ColorFilmItem {
 export const AIOC_SPEC = {
   modelName: 'H&H AIOC™ 改色车衣',
   modelNameEn: 'H&H AIOC™ Color PPF',
-  modelNameRu: 'Цветная защитная плёнка H&H AIOC™',
   substrate: '脂肪族 TPU',
   substrateEn: 'Aliphatic TPU',
-  substrateRu: 'Алифатический TPU',
   thickness: '7.5±0.5 mil',
   rollSize: '1.52 × 18 m',
   warrantyYears: 5,
   features: ['AIOC™ 一体式色层', '脂肪族 TPU 基材', '划痕热修复', '抗石击保护'],
   featuresEn: ['AIOC™ integrated pigment layer', 'Aliphatic TPU base', 'Self-healing surface', 'Stone-chip protection'],
-  featuresRu: ['Цветной слой AIOC™', 'Основа из алифатического TPU', 'Самовосстановление', 'Защита от сколов'],
 } as const;
 
 export const LIGHTING_PRESETS: Array<{
@@ -136,9 +123,7 @@ export const LIGHTING_PRESETS: Array<{
   label: string;
   shortLabel: string;
   labelEn: string;
-  labelRu: string;
   shortLabelEn: string;
-  shortLabelRu: string;
 }> = [
   {
     key: 'studio',
@@ -146,8 +131,6 @@ export const LIGHTING_PRESETS: Array<{
     shortLabel: '柔光',
     labelEn: 'Soft Atelier',
     shortLabelEn: 'Soft',
-    labelRu: 'Мягкий студийный свет',
-    shortLabelRu: 'Студия',
   },
   {
     key: 'gallery',
@@ -155,8 +138,6 @@ export const LIGHTING_PRESETS: Array<{
     shortLabel: '展厅',
     labelEn: 'Daylight Gallery',
     shortLabelEn: 'Gallery',
-    labelRu: 'Дневной свет в выставочном зале',
-    shortLabelRu: 'Дневной',
   },
   {
     key: 'sunset',
@@ -164,8 +145,6 @@ export const LIGHTING_PRESETS: Array<{
     shortLabel: '落日',
     labelEn: 'Golden Sunset',
     shortLabelEn: 'Sunset',
-    labelRu: 'Золотой свет заката',
-    shortLabelRu: 'Закат',
   },
 ];
 
@@ -173,30 +152,28 @@ export const HUE_GROUPS: Array<{
   key: ColorHueGroup;
   label: string;
   labelEn: string;
-  labelRu: string;
   dotColor: string;
 }> = [
-  { key: 'all', label: '全部色系', labelEn: 'All Hues', labelRu: 'Все оттенки', dotColor: '#C9A86A' },
-  { key: 'neutral', label: '曜石黑白灰', labelEn: 'Neutrals', labelRu: 'Нейтральные', dotColor: '#8D95A0' },
-  { key: 'red', label: '绯红·胭脂', labelEn: 'Crimson', labelRu: 'Красные', dotColor: '#B8333A' },
-  { key: 'gold', label: '流金·竞速黄', labelEn: 'Gold & Yellow', labelRu: 'Золотые и жёлтые', dotColor: '#D4A84F' },
-  { key: 'green', label: '翠绿·松石', labelEn: 'Emerald & Mint', labelRu: 'Зелёные и мятные', dotColor: '#257B63' },
-  { key: 'blue', label: '深海·蒂芙尼蓝', labelEn: 'Sapphire & Cyan', labelRu: 'Синие и голубые', dotColor: '#199CAD' },
-  { key: 'purple', label: '魅紫·樱粉', labelEn: 'Violet & Rose', labelRu: 'Фиолетовые и розовые', dotColor: '#8A5AB8' },
+  { key: 'all', label: '全部色系', labelEn: 'All Hues', dotColor: '#C9A86A' },
+  { key: 'neutral', label: '曜石黑白灰', labelEn: 'Neutrals', dotColor: '#8D95A0' },
+  { key: 'red', label: '绯红·胭脂', labelEn: 'Crimson', dotColor: '#B8333A' },
+  { key: 'gold', label: '流金·竞速黄', labelEn: 'Gold & Yellow', dotColor: '#D4A84F' },
+  { key: 'green', label: '翠绿·松石', labelEn: 'Emerald & Mint', dotColor: '#257B63' },
+  { key: 'blue', label: '深海·蒂芙尼蓝', labelEn: 'Sapphire & Cyan', dotColor: '#199CAD' },
+  { key: 'purple', label: '魅紫·樱粉', labelEn: 'Violet & Rose', dotColor: '#8A5AB8' },
 ];
 
 export const FINISH_FILTERS: Array<{
   key: 'all' | FilmFinishType;
   label: string;
   labelEn: string;
-  labelRu: string;
 }> = [
-  { key: 'all', label: '全部工艺', labelEn: 'All', labelRu: 'Все покрытия' },
-  { key: 'crystal', label: '水晶系列', labelEn: 'Crystal', labelRu: 'Кристалл' },
-  { key: 'metallic', label: '金属系列', labelEn: 'Metallic', labelRu: 'Металлик' },
-  { key: 'pearlescent', label: '珠光系列', labelEn: 'Pearly', labelRu: 'Перламутр' },
-  { key: 'chameleon', label: '双色·变色龙', labelEn: 'Chameleon', labelRu: 'Хамелеон' },
-  { key: 'special', label: '镭射·炫彩·锻碳', labelEn: 'Special', labelRu: 'Спецэффекты' },
+  { key: 'all', label: '全部工艺', labelEn: 'All' },
+  { key: 'crystal', label: '水晶系列', labelEn: 'Crystal' },
+  { key: 'metallic', label: '金属系列', labelEn: 'Metallic' },
+  { key: 'pearlescent', label: '珠光系列', labelEn: 'Pearly' },
+  { key: 'chameleon', label: '双色·变色龙', labelEn: 'Chameleon' },
+  { key: 'special', label: '镭射·炫彩·锻碳', labelEn: 'Special' },
 ];
 
 export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
@@ -210,9 +187,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#E7E5E0",
-    "shiftHex": "#ECEDE9",
-    "hue": 43,
+    "hex": "#F4F5F7",
+    "shiftHex": "#FFFFFF",
+    "hue": 220,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
@@ -232,11 +209,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Глянцевый лебединый белый",
-    "taglineRu": "Холодный белый глянец подчёркивает изгибы кузова.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-002s",
@@ -248,9 +221,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#050505",
-    "shiftHex": "#444444",
-    "hue": 0,
+    "hex": "#0A0B0D",
+    "shiftHex": "#22252B",
+    "hue": 220,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
@@ -270,25 +243,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Чёрный рояльный лак",
-    "taglineRu": "На глубоком чёрном фоне чётко виден контур световой полосы.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-003s",
     "code": "TPU-003S",
     "name": "纳多灰",
-    "nameEn": "Nado Grey",
+    "nameEn": "Nardo Grey",
     "finish": "crystal",
     "finishLabel": "水晶",
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#6E6E6C",
-    "shiftHex": "#A1A19F",
-    "hue": 60,
+    "hex": "#7E8386",
+    "shiftHex": "#9DA2A6",
+    "hue": 203,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
@@ -308,11 +277,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Серый Нардо",
-    "taglineRu": "Сдержанный серый глянец выделяет грани кузова.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-004s",
@@ -324,14 +289,14 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#ADC2A3",
-    "shiftHex": "#C8D6C1",
-    "hue": 101,
+    "hex": "#6B9B8A",
+    "shiftHex": "#8BB8A8",
+    "hue": 159,
     "hueGroup": "green",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "柔和的浅绿色中带有一点暖黄。",
-    "taglineEn": "A soft pale green with a touch of warm yellow.",
+    "tagline": "柔和的松石绿带有灰青底调，受光时逐渐变浅。",
+    "taglineEn": "Muted turquoise green carries a grey-teal undertone and lightens in the highlights.",
     "optics": {
       "gloss": 98,
       "metallic": 10,
@@ -346,11 +311,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Бирюзово-зелёный",
-    "taglineRu": "Мягкий светло-зелёный с тёплым желтоватым подтоном.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-005s",
@@ -362,9 +323,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#DFD9B5",
-    "shiftHex": "#F0EDDC",
-    "hue": 51,
+    "hex": "#D5C9A8",
+    "shiftHex": "#E6DEC6",
+    "hue": 44,
     "hueGroup": "gold",
     "isNeutral": false,
     "isNew": false,
@@ -384,11 +345,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Миланский хаки",
-    "taglineRu": "Бежевый хаки с тёплыми песочными бликами.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-006s",
@@ -400,9 +357,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#97AFBB",
-    "shiftHex": "#C4D2D8",
-    "hue": 200,
+    "hex": "#7EA1B6",
+    "shiftHex": "#A1BFD0",
+    "hue": 202,
     "hueGroup": "blue",
     "isNeutral": false,
     "isNew": false,
@@ -422,11 +379,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Фарфорово-голубой",
-    "taglineRu": "Приглушённый серо-голубой с гладким фарфоровым блеском.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-007s",
@@ -438,14 +391,14 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#EDCACE",
-    "shiftHex": "#F6E7E8",
-    "hue": 353,
+    "hex": "#F2C2CE",
+    "shiftHex": "#FADCE4",
+    "hue": 345,
     "hueGroup": "red",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "淡粉底色带少许暖橘，明暗过渡柔和。",
-    "taglineEn": "Pale pink carries a warm peach undertone into the shadows.",
+    "tagline": "柔和的浅玫粉在亮部透出淡粉色。",
+    "taglineEn": "Soft rose pink lightens to a delicate blush in the highlights.",
     "optics": {
       "gloss": 98,
       "metallic": 10,
@@ -460,11 +413,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Розовый «Лолита»",
-    "taglineRu": "Нежно-розовый с персиковым подтоном и мягкими переходами света.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-008s",
@@ -476,9 +425,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#FF7232",
-    "shiftHex": "#FFC9B1",
-    "hue": 19,
+    "hex": "#F37021",
+    "shiftHex": "#FF9857",
+    "hue": 23,
     "hueGroup": "gold",
     "isNeutral": false,
     "isNew": false,
@@ -498,11 +447,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Оранжевый Hermès",
-    "taglineRu": "Насыщенный тёплый оранжевый сохраняет яркость даже в бликах.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-009s",
@@ -514,9 +459,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#5A4089",
-    "shiftHex": "#9685B3",
-    "hue": 261,
+    "hex": "#5B3A94",
+    "shiftHex": "#8162B8",
+    "hue": 262,
     "hueGroup": "purple",
     "isNeutral": false,
     "isNew": false,
@@ -536,11 +481,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Кристальный фиолетовый",
-    "taglineRu": "Глубокий сине-фиолетовый с холодными глянцевыми бликами.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-010s",
@@ -552,14 +493,14 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#84E6F6",
-    "shiftHex": "#C6F4FA",
-    "hue": 188,
+    "hex": "#6EC8E8",
+    "shiftHex": "#9FDEF4",
+    "hue": 196,
     "hueGroup": "blue",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "清透的浅冰蓝，在曲面阴影中转为青蓝。",
-    "taglineEn": "Clear ice blue deepens to teal along shaded curves.",
+    "tagline": "清亮的天蓝带一点青调，亮部接近浅冰蓝。",
+    "taglineEn": "Clear sky blue has a touch of cyan and lightens to ice blue in the highlights.",
     "optics": {
       "gloss": 98,
       "metallic": 10,
@@ -574,24 +515,20 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Кристальный небесно-голубой",
-    "taglineRu": "Светлый ледяной голубой уходит в бирюзовый на затенённых изгибах.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-011s",
     "code": "TPU-011S",
     "name": "法拉利红",
-    "nameEn": "Ferrari Red",
+    "nameEn": "Ferrari Rosso Corsa",
     "finish": "crystal",
     "finishLabel": "水晶",
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#ED3837",
-    "shiftHex": "#F37A79",
+    "hex": "#D40000",
+    "shiftHex": "#F03A3A",
     "hue": 0,
     "hueGroup": "red",
     "isNeutral": false,
@@ -612,11 +549,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Красный Ferrari",
-    "taglineRu": "Насыщенный гоночный красный сохраняет глубину и на свету, и в тени.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-012s",
@@ -628,14 +561,14 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#C8EFEC",
-    "shiftHex": "#DEF5F4",
-    "hue": 175,
+    "hex": "#B5DCE6",
+    "shiftHex": "#D4EEF5",
+    "hue": 192,
     "hueGroup": "blue",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "淡蓝中带一丝薄荷绿，亮部接近冰白色。",
-    "taglineEn": "A trace of mint in pale blue gives way to icy white highlights.",
+    "tagline": "清浅的冰蓝底色在亮部接近冰白。",
+    "taglineEn": "A pale glacial blue fades to an icy white highlight.",
     "optics": {
       "gloss": 98,
       "metallic": 10,
@@ -650,30 +583,26 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Ледниковый голубой",
-    "taglineRu": "Светло-голубой с мятным оттенком и льдисто-белыми бликами.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-013s",
     "code": "TPU-013S",
     "name": "纳多灰(浅)",
-    "nameEn": "Light Nado Grey",
+    "nameEn": "Light Nardo Grey",
     "finish": "crystal",
     "finishLabel": "水晶",
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#9EA09D",
-    "shiftHex": "#C6C8C6",
-    "hue": 100,
+    "hex": "#A4A8AB",
+    "shiftHex": "#C0C4C7",
+    "hue": 206,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
-    "tagline": "浅灰略带暖意，比纳多灰更轻盈。",
-    "taglineEn": "A lighter take on Nado Grey with a gently warm undertone.",
+    "tagline": "纳多灰的浅色版本，冷灰底色更轻盈。",
+    "taglineEn": "A lighter version of Nardo Grey with a cool, understated base.",
     "optics": {
       "gloss": 98,
       "metallic": 10,
@@ -688,11 +617,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Светло-серый Нардо",
-    "taglineRu": "Более светлый вариант серого Нардо с мягким тёплым подтоном.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-014s",
@@ -704,9 +629,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#D7456E",
-    "shiftHex": "#E586A2",
-    "hue": 343,
+    "hex": "#8C2252",
+    "shiftHex": "#B54578",
+    "hue": 333,
     "hueGroup": "red",
     "isNeutral": false,
     "isNew": false,
@@ -726,11 +651,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Свекольный пурпурный",
-    "taglineRu": "Глубокий розовый переходит в пурпурный свекольный оттенок.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-015s",
@@ -742,10 +663,10 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#5CE6C4",
-    "shiftHex": "#8DEDD5",
-    "hue": 165,
-    "hueGroup": "green",
+    "hex": "#2EB5C4",
+    "shiftHex": "#64D2DE",
+    "hue": 186,
+    "hueGroup": "blue",
     "isNeutral": false,
     "isNew": false,
     "tagline": "明亮水绿色中透出青蓝，色泽清透。",
@@ -764,25 +685,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Озёрный голубой",
-    "taglineRu": "Прозрачный аквамариновый тон на границе зелёного и голубого.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-016s",
     "code": "TPU-016S",
     "name": "迈阿密蓝",
-    "nameEn": "Miami Blue",
+    "nameEn": "Porsche Miami Blue",
     "finish": "crystal",
     "finishLabel": "水晶",
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#19B1BE",
-    "shiftHex": "#7ADBE0",
-    "hue": 185,
+    "hex": "#00A8C8",
+    "shiftHex": "#4CCCE3",
+    "hue": 190,
     "hueGroup": "blue",
     "isNeutral": false,
     "isNew": false,
@@ -802,11 +719,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Голубой Майами",
-    "taglineRu": "Насыщенный бирюзово-голубой с чёткими глянцевыми бликами.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-017s",
@@ -818,9 +731,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#5E6947",
-    "shiftHex": "#939B84",
-    "hue": 79,
+    "hex": "#465438",
+    "shiftHex": "#657556",
+    "hue": 90,
     "hueGroup": "green",
     "isNeutral": false,
     "isNew": false,
@@ -840,30 +753,26 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Лесной хаки",
-    "taglineRu": "Землистый оливковый в тени становится глубже.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-025s",
     "code": "TPU-025S",
     "name": "凯莫拉灰",
-    "nameEn": "Kemora Grey",
+    "nameEn": "Audi Kemora Grey",
     "finish": "crystal",
     "finishLabel": "水晶",
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#6C7A7B",
-    "shiftHex": "#9DA6A7",
-    "hue": 184,
+    "hex": "#758690",
+    "shiftHex": "#96A6B0",
+    "hue": 202,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
-    "tagline": "冷灰中透出一点青调，适合观察棱线。",
-    "taglineEn": "A hint of blue-green cools the grey along panel edges.",
+    "tagline": "灰色融入低饱和蓝调，在车身棱线上更明显。",
+    "taglineEn": "A muted blue undertone shows through the grey along panel edges.",
     "optics": {
       "gloss": 98,
       "metallic": 10,
@@ -878,30 +787,26 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Серый Кемора",
-    "taglineRu": "Холодный серый с лёгким сине-зелёным нюансом на гранях.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-026s",
     "code": "TPU-026S",
     "name": "布鲁克林灰",
-    "nameEn": "Brooklyn Grey",
+    "nameEn": "BMW Brooklyn Grey",
     "finish": "crystal",
     "finishLabel": "水晶",
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#99A5A3",
-    "shiftHex": "#AFB9B8",
-    "hue": 170,
+    "hex": "#8E969B",
+    "shiftHex": "#AEB5BA",
+    "hue": 203,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
-    "tagline": "偏浅的灰色带轻微绿调，受光处柔和。",
-    "taglineEn": "A light grey with a trace of green and soft highlights.",
+    "tagline": "中性灰色微微偏蓝，受光处转为浅灰。",
+    "taglineEn": "A subtle blue cast cools this grey, with lighter grey highlights.",
     "optics": {
       "gloss": 98,
       "metallic": 10,
@@ -916,25 +821,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Бруклинский серый",
-    "taglineRu": "Светло-серый с лёгким зеленоватым подтоном и мягкими бликами.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-028s",
     "code": "TPU-028S",
     "name": "迈凯伦橙",
-    "nameEn": "McLaren Orange",
+    "nameEn": "McLaren Papaya Orange",
     "finish": "crystal",
     "finishLabel": "水晶",
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#FEA138",
-    "shiftHex": "#FFBE76",
-    "hue": 32,
+    "hex": "#FF7A00",
+    "shiftHex": "#FFA34D",
+    "hue": 29,
     "hueGroup": "gold",
     "isNeutral": false,
     "isNew": false,
@@ -954,11 +855,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Оранжевый McLaren",
-    "taglineRu": "Яркий гоночный оранжевый даёт золотистые блики.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-029s",
@@ -970,9 +867,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#FFC036",
-    "shiftHex": "#FED16D",
-    "hue": 41,
+    "hex": "#F5B800",
+    "shiftHex": "#FFD44D",
+    "hue": 45,
     "hueGroup": "gold",
     "isNeutral": false,
     "isNew": false,
@@ -992,11 +889,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Энергичный жёлтый",
-    "taglineRu": "Тёплый солнечно-жёлтый плавно переходит в янтарный.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-031s",
@@ -1008,9 +901,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#838C73",
-    "shiftHex": "#A9B09E",
-    "hue": 82,
+    "hex": "#6E7A69",
+    "shiftHex": "#8E9A89",
+    "hue": 102,
     "hueGroup": "green",
     "isNeutral": false,
     "isNew": false,
@@ -1030,11 +923,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Кибер-серый с зелёным отливом",
-    "taglineRu": "В боковом свете у сдержанного серо-зелёного проявляется оливковый тон.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-032s",
@@ -1046,10 +935,10 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#666936",
-    "shiftHex": "#888A61",
-    "hue": 64,
-    "hueGroup": "gold",
+    "hex": "#4A5328",
+    "shiftHex": "#6B7545",
+    "hue": 73,
+    "hueGroup": "green",
     "isNeutral": false,
     "isNew": false,
     "tagline": "深调军绿融入黄褐色，轮廓厚重。",
@@ -1068,30 +957,26 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Армейский зелёный",
-    "taglineRu": "Глубокий армейский зелёный с землисто-охристым подтоном.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-033s",
     "code": "TPU-033S",
     "name": "胡椒白",
-    "nameEn": "Pepper White",
+    "nameEn": "MINI Pepper White",
     "finish": "crystal",
     "finishLabel": "水晶",
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#DBDDC6",
-    "shiftHex": "#E5E6D5",
-    "hue": 65,
+    "hex": "#EBE5D3",
+    "shiftHex": "#F7F3E8",
+    "hue": 45,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
-    "tagline": "温暖的米白底色中隐约可见灰绿。",
-    "taglineEn": "A warm off-white with a subtle grey-green undertone.",
+    "tagline": "温暖的米白底色在高光中接近奶白。",
+    "taglineEn": "Warm off-white turns creamy in the highlights.",
     "optics": {
       "gloss": 98,
       "metallic": 10,
@@ -1106,25 +991,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Белый перец",
-    "taglineRu": "Тёплый кремово-белый с едва заметным серо-зелёным подтоном.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-034s",
     "code": "TPU-034S",
     "name": "沙漠黄",
-    "nameEn": "Desert Yellow",
+    "nameEn": "Desert Sand Yellow",
     "finish": "crystal",
     "finishLabel": "水晶",
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#9C8B60",
-    "shiftHex": "#C9C0A9",
-    "hue": 43,
+    "hex": "#B69B6A",
+    "shiftHex": "#CFB88C",
+    "hue": 39,
     "hueGroup": "gold",
     "isNeutral": false,
     "isNew": false,
@@ -1144,25 +1025,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Пустынный жёлтый",
-    "taglineRu": "Песочно-жёлтый оттенок с коричневатыми тенями.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-035s",
     "code": "TPU-035S",
     "name": "总裁黑",
-    "nameEn": "Executive Black",
+    "nameEn": "Executive Gloss Black",
     "finish": "crystal",
     "finishLabel": "水晶",
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#060606",
-    "shiftHex": "#6C6C6C",
-    "hue": 0,
+    "hex": "#08090C",
+    "shiftHex": "#1F2228",
+    "hue": 225,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": true,
@@ -1182,11 +1059,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Представительский чёрный",
-    "taglineRu": "Чернильно-чёрный глянец подчёркивает зеркальные блики.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-037s",
@@ -1198,9 +1071,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#95797E",
-    "shiftHex": "#AD9BA0",
-    "hue": 349,
+    "hex": "#C2A2A4",
+    "shiftHex": "#D9BFC1",
+    "hue": 356,
     "hueGroup": "red",
     "isNeutral": false,
     "isNew": false,
@@ -1220,26 +1093,22 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Розовый «Молочный улун»",
-    "taglineRu": "Чайно-коричневый смешивается с приглушённым пыльно-розовым.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-038s",
     "code": "TPU-038S",
     "name": "普罗旺斯紫",
-    "nameEn": "Provence Purple",
+    "nameEn": "Provence Lavender Purple",
     "finish": "crystal",
     "finishLabel": "水晶",
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#696363",
-    "shiftHex": "#949090",
-    "hue": 0,
-    "hueGroup": "red",
+    "hex": "#8673A1",
+    "shiftHex": "#A896C2",
+    "hue": 265,
+    "hueGroup": "purple",
     "isNeutral": false,
     "isNew": false,
     "tagline": "灰紫底色近似干燥薰衣草。",
@@ -1258,11 +1127,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Фиолетовый Прованс",
-    "taglineRu": "Приглушённый серо-фиолетовый оттенок сухой лаванды.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-039s",
@@ -1274,10 +1139,10 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#C9BEB8",
-    "shiftHex": "#DAD4CF",
-    "hue": 21,
-    "hueGroup": "gold",
+    "hex": "#DFC2C8",
+    "shiftHex": "#F0DCE0",
+    "hue": 348,
+    "hueGroup": "red",
     "isNeutral": false,
     "isNew": false,
     "tagline": "浅裸粉融入灰色，显出柔和的镜面光。",
@@ -1296,11 +1161,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Зеркально-розовый",
-    "taglineRu": "Светлый нюдово-розовый со спокойным серым подтоном.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-040s",
@@ -1312,14 +1173,14 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#FEE3C6",
-    "shiftHex": "#FEEEDD",
-    "hue": 31,
-    "hueGroup": "gold",
+    "hex": "#F5D2D4",
+    "shiftHex": "#FCE7E8",
+    "hue": 357,
+    "hueGroup": "red",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "奶油色中透出淡淡的桃粉。",
-    "taglineEn": "Creamy shell pink with a soft peach cast.",
+    "tagline": "浅暖粉色让人想到贝壳的粉色内壁。",
+    "taglineEn": "A pale, warm pink reminiscent of the inside of a shell.",
     "optics": {
       "gloss": 98,
       "metallic": 10,
@@ -1334,25 +1195,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Розовая ракушка",
-    "taglineRu": "Кремово-розовый оттенок ракушки с персиковым отливом.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-041s",
     "code": "TPU-041S",
     "name": "水晶熔岩橙",
-    "nameEn": "Crystal Lava Orange",
+    "nameEn": "Porsche Lava Orange",
     "finish": "crystal",
     "finishLabel": "水晶",
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#DD6A4B",
-    "shiftHex": "#F1C5B9",
-    "hue": 13,
+    "hex": "#F2541B",
+    "shiftHex": "#FF8152",
+    "hue": 16,
     "hueGroup": "red",
     "isNeutral": false,
     "isNew": false,
@@ -1372,11 +1229,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Лавовый оранжевый",
-    "taglineRu": "Красно-оранжевый тон в тени переходит в терракотовый.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-042s",
@@ -1388,14 +1241,14 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#F3E3F0",
-    "shiftHex": "#F7ECF6",
-    "hue": 311,
+    "hex": "#B8A8BE",
+    "shiftHex": "#D2C6D8",
+    "hue": 284,
     "hueGroup": "purple",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "近白的浅灰紫，在阴影处透出淡紫色。",
-    "taglineEn": "A near-white grey-lilac reveals lavender in shadow.",
+    "tagline": "带灰调的淡紫色，在亮部转为柔和的浅丁香紫。",
+    "taglineEn": "Muted mauve softens to pale lilac in the highlights.",
     "optics": {
       "gloss": 98,
       "metallic": 10,
@@ -1410,11 +1263,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Дымчатый серо-фиолетовый",
-    "taglineRu": "Почти белый серо-сиреневый проявляет лавандовый оттенок в тени.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-044s",
@@ -1426,10 +1275,10 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#A2F0D9",
-    "shiftHex": "#CBF7EA",
-    "hue": 162,
-    "hueGroup": "green",
+    "hex": "#81D8D0",
+    "shiftHex": "#ACEAE4",
+    "hue": 174,
+    "hueGroup": "blue",
     "isNeutral": false,
     "isNew": false,
     "tagline": "明亮的薄荷蓝绿，亮面带浅色高光。",
@@ -1448,25 +1297,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Бирюзовый Tiffany",
-    "taglineRu": "Светлая мятная бирюза с мягкими глянцевыми бликами.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-045s",
     "code": "TPU-045S",
     "name": "圣保罗黄",
-    "nameEn": "São Paulo Yellow",
+    "nameEn": "BMW Sao Paulo Yellow",
     "finish": "crystal",
     "finishLabel": "水晶",
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#E1F539",
-    "shiftHex": "#F1FBA3",
-    "hue": 66,
+    "hex": "#DCE32D",
+    "shiftHex": "#ECF16B",
+    "hue": 62,
     "hueGroup": "gold",
     "isNeutral": false,
     "isNew": false,
@@ -1486,11 +1331,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Жёлтый Сан-Паулу",
-    "taglineRu": "Ярко-жёлтый с выразительным лаймовым подтоном.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-046s",
@@ -1502,9 +1343,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#729D65",
-    "shiftHex": "#9FBC96",
-    "hue": 106,
+    "hex": "#5D8B62",
+    "shiftHex": "#7FA984",
+    "hue": 127,
     "hueGroup": "green",
     "isNeutral": false,
     "isNew": false,
@@ -1524,11 +1365,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Зелёный Эшли",
-    "taglineRu": "Тёплый травяной зелёный с жёлто-зелёными бликами.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-048s",
@@ -1540,9 +1377,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#969590",
-    "shiftHex": "#B5B4B1",
-    "hue": 50,
+    "hex": "#D2CFC8",
+    "shiftHex": "#E5E3DD",
+    "hue": 42,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
@@ -1562,11 +1399,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.08,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.16
-    },
-    "nameRu": "Меловой серый Porsche",
-    "taglineRu": "Мягкий малонасыщенный серый с тёплым меловым подтоном.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-049s",
@@ -1578,9 +1411,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Crystal",
     "seriesName": "水晶 Sole",
     "seriesNameEn": "Sole Crystal",
-    "hex": "#363636",
-    "shiftHex": "#4E4E4E",
-    "hue": 0,
+    "hex": "#1A1B1E",
+    "shiftHex": "#32353B",
+    "hue": 225,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
@@ -1600,11 +1433,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.04,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.22
-    },
-    "nameRu": "Глубокоматовый угольно-чёрный",
-    "taglineRu": "Матовый угольно-чёрный рассеивает свет, смягчая границы бликов.",
-    "finishLabelRu": "Кристалл",
-    "seriesNameRu": "Кристалл"
+    }
   },
   {
     "id": "tpu-001m",
@@ -1616,14 +1445,14 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#A9ACA3",
-    "shiftHex": "#F6F6F5",
-    "hue": 80,
-    "hueGroup": "green",
+    "hex": "#4F5356",
+    "shiftHex": "#8C8470",
+    "hue": 206,
+    "hueGroup": "blue",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "暖灰中浮现金属光，暗部略带金色。",
-    "taglineEn": "Fine metallic light runs through a warm grey with a golden undertone.",
+    "tagline": "深石墨灰的阴影与柔和的金色反光相衬。",
+    "taglineEn": "Dark graphite-grey shadows contrast with a muted gold reflection.",
     "optics": {
       "gloss": 92,
       "metallic": 92,
@@ -1638,11 +1467,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Горный серый AMG «Чёрное золото»",
-    "taglineRu": "Тёплый серый металлик с тонким золотистым отливом.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-002m",
@@ -1654,14 +1479,14 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#7A7B4F",
-    "shiftHex": "#BFC090",
-    "hue": 61,
+    "hex": "#2B261B",
+    "shiftHex": "#A88B4A",
+    "hue": 41,
     "hueGroup": "gold",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "深橄榄金底色在亮部浮现金属颗粒。",
-    "taglineEn": "A deep olive-gold base reveals metallic grain in the highlights.",
+    "tagline": "近黑的棕金底色在受光处浮现深金色。",
+    "taglineEn": "A near-black bronze base reveals deep gold in the light.",
     "optics": {
       "gloss": 92,
       "metallic": 92,
@@ -1676,25 +1501,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Обсидиановое золото",
-    "taglineRu": "На тёмном оливково-золотом фоне в бликах заметно металлическое зерно.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-003m",
     "code": "TPU-003M",
     "name": "GT银",
-    "nameEn": "Metallic GT Silver",
+    "nameEn": "Porsche GT Silver Metallic",
     "finish": "metallic",
     "finishLabel": "金属",
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#D6D6D6",
-    "shiftHex": "#D9D9D8",
-    "hue": 0,
+    "hex": "#B6BAC0",
+    "shiftHex": "#DCE0E6",
+    "hue": 216,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
@@ -1714,11 +1535,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Серебро GT",
-    "taglineRu": "Мелкое металлическое зерно даёт яркий блик на нейтральном серебре.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-004m",
@@ -1730,9 +1547,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#CDCECD",
-    "shiftHex": "#9C9E9A",
-    "hue": 120,
+    "hex": "#9BA1A8",
+    "shiftHex": "#C2C7CE",
+    "hue": 212,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
@@ -1752,30 +1569,26 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Рыцарское серебро",
-    "taglineRu": "Холодное серебро даёт широкие блики на изгибах.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-005m",
     "code": "TPU-005M",
     "name": "金属枪灰",
-    "nameEn": "Gunmetal Grey",
+    "nameEn": "Metallic Gunmetal Gray",
     "finish": "metallic",
     "finishLabel": "金属",
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#C2C5C6",
-    "shiftHex": "#747471",
-    "hue": 195,
+    "hex": "#4A4F56",
+    "shiftHex": "#787E87",
+    "hue": 215,
     "hueGroup": "blue",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "枪灰色底漆上可见冷调银色反光。",
-    "taglineEn": "Cool silver reflections show through the gunmetal base.",
+    "tagline": "深枪灰色底漆在亮部显出冷调金属光。",
+    "taglineEn": "Deep gunmetal grey catches cool metallic highlights.",
     "optics": {
       "gloss": 92,
       "metallic": 92,
@@ -1790,30 +1603,26 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Оружейный серый",
-    "taglineRu": "Холодные серебристые блики на оружейно-сером фоне.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-006m",
     "code": "TPU-006M",
     "name": "冰莓粉",
-    "nameEn": "Metallic Ice Berry Pink",
+    "nameEn": "Porsche Frozen Berry Metallic",
     "finish": "metallic",
     "finishLabel": "金属",
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#CABDB6",
-    "shiftHex": "#D6CEC8",
-    "hue": 21,
-    "hueGroup": "gold",
+    "hex": "#B98B95",
+    "shiftHex": "#D6B0B9",
+    "hue": 347,
+    "hueGroup": "red",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "偏灰的莓粉色在强光下闪出细银光。",
-    "taglineEn": "A muted berry pink picks up fine silver reflections.",
+    "tagline": "柔和的莓粉色在亮部泛出浅玫色金属光。",
+    "taglineEn": "Muted berry pink catches a pale rose metallic reflection.",
     "optics": {
       "gloss": 92,
       "metallic": 92,
@@ -1828,11 +1637,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Розовый «Ледяная ягода»",
-    "taglineRu": "Приглушённый ягодно-розовый даёт тонкий серебристый отблеск.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-007m",
@@ -1844,14 +1649,14 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#BECDD3",
-    "shiftHex": "#CAD3D7",
-    "hue": 197,
+    "hex": "#5D89A8",
+    "shiftHex": "#8AB2CE",
+    "hue": 205,
     "hueGroup": "blue",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "浅灰蓝底色配以细银色金属颗粒。",
-    "taglineEn": "Pale blue-grey carries a fine silver metallic grain.",
+    "tagline": "中等深度的灰蓝色在受光处转为明亮浅蓝。",
+    "taglineEn": "A medium blue-grey brightens to a lighter blue in the highlights.",
     "optics": {
       "gloss": 92,
       "metallic": 92,
@@ -1866,11 +1671,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Лазурный металлик",
-    "taglineRu": "Светлый серо-голубой с мелким серебристым зерном.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-008m",
@@ -1882,14 +1683,14 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#D7A511",
-    "shiftHex": "#F8DC5F",
-    "hue": 45,
+    "hex": "#E8741C",
+    "shiftHex": "#FFA052",
+    "hue": 26,
     "hueGroup": "gold",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "暖金橙色随金属光带逐渐变亮。",
-    "taglineEn": "Warm golden orange brightens along the metallic highlight.",
+    "tagline": "鲜明的暖橙色随金属光带过渡为浅橙。",
+    "taglineEn": "Vivid warm orange turns lighter across the metallic highlight.",
     "optics": {
       "gloss": 92,
       "metallic": 92,
@@ -1904,11 +1705,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Солнечный оранжевый металлик",
-    "taglineRu": "Тёплый золотисто-оранжевый светлеет вдоль металлического блика.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-009m",
@@ -1920,14 +1717,14 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#D47E5A",
-    "shiftHex": "#EEA886",
-    "hue": 18,
-    "hueGroup": "gold",
+    "hex": "#E84C1E",
+    "shiftHex": "#FF7D54",
+    "hue": 14,
+    "hueGroup": "red",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "铜橙色的细密金属光在曲面上铺开。",
-    "taglineEn": "Fine metallic reflections spread across the copper-orange base.",
+    "tagline": "暖红橙色的金属光泽在曲面上展开。",
+    "taglineEn": "Warm red-orange carries metallic reflections across curved panels.",
     "optics": {
       "gloss": 92,
       "metallic": 92,
@@ -1942,11 +1739,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Лавовый оранжевый металлик",
-    "taglineRu": "Тонкие металлические блики ложатся на медно-оранжевый фон.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-010m",
@@ -1958,14 +1751,14 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#C4B4B6",
-    "shiftHex": "#E7DFE6",
-    "hue": 352,
-    "hueGroup": "red",
+    "hex": "#5C3468",
+    "shiftHex": "#8A5D96",
+    "hue": 286,
+    "hueGroup": "purple",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "低饱和紫调在银灰与淡紫之间变化。",
-    "taglineEn": "A soft metallic mauve shifts between silver-grey and lilac.",
+    "tagline": "深紫底色泛出较明亮的紫红色金属光。",
+    "taglineEn": "Deep violet catches a brighter plum-coloured metallic sheen.",
     "optics": {
       "gloss": 92,
       "metallic": 92,
@@ -1980,11 +1773,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Бархатный фиолетовый металлик",
-    "taglineRu": "Мягкий лиловый металлик переливается от серебристо-серого к сиреневому.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-011m",
@@ -1996,14 +1785,14 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#CC950C",
-    "shiftHex": "#F3D35D",
-    "hue": 43,
+    "hex": "#8C6239",
+    "shiftHex": "#BA9064",
+    "hue": 30,
     "hueGroup": "gold",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "古铜与金黄色相融，亮部更偏金。",
-    "taglineEn": "Bronze and yellow gold meet in a warmer, golden highlight.",
+    "tagline": "浓郁铜棕底色在亮部呈现古铜金光。",
+    "taglineEn": "The rich copper-brown base catches a bronze-gold sheen.",
     "optics": {
       "gloss": 92,
       "metallic": 92,
@@ -2018,30 +1807,26 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Бронзовое золото",
-    "taglineRu": "Бронзовый тон в бликах переходит в тёплое золото.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-012m",
     "code": "TPU-012M",
     "name": "超音速钛灰",
-    "nameEn": "Supersonic Titanium Grey",
+    "nameEn": "Sonic Titanium Grey",
     "finish": "metallic",
     "finishLabel": "金属",
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#C6C7BA",
-    "shiftHex": "#E9ECE9",
-    "hue": 65,
+    "hex": "#8A8D8F",
+    "shiftHex": "#B5B8BA",
+    "hue": 204,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
-    "tagline": "钛灰色中带淡金属暖意，边缘阴影更深。",
-    "taglineEn": "Titanium grey carries a warm sheen and deeper edges.",
+    "tagline": "中性钛灰色带有偏冷的银色反光。",
+    "taglineEn": "Neutral titanium grey carries a cool silver reflection.",
     "optics": {
       "gloss": 92,
       "metallic": 92,
@@ -2056,25 +1841,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Титановый серый «Сверхзвук»",
-    "taglineRu": "Титановый серый с тёплым металлическим блеском и более тёмными краями.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-013m",
     "code": "TPU-013M",
     "name": "AMG 超哑山灰",
-    "nameEn": "Ultra-Matte AMG Mountain Grey",
+    "nameEn": "AMG Selenite Grey Magno",
     "finish": "metallic",
     "finishLabel": "金属",
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#7F7F78",
-    "shiftHex": "#707068",
-    "hue": 60,
+    "hex": "#5A5E62",
+    "shiftHex": "#7C8186",
+    "hue": 210,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
@@ -2094,25 +1875,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.04,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.22
-    },
-    "nameRu": "Глубокоматовый горный серый AMG",
-    "taglineRu": "Матовый горный серый смягчает отражения.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-014m",
     "code": "TPU-014M",
     "name": "超哑黑矿石",
-    "nameEn": "Ultra-Matte Black Mineral",
+    "nameEn": "Super Matte Obsidian Black",
     "finish": "metallic",
     "finishLabel": "金属",
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#4C4D4B",
-    "shiftHex": "#595958",
-    "hue": 90,
+    "hex": "#1C1E21",
+    "shiftHex": "#383B42",
+    "hue": 216,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
@@ -2132,25 +1909,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.04,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.22
-    },
-    "nameRu": "Глубокоматовый чёрный минерал",
-    "taglineRu": "Глубокий минеральный графит с мягким матовым бликом.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-015m",
     "code": "TPU-015M",
     "name": "哑光铝水银",
-    "nameEn": "Matte Mercury Silver",
+    "nameEn": "Matte Aluminum Mercury",
     "finish": "metallic",
     "finishLabel": "金属",
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#CBCCC8",
-    "shiftHex": "#FEFEFE",
-    "hue": 75,
+    "hex": "#AEB3B8",
+    "shiftHex": "#D0D4D8",
+    "hue": 210,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
@@ -2170,25 +1943,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.04,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.22
-    },
-    "nameRu": "Матовый ртутно-серебристый",
-    "taglineRu": "На светлом матовом серебре блики широкие и мягкие.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-016m",
     "code": "TPU-016M",
     "name": "液态银",
-    "nameEn": "Liquid Silver",
+    "nameEn": "Liquid Silver Metallic",
     "finish": "metallic",
     "finishLabel": "金属",
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#A9A9A1",
-    "shiftHex": "#CDCEC8",
-    "hue": 60,
+    "hex": "#C2C6CC",
+    "shiftHex": "#E5E8ED",
+    "hue": 216,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
@@ -2208,11 +1977,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Жидкое серебро",
-    "taglineRu": "Блики плавно скользят по серебристо-серой поверхности, как по жидкому металлу.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-019m",
@@ -2224,9 +1989,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#767772",
-    "shiftHex": "#8D8E89",
-    "hue": 72,
+    "hex": "#565A5E",
+    "shiftHex": "#7A7F85",
+    "hue": 210,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
@@ -2246,25 +2011,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.35
-    },
-    "nameRu": "Сатиновый горный серый AMG",
-    "taglineRu": "Сатиновый блеск подчёркивает грани серой поверхности.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-020m",
     "code": "TPU-020M",
     "name": "丝缎哑黑矿石",
-    "nameEn": "Satin Black Mineral",
+    "nameEn": "Satin Matte Black",
     "finish": "metallic",
     "finishLabel": "金属",
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#696967",
-    "shiftHex": "#6C6B69",
-    "hue": 60,
+    "hex": "#222428",
+    "shiftHex": "#3F434A",
+    "hue": 220,
     "hueGroup": "neutral",
     "isNeutral": true,
     "isNew": false,
@@ -2284,30 +2045,26 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.35
-    },
-    "nameRu": "Сатиновый чёрный минерал",
-    "taglineRu": "Глубокий минеральный серый с мягким сатиновым отливом.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-021m",
     "code": "TPU-021M",
     "name": "索马托蓝",
-    "nameEn": "Somato Blue",
+    "nameEn": "Somato Metallic Blue",
     "finish": "metallic",
     "finishLabel": "金属",
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#98B4AE",
-    "shiftHex": "#F3FBFB",
-    "hue": 167,
-    "hueGroup": "green",
+    "hex": "#587A96",
+    "shiftHex": "#83A5C0",
+    "hue": 207,
+    "hueGroup": "blue",
     "isNeutral": false,
     "isNew": false,
-    "tagline": "清淡的灰蓝绿色在高光处接近银白。",
-    "taglineEn": "Pale blue-green grey approaches silver-white in the light.",
+    "tagline": "偏冷的灰蓝色在金属高光中转为浅蓝。",
+    "taglineEn": "Cool grey-blue turns pale blue along the metallic highlight.",
     "optics": {
       "gloss": 92,
       "metallic": 92,
@@ -2322,25 +2079,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Голубой Сомато",
-    "taglineRu": "Светлый серо-голубой с зелёным оттенком в бликах становится почти серебристым.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-022m",
     "code": "TPU-022M",
     "name": "曙光金",
-    "nameEn": "Dawn Gold",
+    "nameEn": "Dawning Gold Metallic",
     "finish": "metallic",
     "finishLabel": "金属",
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#D4CDBA",
-    "shiftHex": "#D9D2C0",
-    "hue": 44,
+    "hex": "#C9B082",
+    "shiftHex": "#E2CFA8",
+    "hue": 39,
     "hueGroup": "gold",
     "isNeutral": false,
     "isNew": false,
@@ -2360,11 +2113,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Рассветное золото",
-    "taglineRu": "Светлое золото в мягких бликах напоминает шампань.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-026m",
@@ -2376,9 +2125,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#C6C2B0",
-    "shiftHex": "#D7D4C3",
-    "hue": 49,
+    "hex": "#C2AD84",
+    "shiftHex": "#DECBA6",
+    "hue": 40,
     "hueGroup": "gold",
     "isNeutral": false,
     "isNew": true,
@@ -2398,11 +2147,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Золото шампань",
-    "taglineRu": "Тёплое золото шампань с мелким металлическим мерцанием.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-027m",
@@ -2414,9 +2159,9 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#D3CCBC",
-    "shiftHex": "#DCD6C8",
-    "hue": 42,
+    "hex": "#CBB892",
+    "shiftHex": "#E3D4B4",
+    "hue": 40,
     "hueGroup": "gold",
     "isNeutral": false,
     "isNew": true,
@@ -2436,25 +2181,21 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.35
-    },
-    "nameRu": "Сатиновое золото шампань",
-    "taglineRu": "Светлое золото шампань с широким сатиновым бликом.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-029m",
     "code": "TPU-029M",
     "name": "流光金",
-    "nameEn": "Flowing Gold",
+    "nameEn": "Flowing Gold Metallic",
     "finish": "metallic",
     "finishLabel": "金属",
     "finishLabelEn": "Metallic",
     "seriesName": "金属 Metal",
     "seriesNameEn": "Metal Series",
-    "hex": "#B4A694",
-    "shiftHex": "#DAD0C1",
-    "hue": 34,
+    "hex": "#B8965A",
+    "shiftHex": "#D6B87E",
+    "hue": 38,
     "hueGroup": "gold",
     "isNeutral": false,
     "isNew": true,
@@ -2474,11 +2215,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.34
-    },
-    "nameRu": "Струящееся золото",
-    "taglineRu": "Мягкий коричневато-золотой оттенок меняет глубину при движении света.",
-    "finishLabelRu": "Металлик",
-    "seriesNameRu": "Металлик"
+    }
   },
   {
     "id": "tpu-001p",
@@ -2512,11 +2249,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Перламутровый алый",
-    "taglineRu": "На глубоком красном фоне проступает розово-красный перламутр.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-002p",
@@ -2550,11 +2283,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Жемчужно-белый",
-    "taglineRu": "Мягкий перламутр виден при боковом освещении почти белой поверхности.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-003p",
@@ -2588,11 +2317,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Изумрудный перламутр",
-    "taglineRu": "Глубокий изумрудно-зелёный с холодными перламутровыми бликами.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-004p",
@@ -2626,11 +2351,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Чёрный перламутр",
-    "taglineRu": "Тонкий серебристый перламутр проступает на тёмно-графитовом фоне.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-005p",
@@ -2664,11 +2385,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Зелёное пламя",
-    "taglineRu": "Ярко-зелёный перламутр вспыхивает на глубоком зелёном фоне.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-006p",
@@ -2702,11 +2419,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Горный зелёный перламутр",
-    "taglineRu": "Тёмный бирюзово-зелёный в бликах приобретает нефритовый оттенок.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-007p",
@@ -2740,11 +2453,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Яркий жёлтый перламутр",
-    "taglineRu": "Насыщенный жёлтый на свету даёт золотистый перламутр.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-008p",
@@ -2778,11 +2487,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Виноградный перламутр",
-    "taglineRu": "Тёмный виноградный фиолетовый в боковом свете даёт ягодный отблеск.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-009p",
@@ -2816,11 +2521,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Насыщенный синий перламутр",
-    "taglineRu": "Глубокий синий в бликах переходит в яркий кобальтовый.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-011p",
@@ -2854,11 +2555,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.22
-    },
-    "nameRu": "Сатиновая слоновая кость",
-    "taglineRu": "Матовая слоновая кость мягко рассеивает свет.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-012p",
@@ -2892,11 +2589,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Глянцевая слоновая кость",
-    "taglineRu": "Тёплая слоновая кость при ярком свете приобретает мягкий жемчужный блеск.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-021p",
@@ -2930,11 +2623,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.32,
       "sheenIntensity": 0.22
-    },
-    "nameRu": "Матовый белый рассвет",
-    "taglineRu": "Светлый белый с лёгким переливом и мягким матовым бликом.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-025p",
@@ -2968,11 +2657,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Серая ангора",
-    "taglineRu": "Светлый кремово-серый с тёплым подтоном и тонким перламутром.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-026p",
@@ -3006,11 +2691,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Теневой синий",
-    "taglineRu": "Тёмный сине-зелёный переходит от серо-синих теней к аквамариновым бликам.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-027p",
@@ -3044,11 +2725,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Теневой фиолетовый",
-    "taglineRu": "Приглушённый тёмно-фиолетовый при боковом свете даёт холодный фиалковый отблеск.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-028p",
@@ -3082,11 +2759,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Красный «Драконья кровь»",
-    "taglineRu": "Тёмно-красная основа в освещённых участках становится рубиновой.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-029p",
@@ -3120,11 +2793,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Чёрная роза",
-    "taglineRu": "Почти чёрный в тени, на прямом свету оттенок раскрывается тёмно-розовым.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-031p",
@@ -3158,11 +2827,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Киберсерый",
-    "taglineRu": "На тёмно-сером фоне в боковом свете проявляется холодный перламутр.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-033p",
@@ -3196,11 +2861,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Королевский зелёный",
-    "taglineRu": "Тёмно-нефритовый зелёный на ярком свету даёт изумрудный отлив.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-034p",
@@ -3234,11 +2895,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Августовский жёлтый",
-    "taglineRu": "Золотисто-жёлтый с мягким мелким перламутром.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-035p",
@@ -3272,11 +2929,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Гоночный оранжевый",
-    "taglineRu": "Насыщенный тёплый оранжевый в бликах переходит в золотисто-оранжевый.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-039p",
@@ -3310,11 +2963,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Глазурный синий",
-    "taglineRu": "Сапфирово-синий под углом переходит в более яркий кобальтовый.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-040p",
@@ -3348,11 +2997,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Марганцевый чёрный металлик",
-    "taglineRu": "Почти чёрный графит с тонким металлическим перламутром.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-041p",
@@ -3386,11 +3031,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Агатовый зелёный",
-    "taglineRu": "Густой тёмно-зелёный с тонким перламутром и нефритовыми бликами.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-043p",
@@ -3424,11 +3065,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Венецианский фиолетовый",
-    "taglineRu": "На тёмно-фиолетовом фоне проявляются более светлые фиалковые блики.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-044p",
@@ -3462,11 +3099,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Серо-зелёный металлик",
-    "taglineRu": "Приглушённый серо-зелёный при смене света проявляет холодный перламутр.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-048p",
@@ -3500,11 +3133,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.62,
       "iridescenceIOR": 1.46,
       "sheenIntensity": 0.72
-    },
-    "nameRu": "Фиолетовая туманность",
-    "taglineRu": "Фиолетовый перламутр переливается от глубокого тона к светлой сирени.",
-    "finishLabelRu": "Перламутр",
-    "seriesNameRu": "Перламутр"
+    }
   },
   {
     "id": "tpu-001b",
@@ -3538,11 +3167,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.88,
       "iridescenceIOR": 1.56,
       "sheenIntensity": 0.88
-    },
-    "nameRu": "Вулканический пепел",
-    "taglineRu": "Светло-серый фон под углом приобретает дымчато-розовый отлив.",
-    "finishLabelRu": "Двухцветный",
-    "seriesNameRu": "Двухцветный"
+    }
   },
   {
     "id": "tpu-002b",
@@ -3576,11 +3201,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.88,
       "iridescenceIOR": 1.56,
       "sheenIntensity": 0.88
-    },
-    "nameRu": "Белый с розовым румянцем",
-    "taglineRu": "На светлом белом фоне под углом проявляется розовый румянец.",
-    "finishLabelRu": "Двухцветный",
-    "seriesNameRu": "Двухцветный"
+    }
   },
   {
     "id": "tpu-001l",
@@ -3614,11 +3235,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.82,
       "iridescenceIOR": 1.52,
       "sheenIntensity": 0.82
-    },
-    "nameRu": "Глянцевый лазерный белый",
-    "taglineRu": "На белой основе при прямом свете видны мелкие разноцветные искры.",
-    "finishLabelRu": "Голографический",
-    "seriesNameRu": "Голографический"
+    }
   },
   {
     "id": "tpu-002l",
@@ -3652,11 +3269,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.82,
       "iridescenceIOR": 1.52,
       "sheenIntensity": 0.82
-    },
-    "nameRu": "Лазерный чёрный",
-    "taglineRu": "Мелкие радужные искры выделяются на чёрном фоне при ярком свете.",
-    "finishLabelRu": "Голографический",
-    "seriesNameRu": "Голографический"
+    }
   },
   {
     "id": "tpu-001c",
@@ -3690,11 +3303,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.88,
       "iridescenceIOR": 1.56,
       "sheenIntensity": 0.88
-    },
-    "nameRu": "Чёрно-красное сияние",
-    "taglineRu": "Почти чёрные тени переходят в бордовый на освещённых участках.",
-    "finishLabelRu": "Хамелеон",
-    "seriesNameRu": "Хамелеон"
+    }
   },
   {
     "id": "tpu-002c",
@@ -3728,11 +3337,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.88,
       "iridescenceIOR": 1.56,
       "sheenIntensity": 0.88
-    },
-    "nameRu": "Зелёное сияние",
-    "taglineRu": "Изумрудный и бирюзовый сменяют друг друга при изменении угла обзора.",
-    "finishLabelRu": "Хамелеон",
-    "seriesNameRu": "Хамелеон"
+    }
   },
   {
     "id": "tpu-003c",
@@ -3766,11 +3371,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.88,
       "iridescenceIOR": 1.56,
       "sheenIntensity": 0.88
-    },
-    "nameRu": "Сине-зелёное сияние",
-    "taglineRu": "Тёмный сине-зелёный на изгибах переходит в озёрный голубой.",
-    "finishLabelRu": "Хамелеон",
-    "seriesNameRu": "Хамелеон"
+    }
   },
   {
     "id": "tpu-005c",
@@ -3804,11 +3405,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.88,
       "iridescenceIOR": 1.56,
       "sheenIntensity": 0.88
-    },
-    "nameRu": "Глянцевый синий Канас",
-    "taglineRu": "На глянцевом изгибе последовательно проявляются бирюзовый, синий и фиолетовый.",
-    "finishLabelRu": "Хамелеон",
-    "seriesNameRu": "Хамелеон"
+    }
   },
   {
     "id": "tpu-006c",
@@ -3842,11 +3439,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.32,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.35
-    },
-    "nameRu": "Сатиновый синий Канас",
-    "taglineRu": "Сатиновая поверхность смягчает переход от бирюзово-синего к фиолетовому.",
-    "finishLabelRu": "Хамелеон",
-    "seriesNameRu": "Хамелеон"
+    }
   },
   {
     "id": "tpu-002a",
@@ -3880,11 +3473,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.16,
       "iridescenceIOR": 1.38,
       "sheenIntensity": 0.35
-    },
-    "nameRu": "Сатиновое золото восхода",
-    "taglineRu": "Светлое золото рассвета с мягким сатиновым бликом.",
-    "finishLabelRu": "Сплав",
-    "seriesNameRu": "Сплав"
+    }
   },
   {
     "id": "tpu-001g",
@@ -3918,11 +3507,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.82,
       "iridescenceIOR": 1.52,
       "sheenIntensity": 0.82
-    },
-    "nameRu": "Переливчатое золото",
-    "taglineRu": "Золотистое мерцание проявляется на свету, а итоговый оттенок зависит от цвета основы.",
-    "finishLabelRu": "Иридисцентный",
-    "seriesNameRu": "Иридисцентный"
+    }
   },
   {
     "id": "tpu-002g",
@@ -3956,11 +3541,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.82,
       "iridescenceIOR": 1.52,
       "sheenIntensity": 0.82
-    },
-    "nameRu": "Бриллиантовый белый с золотым отливом",
-    "taglineRu": "На чистом белом фоне в бликах заметно тонкое золотистое мерцание.",
-    "finishLabelRu": "Иридисцентный",
-    "seriesNameRu": "Иридисцентный"
+    }
   },
   {
     "id": "tpu-003g",
@@ -3994,11 +3575,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.82,
       "iridescenceIOR": 1.52,
       "sheenIntensity": 0.82
-    },
-    "nameRu": "Бриллиантовый белый с голубым отливом",
-    "taglineRu": "Белая основа при ярком свете даёт тонкое ледяно-голубое мерцание.",
-    "finishLabelRu": "Иридисцентный",
-    "seriesNameRu": "Иридисцентный"
+    }
   },
   {
     "id": "tpu-001fp",
@@ -4032,11 +3609,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.12,
       "iridescenceIOR": 1.35,
       "sheenIntensity": 0.18
-    },
-    "nameRu": "Чёрная бездна",
-    "taglineRu": "На тёмно-графитовой основе виден нерегулярный волнистый рисунок.",
-    "finishLabelRu": "Кованый карбон",
-    "seriesNameRu": "Кованый карбон"
+    }
   },
   {
     "id": "tpu-002fp",
@@ -4070,11 +3643,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.12,
       "iridescenceIOR": 1.35,
       "sheenIntensity": 0.18
-    },
-    "nameRu": "Чёрный кованый карбон",
-    "taglineRu": "Чёрный рисунок кованого карбона образован разнонаправленными угловатыми фрагментами.",
-    "finishLabelRu": "Кованый карбон",
-    "seriesNameRu": "Кованый карбон"
+    }
   },
   {
     "id": "tpu-cf",
@@ -4108,11 +3677,7 @@ export const COLOR_STUDIO_SWATCHES: ColorFilmItem[] = [
       "iridescence": 0.12,
       "iridescenceIOR": 1.35,
       "sheenIntensity": 0.18
-    },
-    "nameRu": "Чёрный карбон",
-    "taglineRu": "В чёрном карбоновом плетении ритмично чередуются светлые и тёмные участки.",
-    "finishLabelRu": "Карбоновое плетение",
-    "seriesNameRu": "Карбоновое плетение"
+    }
   }
 ];
 

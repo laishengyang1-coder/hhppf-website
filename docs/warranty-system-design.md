@@ -276,5 +276,5 @@ Production notes:
 - Images and PDFs must not be stored in D1.
 - Import should be transactional: any row-level error blocks the whole file.
 - PDF should include full VIN; web certificate should mask VIN.
-- English should be the default UI language, with Chinese and Russian supported through label dictionaries.
+- English should be the default UI language, with Chinese supported through label dictionaries.
 - Email notifications are intentionally out of V1 and can be added in V2.

@@ -6,11 +6,13 @@
   <script>
     const studio = new URL('./', window.location.href);
     const params = new URLSearchParams(window.location.search);
+    if (params.has('lang') && params.get('lang') !== 'zh') params.set('lang', 'en');
     params.set('mode', params.get('mode') || params.get('view') || 'car');
     params.set('car', params.get('car') || params.get('model') || 'model3');
     params.delete('view');
     params.delete('model');
     studio.search = params.toString();
+    studio.hash = window.location.hash;
     window.location.replace(studio.href);
   </script>
 </head><body><a href="./?mode=car">H&amp;H Color Studio</a></body></html>

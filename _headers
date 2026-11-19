@@ -14,3 +14,15 @@
 
 /warranty/*.css
   Cache-Control: public, max-age=0, must-revalidate
+
+/color-studio/models/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+
+/color-studio/paint/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+
+/color-studio/models/tesla-model-3.glb
+  Content-Encoding: gzip
+
+/color-studio/models/tesla-model-y.glb
+  Content-Encoding: gzip

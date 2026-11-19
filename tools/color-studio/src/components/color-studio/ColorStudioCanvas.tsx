@@ -919,8 +919,7 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
     <div ref={containerRef} className="w-full h-full select-none">
       {graphicsUnavailable && <p role="status" className="absolute inset-0 grid place-items-center px-8 text-center text-sm text-white/75">
         {t('当前浏览器无法显示 3D，可切换至“流光样板”查看色卡。',
-          '3D is unavailable in this browser. Select Swatches to view the film samples.',
-          'В этом браузере 3D недоступно. Выберите «Образцы», чтобы посмотреть цвета плёнки.')}
+          '3D is unavailable in this browser. Select Swatches to view the film samples.')}
       </p>}
     </div>
   );
