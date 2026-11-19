@@ -94,11 +94,13 @@
     });
 
     cards.forEach((card) => {
-      card.addEventListener("click", () => {
+      card.addEventListener("click", (e) => {
+        if (e.target.closest("a")) return;
         const cat = card.dataset.category || "ppf";
         activateSpecTab(cat, true);
       });
       card.addEventListener("keydown", (e) => {
+        if (e.target !== card) return;
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           activateSpecTab(card.dataset.category || "ppf", true);

@@ -41,4 +41,28 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://hhppf.com/color-studio/?lang=en</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hhppf.com/color-studio/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://hhppf.com/color-studio/?lang=zh" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hhppf.com/color-studio/?lang=ru" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hhppf.com/color-studio/" />
+    <lastmod>2026-11-19</lastmod>
+  </url>
+  <url>
+    <loc>https://hhppf.com/color-studio/?lang=zh</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hhppf.com/color-studio/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://hhppf.com/color-studio/?lang=zh" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hhppf.com/color-studio/?lang=ru" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hhppf.com/color-studio/" />
+    <lastmod>2026-11-19</lastmod>
+  </url>
+  <url>
+    <loc>https://hhppf.com/color-studio/?lang=ru</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hhppf.com/color-studio/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://hhppf.com/color-studio/?lang=zh" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hhppf.com/color-studio/?lang=ru" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hhppf.com/color-studio/" />
+    <lastmod>2026-11-19</lastmod>
+  </url>
 </urlset>

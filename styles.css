@@ -1063,6 +1063,24 @@ footer span {
   font-weight: 800;
 }
 
+.swatch-entry {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: .45em;
+  margin-top: 16px;
+  padding: 7px 12px;
+  color: #772610;
+  background: #fff1e7;
+  border: 1px solid #dbb2a1;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.swatch-entry:hover, .swatch-entry:focus-visible { text-decoration: underline; }
+.finish-studio-entry.cta-buttons { justify-content: flex-start; margin: 0 0 24px; }
+.finish-studio-entry a { gap: .55em; }
+
 /* Interactive Technical Specification Hub */
 .spec-hub {
   margin-top: clamp(44px, 6vw, 72px);

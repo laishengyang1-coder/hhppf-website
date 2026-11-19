@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f9f2ec">
+  <title>Color Studio | H&amp;H Automotive Films</title>
+  <meta name="description" content="Explore H&amp;H automotive film swatches, compare finishes and see how each color responds to light.">
+  <link rel="canonical" href="https://hhppf.com/color-studio/">
+  <link rel="alternate" hreflang="en" href="https://hhppf.com/color-studio/?lang=en">
+  <link rel="alternate" hreflang="zh" href="https://hhppf.com/color-studio/?lang=zh">
+  <link rel="alternate" hreflang="ru" href="https://hhppf.com/color-studio/?lang=ru">
+  <link rel="alternate" hreflang="x-default" href="https://hhppf.com/color-studio/">
+  <link rel="icon" href="../assets/favicon.ico">
+  <link rel="stylesheet" href="./studio.css">
+  <script type="module" src="./studio.js"></script>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" class="symbol-sheet" aria-hidden="true">
+    <symbol id="arrow" viewBox="0 0 24 24"><path d="m10 5 7 7-7 7"/></symbol>
+    <symbol id="grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1.2"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="1.2"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="1.2"/><rect x="14" y="14" width="6.5" height="6.5" rx="1.2"/></symbol>
+    <symbol id="link" viewBox="0 0 24 24"><path d="m10 14 4-4m-5 1-2 2a3.5 3.5 0 0 0 5 5l3-3m0-2 2-2a3.5 3.5 0 0 0-5-5l-3 3"/></symbol>
+    <symbol id="lift-icon" viewBox="0 0 24 24"><path d="M4 18.5h16M6 15l1.4-10h9.8l-1.4 10z"/></symbol>
+    <symbol id="pause-icon" viewBox="0 0 24 24"><path d="M9 5v14m6-14v14" stroke-width="3"/></symbol>
+    <symbol id="play-icon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z" fill="currentColor" stroke-width="1"/></symbol>
+    <symbol id="close-icon" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="search-icon" viewBox="0 0 24 24"><circle cx="10.3" cy="10.3" r="6.4"/><path d="m15.4 15.4 4.6 4.6"/></symbol>
+  </svg>
+  <header class="mast">
+    <div class="mast-brand"><a id="home" href="/" aria-label="H&amp;H home"><img src="../assets/hh-logo.png" alt="H&amp;H" width="94" height="44"></a><span class="mast-divider"></span><h1 data-i18n="title">Color Studio</h1></div>
+    <div class="mast-nav"><a id="products" href="/#products" data-i18n="products">Film portfolio</a><select id="lang" aria-label="Language"><option value="en">English</option><option value="zh">中文</option><option value="ru">Русский</option></select></div>
+  </header>
+  <main>
+    <section class="studio" aria-labelledby="swatch-name">
+      <header class="sample-info">
+        <div class="sample-details"><p class="sample-meta"><span id="ink-chip"></span><span id="code">TPU-010S</span><span class="rule"></span><span id="finish-name"></span></p><h2 id="swatch-name"></h2></div>
+        <div class="sample-tools"><div class="light-list" role="group" aria-label="Lighting"><button type="button" data-light="studio" data-i18n="studio">Studio</button><button type="button" data-light="gallery" data-i18n="gallery">Daylight</button><button type="button" data-light="sunset" data-i18n="sunset">Sunset</button></div><a id="vehicle" class="vehicle-link" href="./vehicle.html" data-i18n="vehicle">View on car</a></div>
+      </header>
+      <div id="fan" class="swatch-fan" data-swatch-fan data-picked-up="false" data-lighting="studio" tabindex="0" role="region" aria-label="Film samples">
+        <div id="cards" class="swatch-fan__cards"></div>
+      </div>
+      <div class="console">
+        <div class="playback"><button id="prev" class="icon-button previous" type="button" aria-label="Previous color"><svg><use href="#arrow"/></svg></button><button id="play" class="icon-button fan-play" type="button" aria-label="Pause autoplay"><svg><use href="#pause-icon"/></svg></button><button id="next" class="icon-button" type="button" aria-label="Next color"><svg><use href="#arrow"/></svg></button><span id="index" class="current-index"></span></div>
+        <p id="hint"></p>
+        <div class="inspect-actions"><button id="lift" type="button" class="pill"><svg><use href="#lift-icon"/></svg><span data-i18n="lift">Pick up</span></button><button id="share" type="button" class="icon-button" aria-label="Copy color link"><svg><use href="#link"/></svg></button></div>
+      </div>
+    </section>
+    <div class="spectrum">
+      <div class="library-controls"><button id="catalog-open" class="catalog-cta" type="button"><svg><use href="#grid"/></svg><span data-i18n="catalog">Color library</span></button><select id="finish" aria-label="Filter finishes"></select></div>
+      <div id="strip" class="swatch-strip" role="group" aria-label="Nearby colors"></div>
+    </div>
+    <p id="disclaimer" class="disclaimer" data-i18n="disclaimer">Screen colors are approximate. Use a physical sample for final selection.</p>
+    <p id="status" class="screen-reader" role="status"></p>
+    <noscript>Enable JavaScript to explore the interactive color samples. <a href="/#products">View the H&amp;H film portfolio.</a></noscript>
+  </main>
+  <dialog id="catalog" aria-labelledby="catalog-heading"><div class="drawer-head"><h2 id="catalog-heading" data-i18n="catalog">Color library</h2><button id="catalog-close" type="button" class="icon-button" aria-label="Close"><svg><use href="#close-icon"/></svg></button></div>
+    <div class="search-row"><label class="search"><svg aria-hidden="true"><use href="#search-icon"/></svg><input id="query" type="search" autocomplete="off" placeholder="Search name or code"></label><select id="catalog-finish" aria-label="Filter finishes"></select></div>
+    <p id="result-count" class="result-count" aria-live="polite"></p>
+    <div id="results" class="results"></div>
+  </dialog>
+  <dialog id="share-dialog" aria-labelledby="share-heading"><div class="drawer-head"><h2 id="share-heading" data-i18n="share">Share color</h2><button id="share-close" type="button" class="icon-button" aria-label="Close"><svg><use href="#close-icon"/></svg></button></div><input id="share-url" type="url" readonly aria-label="Link"></dialog>
+</body>
+</html>
