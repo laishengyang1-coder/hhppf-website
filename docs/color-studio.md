@@ -1,30 +1,36 @@
 # H&H 官网电子色卡交接
 
-## 访问与产品入口
+## 页面来源和入口
 
-正式页面支持英语、简体中文和俄语。三个语言首页都可以从 TPU 改色车衣产品卡和表面工艺展示区进入。产品卡原有的技术参数入口和询盘按钮继续可用。
+H&H 选色工坊直接移植和膜官网的选色页。布局、动画、底部色轨、全系色谱、定制选色单及五个视图以和膜业务提交 [95028f4](https://github.com/laishengyang1-coder/hamorey-website/commit/95028f491a67af1c445816ed22acb621fdaf796e) 为基准。品牌使用 H&H 官方标志、橙色强调和 H&H 产品资料，支持英语、简体中文和俄语。
 
-| 入口 | 用途 |
+| 入口 | 操作 |
 |---|---|
-| [English](https://hhppf.com/color-studio/?lang=en) · [中文](https://hhppf.com/color-studio/?lang=zh) · [Русский](https://hhppf.com/color-studio/?lang=ru) | 浏览电子色卡。分享地址可用 `code=TPU-048P` 指定色号。 |
-| [中文星云紫装车](https://hhppf.com/color-studio/vehicle.html?lang=zh&code=TPU-048P&view=car&model=modely) | 预览选定色号。支持 Model 3、Model Y，以及整车、近景、微距、光影球四个视图。 |
+| [English](https://hhppf.com/color-studio/?lang=en) · [中文](https://hhppf.com/color-studio/?lang=zh) · [Русский](https://hhppf.com/color-studio/?lang=ru) | 从三个语言首页的 TPU 改色车衣卡片或表面工艺展示区进入。右上角可切换语言。 |
+| [星云紫样板](https://hhppf.com/color-studio/?lang=zh&code=TPU-048P&mode=swatch) | 轮转时扇面微张再收拢。双击中央或侧卡拿起，拖动查看反光，双击或使用放回按钮归位。 |
+| [同色 Model Y 整车](https://hhppf.com/color-studio/?lang=zh&code=TPU-048P&mode=car&car=modely) | 在工坊内原位切换样板、整车、腰线近景、微距和光影球。车型、灯光和色号随视图共享。 |
 
-## 样板与数据
+色号使用 `code`，语言使用 `lang=en|zh|ru`，视图为 `mode=swatch|car|closeup|macro|sphere`，车型为 `car=model3|modely`。复制当前浏览器地址可分享所选状态。初版 `/color-studio/vehicle.html` 的旧链接会把原 `view/model` 转为 `mode/car` 后进入同一工坊。
 
-- 样板可以自动轮转，卡片围绕同一转轴依次轻轻张开、收回。双击或双触一张色卡可将它拿起；拖动查看漆面反光，再放回。也可以使用界面按钮。色谱支持查找色名与色号、按表面效果筛选。
-- `color-studio/catalog.js` 保存 103 个唯一色号，包括三语展示名、底色、偏色、四色带与物理材质。中文名称、色号和渲染参数以同次和膜色卡库为来源。英文和俄文为站内展示名，两站对照以产品色号为准。
-- 色库里的五种效果分组用于找色。H&H 产品页的四条 AIOC™ 产品系列及其商务参数继续在原产品页维护，未按色号推断厚度、售价、供货或质保。三语页面都提醒最终选色以实物为准。
-- `color-studio/studio.js`、`studio.css` 和 `paint/` 分别控制扇形动作、卡面叠层和七张漆面纹理，电子色卡首屏无需加载车模。三个语言首页通过 `?lang=en|zh|ru` 传入语言。
-- 装车页沿用色卡的语言与选色，`vehicle.js` 管理页面控件，`vehicle-renderer.js` 负责 3D。可编辑渲染源码和锁定版本的构建依赖在 `tools/color-studio/`，修改源码后在该目录运行 `npm ci && npm run build`，将产物与源码一起提交。模型在 `color-studio/models/`，作者与来源见同目录 [ATTRIBUTION.txt](../color-studio/models/ATTRIBUTION.txt)。第三方渲染库声明随 [vehicle-licenses.txt](../color-studio/vehicle-licenses.txt) 提供。
+## 接手位置
 
-## 发布
+| 文件（均相对仓库根目录） | 维护内容 |
+|---|---|
+| `tools/color-studio/src/pages/ColorStudioPage.tsx`、`ColorStudioFanLayout.css` | 桌面与手机布局、五视图、状态同步、语言切换、品牌标志与选色入口。 |
+| `tools/color-studio/src/components/color-studio/` | 扇形卡片与拾取动画、漆膜外观、Three.js 场景、可搜索色谱、选色单与 PNG 导出。 |
+| `tools/color-studio/src/config/colorStudio.ts` | 103 色名称与色号、三语表面工艺、材质参数、车型与灯光。中文、英文、俄文共用同一色号和物理参数。 |
+| `color-studio/models/`、`paint/`、`finishes/` | 站内模型、七张漆面纹理及 103 张原册切片。源模型作者及许可说明见 [ATTRIBUTION.txt](../color-studio/models/ATTRIBUTION.txt)。 |
+| `tools/color-studio/index.html`、`src/main.tsx`、`vite.config.js` | 独立页面入口及构建配置。生成的 `color-studio/index.html` 和 `color-studio/bundle/` 随源码一起提交。 |
+| 根目录三份 `index*.html` | H&H 的三语产品入口。询盘、质保和其余官网内容继续使用原站页面。 |
 
-官网基线为 `7c484df`。先将本轮业务提交推送至 GitHub 的 `main`。Cloudflare Pages 项目 `hhppf-website` 为 Direct Upload，绑定 `hhppf.com` 和 `www.hhppf.com`。按项目的正式分支发布同一提交，保留 `functions/`、`wrangler.toml`、现有质保 D1 和照片 R2 绑定。GitHub Pages 构建和 Cloudflare 正式部署分别核对。
+产品参数按 H&H 官网 AIOC™ 资料维护，色号对应的五种表面效果分组用于找色，不等同于 H&H 商务产品页的四条系列。2D 样板首屏只加载选色界面与漆面素材，3D 场景在切换视图时加载。整车和近景另请求所选车型。
 
-验收时从三个语言首页点入，检查切语和返回、按色号深链、色谱筛选、双击及双触拾取、装车后切换车型。随后在根域和 www 检查真实页面及 3D 资源。官网页面的业务变更不涉及质保数据库结构、表单字段或已有保修记录。
+## 构建和正式发布
 
-### 2026-11-19 正式发布回执
+在 `tools/color-studio/` 运行 `npm ci` 与 `npm run build`，完成类型校验并生成静态页面和分包。构建前可清理上次的 `color-studio/bundle/`；同目录下的模型和材质须保留。部署前按色号、语言、两个屏幕尺寸验证五视图、拾取与放回、弹层、询盘去向及 PNG 导出。
 
-- 官网业务提交为 [45770d3](https://github.com/laishengyang1-coder/hhppf-website/commit/45770d31730c7dddd5a8a0c85f514d094a60e1a4)。Cloudflare 生产部署 ID 为 `89428795-1fad-4692-862a-bfba437d4f2c`，与 GitHub 同一提交。[Cloudflare 发布快照](https://89428795.hhppf-website.pages.dev/color-studio/?lang=zh) · [GitHub Pages 构建通过](https://github.com/laishengyang1-coder/hhppf-website/actions/runs/44493355767)。
-- 北京时间 17:07–17:08 在根域和 www 检查了三种语言首页的入口、色卡与装车页的语言和色号深链、15 份脚本/样式/纹理/车型文件的 SHA-256、原质保首页与只读 `/api/ping`。两个域名均通过。
-- 正式根域用桌面 Chrome 和 390 像素宽的触屏仿真验证了三语界面与 103 色、俄文工艺筛选、按名搜索、自动轮转、双击侧卡拿起、拖动反光、放回、复制分享与重新打开。Model 3 / Model Y 两份模型均成功加载，四种视图及切色后的返回链接均正常。微信或手机真机尚未测量。
+H&H 正式域名 `hhppf.com` 和 `www.hhppf.com` 绑定 Cloudflare Pages 项目 `hhppf-website`，采用 Direct Upload。将业务提交推送到 GitHub 的 `main`，从同一提交导出生产文件，在含有 `wrangler.toml`、`functions/` 和现有质保资源的目录发布到该项目的 `main`。GitHub Pages 另外自动构建；以自定义域名实际加载的版本作最终验收。
+
+## 发布沿革
+
+2026-11-19 的 `45770d3` 是早期独立排版版，曾将装车拆为独立页面。用户随后确认采用和膜原页的布局与操作，现行版本恢复为单页面的五视图工坊。

@@ -1,1 +1,2 @@
-color-studio/vehicle-renderer.js -diff linguist-generated=true
+color-studio/bundle/*.js -diff linguist-generated=true
+color-studio/bundle/*.css -diff linguist-generated=true
