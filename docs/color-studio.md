@@ -22,3 +22,9 @@
 官网基线为 `7c484df`。先将本轮业务提交推送至 GitHub 的 `main`。Cloudflare Pages 项目 `hhppf-website` 为 Direct Upload，绑定 `hhppf.com` 和 `www.hhppf.com`。按项目的正式分支发布同一提交，保留 `functions/`、`wrangler.toml`、现有质保 D1 和照片 R2 绑定。GitHub Pages 构建和 Cloudflare 正式部署分别核对。
 
 验收时从三个语言首页点入，检查切语和返回、按色号深链、色谱筛选、双击及双触拾取、装车后切换车型。随后在根域和 www 检查真实页面及 3D 资源。官网页面的业务变更不涉及质保数据库结构、表单字段或已有保修记录。
+
+### 2026-11-19 正式发布回执
+
+- 官网业务提交为 [45770d3](https://github.com/laishengyang1-coder/hhppf-website/commit/45770d31730c7dddd5a8a0c85f514d094a60e1a4)。Cloudflare 生产部署 ID 为 `89428795-1fad-4692-862a-bfba437d4f2c`，与 GitHub 同一提交。[Cloudflare 发布快照](https://89428795.hhppf-website.pages.dev/color-studio/?lang=zh) · [GitHub Pages 构建通过](https://github.com/laishengyang1-coder/hhppf-website/actions/runs/44493355767)。
+- 北京时间 17:07–17:08 在根域和 www 检查了三种语言首页的入口、色卡与装车页的语言和色号深链、15 份脚本/样式/纹理/车型文件的 SHA-256、原质保首页与只读 `/api/ping`。两个域名均通过。
+- 正式根域用桌面 Chrome 和 390 像素宽的触屏仿真验证了三语界面与 103 色、俄文工艺筛选、按名搜索、自动轮转、双击侧卡拿起、拖动反光、放回、复制分享与重新打开。Model 3 / Model Y 两份模型均成功加载，四种视图及切色后的返回链接均正常。微信或手机真机尚未测量。
