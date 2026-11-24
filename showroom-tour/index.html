@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <base href="/showroom-tour/">
+  <title>H&amp;H Virtual Showroom | 360° Tour</title>
+  <meta name="description" content="Explore the H&amp;H automotive film showroom design in 360°, from the storefront and installation bay to the customer lounge.">
+  <meta property="og:title" content="H&amp;H Virtual Showroom | 360° Tour">
+  <meta property="og:description" content="Explore the H&amp;H automotive film showroom design in 360°.">
+  <meta property="og:image" content="https://hhppf.com/showroom-tour/stills/storefront.jpg">
+  <meta property="og:url" content="https://hhppf.com/showroom-tour/">
+  <meta name="theme-color" content="#fafaf8">
+  <link rel="icon" href="hh-logo.png" type="image/png">
+  <link rel="stylesheet" href="vendor/pannellum.css">
+  <link rel="stylesheet" href="tour.css">
+  <script defer src="vendor/pannellum.js"></script>
+  <script defer src="tour.js"></script>
+</head>
+<body>
+  <div class="tour" id="tour">
+    <header class="topbar">
+      <a class="brand" href="https://hhppf.com/" aria-label="H&amp;H home">
+        <img src="hh-logo.png" alt="H&amp;H" width="70" height="34">
+      </a>
+      <h1>Virtual showroom</h1>
+      <a class="download" href="HH-Showroom-Views.zip" download aria-label="Download showroom photos" title="Download showroom photos">
+        <svg width="18" height="18" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v11m-4-4 4 4 4-4M4.5 15.5v4h15v-4"/></svg>
+        <span>Download photos</span>
+      </a>
+    </header>
+    <main class="stage" id="stage" aria-label="Showroom view">
+      <img id="still" class="still" src="stills/storefront.jpg" alt="The exterior of the H&amp;H automotive film showroom" fetchpriority="high">
+      <div id="panorama" class="panorama" hidden aria-label="360-degree showroom panorama. Use the arrow keys to look around and plus or minus to zoom."></div>
+      <div class="hud">
+        <p id="guide" class="guide" role="status">Choose a scene below</p>
+        <div class="tools" role="group" aria-label="View controls">
+          <button type="button" id="zoom-out" title="Zoom out" aria-label="Zoom out" hidden>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+          </button>
+          <button type="button" id="zoom-in" title="Zoom in" aria-label="Zoom in" hidden>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-7-7v14"/></svg>
+          </button>
+          <button type="button" id="fullscreen" title="Enter full screen" aria-label="Enter full screen" aria-pressed="false" hidden>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path id="full-icon" d="M4 9V4h5m6 0h5v5m0 6v5h-5M9 20H4v-5"/></svg>
+          </button>
+        </div>
+      </div>
+    </main>
+    <nav class="scene-strip" aria-label="Showroom scenes">
+      <a class="scene" data-id="storefront" href="stills/storefront.jpg" aria-current="true">
+        <img src="stills/storefront-thumb.jpg" alt="" width="120" height="68"><span>Storefront</span>
+      </a>
+      <a class="scene" data-id="bay" href="stills/bay.jpg">
+        <img src="stills/bay-thumb.jpg" alt="" width="120" height="68"><span>Installation Bay</span>
+      </a>
+      <a class="scene" data-id="lounge" href="stills/lounge.jpg">
+        <img src="stills/lounge-thumb.jpg" alt="" width="120" height="68"><span>Customer Lounge</span>
+      </a>
+    </nav>
+  </div>
+</body>
+</html>
