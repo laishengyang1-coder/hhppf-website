@@ -15,9 +15,13 @@ import {
 } from '../../config/colorStudio';
 import {
   createAutomotiveStudioEnvMap,
+  createHHPlateTexture,
   createMetallicFlakeNormalMap,
 } from './studioEnvironment';
 import { createFilmMaterialController, type FilmMaterialController } from './filmMaterial';
+import { createLuxuryShaderball } from './shaderballBuilder';
+import { createStudioSceneManager, type StudioSceneManager } from './studioScenes';
+import { unpackHmyModelBuffer } from './studioGuard';
 type WebGLViewMode = Exclude<StudioViewMode, 'swatch'>;
 
 export type CarModelLoadStatus = 'idle' | 'loading' | 'ready' | 'error';
@@ -28,6 +32,8 @@ export interface ColorStudioCanvasProps {
   viewMode: WebGLViewMode;
   lightingPreset: StudioLightingPreset;
   vehicleId: StudioVehicleId;
+  paused?: boolean;
+  retryToken?: number;
   onStepSwatch: (delta: number) => void;
   onModelStatusChange?: (status: CarModelLoadStatus, progress: number) => void;
 }
@@ -38,7 +44,7 @@ interface CameraPreset {
 }
 
 const CAMERA_PRESETS: Record<WebGLViewMode, CameraPreset> = {
-  sphere: { pos: new THREE.Vector3(2.25, 0.96, 2.78), target: new THREE.Vector3(0, 0.02, 0) },
+  sphere: { pos: new THREE.Vector3(3.26, 1.32, 4.02), target: new THREE.Vector3(0, -0.46, 0) },
   macro: { pos: new THREE.Vector3(0, 0.16, 2.35), target: new THREE.Vector3(0, 0.02, 0) },
   car: { pos: new THREE.Vector3(3.85, 1.28, 4.35), target: new THREE.Vector3(0, 0.42, 0) },
   closeup: { pos: new THREE.Vector3(1.95, 0.96, 2.05), target: new THREE.Vector3(0.28, 0.56, 0.48) },
@@ -46,9 +52,19 @@ const CAMERA_PRESETS: Record<WebGLViewMode, CameraPreset> = {
 
 function getResponsiveCameraPreset(mode: WebGLViewMode, aspect: number): CameraPreset {
   const base = CAMERA_PRESETS[mode];
-  if (aspect < 0.85 && (mode === 'car' || mode === 'sphere')) {
-    const scale = mode === 'car' ? 2.08 : 1.36;
+  if (aspect < 0.85) {
+    const scale =
+      mode === 'car'
+        ? 1.88
+        : mode === 'closeup'
+          ? 1.32
+          : mode === 'sphere'
+            ? 1.28
+            : 1.15;
     const target = base.target.clone();
+    if (mode === 'car') target.y = 0.28;
+    else if (mode === 'sphere') target.y = -0.32;
+    else if (mode === 'closeup') target.y = 0.48;
     const offset = base.pos.clone().sub(base.target).multiplyScalar(scale);
     return {
       pos: target.clone().add(offset),
@@ -189,7 +205,7 @@ function vehicleResourceDisposer(root: THREE.Object3D) {
 }
 
 export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
-  const { activeSwatch, viewMode, lightingPreset, vehicleId, onStepSwatch } = props;
+  const { activeSwatch, viewMode, lightingPreset, vehicleId, retryToken = 0, onStepSwatch } = props;
   const t = studioText.bind(null, props.lang);
   const [graphicsUnavailable, setGraphicsUnavailable] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -215,6 +231,7 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
     desiredTarget: THREE.Vector3;
     controls: OrbitControls | null;
     switchVehicle: ((id: StudioVehicleId) => void) | null;
+    sceneManager: StudioSceneManager | null;
     shadowDirtyFrames: number;
   }>({
     renderer: null,
@@ -235,6 +252,7 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
     desiredTarget: CAMERA_PRESETS[viewMode].target.clone(),
     controls: null,
     switchVehicle: null,
+    sceneManager: null,
     shadowDirtyFrames: 4,
   });
 
@@ -248,15 +266,16 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
 
     let renderer: THREE.WebGLRenderer;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: false,
+        powerPreference: 'high-performance',
+      });
     } catch {
       setGraphicsUnavailable(true);
+      stateRef.current.onModelStatusChange?.('error', 0);
       return;
     }
-    const contextLost = () => setGraphicsUnavailable(true);
-    const contextRestored = () => setGraphicsUnavailable(false);
-    renderer.domElement.addEventListener('webglcontextlost', contextLost);
-    renderer.domElement.addEventListener('webglcontextrestored', contextRestored);
     // 自适应像素比：Retina 屏不再强制 2x（4 倍像素量），按实际帧耗动态升降
     const deviceDpr = window.devicePixelRatio || 1;
     const maxDpr = Math.min(deviceDpr, 1.75);
@@ -269,7 +288,7 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
     renderer.toneMappingExposure = 1.0;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     // 阴影按需更新：车辆静止时不再每帧重绘 20 万面阴影
     renderer.shadowMap.autoUpdate = false;
     renderer.shadowMap.needsUpdate = true;
@@ -297,24 +316,31 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
     );
     runtimeRef.current.filmController = filmController;
 
-    // 真实棚拍布光：环境 HDR 主导反射，直射光只做轻度塑形，避免整面漫反射泛白
-    const hemiLight = new THREE.HemisphereLight('#e8eefc', '#0b0c10', 0.12);
+    // 真实棚拍布光：95% 由大面积渐变柔光天幕 HDR 承载，直射光仅作极轻柔地面投影与体积微塑形，彻底消除点光源塑料白斑与生硬明暗交界线
+    const hemiLight = new THREE.HemisphereLight('#edf1fa', '#14161e', 0.24);
     scene.add(hemiLight);
     runtimeRef.current.hemiLight = hemiLight;
 
-    const keyLight = new THREE.DirectionalLight('#fff8f0', 0.75);
-    keyLight.position.set(4.5, 7.8, 5.2);
+    const keyLight = new THREE.DirectionalLight('#fffaf4', 0.26);
+    keyLight.position.set(4.2, 8.2, 4.8);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.set(1024, 1024);
-    keyLight.shadow.bias = -0.0004;
+    keyLight.shadow.camera.left = -3.4;
+    keyLight.shadow.camera.right = 3.4;
+    keyLight.shadow.camera.top = 3.4;
+    keyLight.shadow.camera.bottom = -3.4;
+    keyLight.shadow.camera.near = 1;
+    keyLight.shadow.camera.far = 20;
+    keyLight.shadow.bias = -0.0002;
+    keyLight.shadow.normalBias = 0.035;
     scene.add(keyLight);
     runtimeRef.current.keyLight = keyLight;
 
-    const fillLight = new THREE.DirectionalLight('#eef2ff', 0.14);
+    const fillLight = new THREE.DirectionalLight('#eef2ff', 0.08);
     fillLight.position.set(-4.4, 4.6, 4.8);
     scene.add(fillLight);
 
-    const rimLight = new THREE.DirectionalLight('#dbe8ff', 0.3);
+    const rimLight = new THREE.DirectionalLight('#e2ecff', 0.12);
     rimLight.position.set(-5.2, 3.4, -4.4);
     scene.add(rimLight);
     runtimeRef.current.rimLight = rimLight;
@@ -342,25 +368,14 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
     };
     controls.addEventListener('start', handleControlStart);
 
-    // 光影球
-    const sphereGroup = new THREE.Group();
-    const sphereGeo = new THREE.SphereGeometry(1.1, 72, 56);
-    const sphereMesh = new THREE.Mesh(sphereGeo, filmController.material);
-    sphereMesh.position.y = 0.14;
-    sphereMesh.castShadow = true;
-    sphereGroup.add(sphereMesh);
-
-    const ringGeo = new THREE.TorusGeometry(0.76, 0.036, 20, 72);
-    ringGeo.rotateX(Math.PI / 2);
-    const ringMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color('#e9481a'),
-      metalness: 0.94,
-      roughness: 0.18,
-      envMapIntensity: 1.5,
-    });
-    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-    ringMesh.position.y = -1.04;
-    sphereGroup.add(ringMesh);
+    // 高定车漆雕塑测试球（多曲率球壳 + 黑钛香槟金腰线 + 博物馆级曜石展台）
+    const shaderball = createLuxuryShaderball(
+      filmController.material,
+      computeSpotlightGlowColor(
+        stateRef.current.activeSwatch.shiftHex || stateRef.current.activeSwatch.hex,
+      ),
+    );
+    const sphereGroup = shaderball.rootGroup;
     sphereGroup.visible = stateRef.current.viewMode === 'sphere';
     scene.add(sphereGroup);
     runtimeRef.current.sphereGroup = sphereGroup;
@@ -431,6 +446,17 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
     scene.add(carGroup);
     runtimeRef.current.carGroup = carGroup;
 
+    // 三大 3D 实景展厅（暗夜柔光影棚 / 极昼美术馆 GroundedSkybox / 海岸落日 GroundedSkybox）
+    const sceneManager = createStudioSceneManager(
+      scene,
+      floorMesh,
+      floorMat,
+      floorGlowMat,
+      shadowPlaneMat,
+    );
+    sceneManager.applyPreset(stateRef.current.lightingPreset, stateRef.current.viewMode);
+    runtimeRef.current.sceneManager = sceneManager;
+
     // 后台异步加载与缓存双车型 3D 模型（Model 3 焕新版 / Model Y 焕新版）
     let disposed = false;
     const extraCarMaterials: THREE.Material[] = [];
@@ -486,6 +512,23 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
       roughness: 0.15,
       metalness: 0.12,
     });
+    const plateTexture = createHHPlateTexture();
+    // 欧规/原厂展车修长比例（4.08:1）+ 8mm 超薄黑钛金属背框，完整覆盖原车牌照位
+    const plateFrameGeo = new THREE.BoxGeometry(0.474, 0.118, 0.008);
+    const plateFaceGeo = new THREE.PlaneGeometry(0.464, 0.112);
+    const plateFrameMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color('#0c0d10'),
+      metalness: 0.72,
+      roughness: 0.25,
+    });
+    const plateFaceMat = new THREE.MeshPhysicalMaterial({
+      map: plateTexture,
+      roughness: 0.18,
+      metalness: 0.12,
+      clearcoat: 0.94,
+      clearcoatRoughness: 0.1,
+      envMapIntensity: 0.9,
+    });
     extraCarMaterials.push(
       glassMat,
       tireRubberMat,
@@ -493,7 +536,123 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
       frontDrlMat,
       headlightLensMat,
       rearLightBarMat,
+      plateFrameMat,
+      plateFaceMat,
     );
+
+    const buildVehicleLicensePlates = (
+      vehicleRoot: THREE.Group,
+      id: StudioVehicleId,
+    ): THREE.Group => {
+      const platesGroup = new THREE.Group();
+      vehicleRoot.updateMatrixWorld(true);
+      const raycaster = new THREE.Raycaster();
+
+      // 自动识别车身主轴方向（X 轴或 Z 轴）及车头/车尾朝向，杜绝车牌贴到车门侧面
+      const carBox = new THREE.Box3().setFromObject(vehicleRoot);
+      const carSize = new THREE.Vector3();
+      carBox.getSize(carSize);
+      const alongX = carSize.x > carSize.z;
+      const halfLen = (alongX ? carSize.x : carSize.z) * 0.5;
+
+      // 通过对比车身前后 38% 处的垂向高度自动判定车头（前机盖低于后尾箱/溜背）
+      const probeTopY = (axisCoord: number): number => {
+        const origin = alongX
+          ? new THREE.Vector3(axisCoord, 2.6, 0)
+          : new THREE.Vector3(0, 2.6, axisCoord);
+        raycaster.set(origin, new THREE.Vector3(0, -1, 0));
+        const hits = raycaster.intersectObject(vehicleRoot, true);
+        return hits.length > 0 ? hits[0].point.y : 2.6;
+      };
+      const topPos = probeTopY(halfLen * 0.72);
+      const topNeg = probeTopY(-halfLen * 0.72);
+      const frontSign: 1 | -1 = topPos <= topNeg ? 1 : -1;
+
+      const configs: Array<{ side: 'front' | 'rear'; sign: 1 | -1; y: number }> =
+        id === 'modely'
+          ? [
+              // 精准对齐 Model Y 前杠原厂牌照框凹槽与后杠凹槽中心
+              { side: 'front', sign: frontSign, y: 0.485 },
+              { side: 'rear', sign: (-frontSign as 1 | -1), y: 0.47 },
+            ]
+          : [
+              { side: 'front', sign: frontSign, y: 0.38 },
+              { side: 'rear', sign: (-frontSign as 1 | -1), y: 0.60 },
+            ];
+
+      const sampleAxis = (lateral: number, y: number, sign: 1 | -1): number | null => {
+        if (alongX) {
+          raycaster.set(
+            new THREE.Vector3(sign * 4.2, y, lateral),
+            new THREE.Vector3(-sign, 0, 0),
+          );
+        } else {
+          raycaster.set(
+            new THREE.Vector3(lateral, y, sign * 4.2),
+            new THREE.Vector3(0, 0, -sign),
+          );
+        }
+        const hits = raycaster.intersectObject(vehicleRoot, true);
+        if (hits.length === 0) return null;
+        return alongX ? hits[0].point.x : hits[0].point.z;
+      };
+
+      for (const cfg of configs) {
+        const sign = cfg.sign;
+        const cHit = sampleAxis(0, cfg.y, sign);
+        if (cHit === null) continue;
+
+        const lHit = sampleAxis(-0.18, cfg.y, sign);
+        const rHit = sampleAxis(0.18, cfg.y, sign);
+        const tHit = sampleAxis(0, cfg.y + 0.04, sign);
+        const bHit = sampleAxis(0, cfg.y - 0.04, sign);
+
+        // Model Y 后保险杠凹槽上方有挑边，略加厚底座，让牌面上沿从斜后方也能看全。
+        const raisedRearMount = id === 'modely' && cfg.side === 'rear';
+        const mountOffset = raisedRearMount ? 0.014 : 0.006;
+        const candidates = [cHit, lHit, rHit].filter(
+          (v): v is number => v !== null,
+        );
+        const outerCoord =
+          sign === 1 ? Math.max(...candidates) : Math.min(...candidates);
+
+        let pitch = 0;
+        if (tHit !== null && bHit !== null) {
+          const dAxis = sign === 1 ? tHit - bHit : bHit - tHit;
+          pitch = Math.max(-0.24, Math.min(0.24, Math.atan2(dAxis, 0.08)));
+        }
+
+        const plateUnit = new THREE.Group();
+        plateUnit.name = `hh-plate-${id}-${cfg.side}`;
+        const frameMesh = new THREE.Mesh(plateFrameGeo, plateFrameMat);
+        if (raisedRearMount) {
+          frameMesh.scale.z = 2;
+          frameMesh.position.z = -0.004;
+        }
+        frameMesh.castShadow = true;
+        frameMesh.receiveShadow = true;
+        plateUnit.add(frameMesh);
+
+        const faceMesh = new THREE.Mesh(plateFaceGeo, plateFaceMat);
+        faceMesh.position.z = 0.0046;
+        plateUnit.add(faceMesh);
+
+        if (alongX) {
+          plateUnit.position.set(outerCoord + sign * mountOffset, cfg.y, 0);
+          plateUnit.rotation.order = 'YXZ';
+          plateUnit.rotation.y = sign === 1 ? Math.PI / 2 : -Math.PI / 2;
+        } else {
+          plateUnit.position.set(0, cfg.y, outerCoord + sign * mountOffset);
+          plateUnit.rotation.order = 'YXZ';
+          plateUnit.rotation.y = sign === 1 ? 0 : Math.PI;
+        }
+        plateUnit.rotation.x = pitch;
+
+        platesGroup.add(plateUnit);
+      }
+
+      return platesGroup;
+    };
 
     const loader = new GLTFLoader();
     loader.setMeshoptDecoder(MeshoptDecoder);
@@ -573,10 +732,20 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
           return mat;
         };
 
+        let usesPaint = false;
         if (Array.isArray(mesh.material)) {
-          mesh.material = mesh.material.map(mapSingleMaterial);
+          mesh.material = mesh.material.map((m) => {
+            const mapped = mapSingleMaterial(m);
+            if (mapped === filmController.material) usesPaint = true;
+            return mapped;
+          });
         } else if (mesh.material) {
           mesh.material = mapSingleMaterial(mesh.material);
+          if (mesh.material === filmController.material) usesPaint = true;
+        }
+        if (usesPaint) {
+          // 车身曲面漆面保留向地面投射阴影，关闭自身阴影贴图接收，避免掠射角自阴影伪影
+          mesh.receiveShadow = false;
         }
       });
     };
@@ -595,76 +764,127 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
       if (loadingVehicles.has(id)) return;
       loadingVehicles.add(id);
 
-      loader.load(
-        spec.modelUrl,
-        (gltf) => {
-          loadingVehicles.delete(id);
-          const release = vehicleResourceDisposer(gltf.scene);
-          if (disposed) {
-            release();
-            return;
-          }
-          releaseVehicles.push(release);
+      const fetchAndParseHmy = async () => {
+        try {
+          const resp = await window.fetch(spec.modelUrl, { credentials: 'same-origin' });
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
-          const wrapper = new THREE.Group();
-          const root = gltf.scene;
-          if (spec.rotationY !== 0) {
-            root.rotation.y = spec.rotationY;
-          }
-          wrapper.add(root);
+          const total = Number(resp.headers.get('content-length') || 0);
+          let rawBuf: ArrayBuffer;
 
-          // 按世界坐标真实顶点计算精确包围盒，使四轮精确贴合地面 y=0
-          wrapper.updateMatrixWorld(true);
-          const rawBox = new THREE.Box3();
-          const tempVec = new THREE.Vector3();
-          root.traverse((obj) => {
-            if ((obj as THREE.Mesh).isMesh) {
-              const m = obj as THREE.Mesh;
-              const pos = m.geometry.getAttribute('position');
-              if (pos) {
-                for (let i = 0; i < pos.count; i++) {
-                  tempVec.fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld);
-                  rawBox.expandByPoint(tempVec);
+          if (resp.body && total > 0) {
+            const reader = resp.body.getReader();
+            const chunks: Uint8Array[] = [];
+            let received = 0;
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              if (disposed) {
+                reader.cancel().catch(() => {});
+                return;
+              }
+              if (value) {
+                chunks.push(value);
+                received += value.byteLength;
+                if (stateRef.current.vehicleId === id) {
+                  const pct = Math.min(96, Math.round((received / total) * 100));
+                  stateRef.current.onModelStatusChange?.('loading', pct);
                 }
               }
             }
-          });
-          const size = new THREE.Vector3();
-          const center = new THREE.Vector3();
-          rawBox.getSize(size);
-          rawBox.getCenter(center);
-
-          const maxDim = Math.max(size.x, size.y, size.z) || 1;
-          const normScale = spec.targetLength / maxDim;
-          wrapper.scale.setScalar(normScale);
-          wrapper.position.set(
-            -center.x * normScale,
-            -rawBox.min.y * normScale,
-            -center.z * normScale,
-          );
-
-          bindVehicleMaterials(root, id);
-          loadedVehicles.set(id, wrapper);
-          carAnchor.add(wrapper);
-
-          const isCurrent = stateRef.current.vehicleId === id;
-          wrapper.visible = isCurrent;
-          if (isCurrent) {
-            showLoadedVehicle(stateRef.current.vehicleId);
-            stateRef.current.onModelStatusChange?.('ready', 100);
+            const merged = new Uint8Array(received);
+            let offset = 0;
+            for (const c of chunks) {
+              merged.set(c, offset);
+              offset += c.byteLength;
+            }
+            rawBuf = merged.buffer;
+          } else {
+            rawBuf = await resp.arrayBuffer();
           }
-        },
-        (evt) => {
-          if (disposed || !evt.total || stateRef.current.vehicleId !== id) return;
-          const pct = Math.min(98, Math.round((evt.loaded / evt.total) * 100));
-          stateRef.current.onModelStatusChange?.('loading', pct);
-        },
-        () => {
+
+          if (disposed) return;
+          const glbBuffer = unpackHmyModelBuffer(rawBuf);
+
+          loader.parse(
+            glbBuffer,
+            '/models/',
+            (gltf) => {
+              loadingVehicles.delete(id);
+              const release = vehicleResourceDisposer(gltf.scene);
+              if (disposed) {
+                release();
+                return;
+              }
+              releaseVehicles.push(release);
+
+              const wrapper = new THREE.Group();
+              const root = gltf.scene;
+              if (spec.rotationY !== 0) {
+                root.rotation.y = spec.rotationY;
+              }
+              wrapper.add(root);
+
+              // 按世界坐标真实顶点计算精确包围盒，使四轮精确贴合地面 y=0
+              wrapper.updateMatrixWorld(true);
+              const rawBox = new THREE.Box3();
+              const tempVec = new THREE.Vector3();
+              root.traverse((obj) => {
+                if ((obj as THREE.Mesh).isMesh) {
+                  const m = obj as THREE.Mesh;
+                  const pos = m.geometry.getAttribute('position');
+                  if (pos) {
+                    for (let i = 0; i < pos.count; i++) {
+                      tempVec.fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld);
+                      rawBox.expandByPoint(tempVec);
+                    }
+                  }
+                }
+              });
+              const size = new THREE.Vector3();
+              const center = new THREE.Vector3();
+              rawBox.getSize(size);
+              rawBox.getCenter(center);
+
+              const maxDim = Math.max(size.x, size.y, size.z) || 1;
+              const normScale = spec.targetLength / maxDim;
+              wrapper.scale.setScalar(normScale);
+              wrapper.position.set(
+                -center.x * normScale,
+                -rawBox.min.y * normScale,
+                -center.z * normScale,
+              );
+
+              bindVehicleMaterials(root, id);
+
+              const vehicleAssembly = new THREE.Group();
+              vehicleAssembly.add(wrapper);
+              vehicleAssembly.add(buildVehicleLicensePlates(wrapper, id));
+
+              loadedVehicles.set(id, vehicleAssembly);
+              carAnchor.add(vehicleAssembly);
+
+              const isCurrent = stateRef.current.vehicleId === id;
+              vehicleAssembly.visible = isCurrent;
+              if (isCurrent) {
+                showLoadedVehicle(stateRef.current.vehicleId);
+                stateRef.current.onModelStatusChange?.('ready', 100);
+              }
+            },
+            () => {
+              loadingVehicles.delete(id);
+              if (disposed || stateRef.current.vehicleId !== id) return;
+              stateRef.current.onModelStatusChange?.('error', 0);
+            },
+          );
+        } catch {
           loadingVehicles.delete(id);
           if (disposed || stateRef.current.vehicleId !== id) return;
           stateRef.current.onModelStatusChange?.('error', 0);
-        },
-      );
+        }
+      };
+
+      void fetchAndParseHmy();
     };
 
     runtimeRef.current.switchVehicle = loadOrSwitchVehicle;
@@ -696,22 +916,40 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
     let lastTime = performance.now();
     const clockStart = lastTime;
 
+    const onContextLost = (e: Event) => {
+      e.preventDefault();
+      setGraphicsUnavailable(true);
+    };
+    const onContextRestored = () => {
+      setGraphicsUnavailable(false);
+      runtimeRef.current.shadowDirtyFrames = 4;
+    };
+    renderer.domElement.addEventListener('webglcontextlost', onContextLost);
+    renderer.domElement.addEventListener('webglcontextrestored', onContextRestored);
+
     const animate = (now: number) => {
       if (disposed) return;
       rafId = window.requestAnimationFrame(animate);
+
+      // 弹窗开启或切到后台时暂停 WebGL 渲染，保证移动端滚屏满帧零功耗
+      if (document.hidden || stateRef.current.paused) {
+        lastTime = now;
+        lastPerfStamp = now;
+        return;
+      }
 
       const dt = Math.min(0.05, (now - lastTime) / 1000);
       lastTime = now;
       const elapsed = (now - clockStart) / 1000;
       const curMode = stateRef.current.viewMode;
 
-      // 1) 同色调影棚氛围空间渐变
-      if (scene.background instanceof THREE.Color) {
+      // 1) 同色调影棚氛围空间渐变（仅暗夜柔光影棚随车色微调地台，展厅与落日保留独立实景地面与雾效）
+      if (stateRef.current.lightingPreset === 'studio' && scene.background instanceof THREE.Color) {
         scene.background.lerp(runtimeRef.current.targetMoodColor, Math.min(1, dt * 4.5));
         if (scene.fog instanceof THREE.FogExp2) {
           scene.fog.color.copy(scene.background);
         }
-        floorMat.color.copy(scene.background).multiplyScalar(0.55);
+        floorMat.color.copy(scene.background).multiplyScalar(0.58);
       }
       if (runtimeRef.current.floorGlowMat) {
         runtimeRef.current.floorGlowMat.color.lerp(
@@ -719,6 +957,10 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
           Math.min(1, dt * 4.5),
         );
       }
+      shaderball.ambientRingMat.color.lerp(
+        runtimeRef.current.targetGlowColor,
+        Math.min(1, dt * 4.5),
+      );
 
       // 2) 模式切换相机平滑过渡
       if (runtimeRef.current.transitionCamera) {
@@ -791,6 +1033,8 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
       disposed = true;
       window.cancelAnimationFrame(rafId);
       resizeObserver.disconnect();
+      renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
+      renderer.domElement.removeEventListener('webglcontextrestored', onContextRestored);
       controls.removeEventListener('start', handleControlStart);
       controls.dispose();
 
@@ -800,9 +1044,9 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
       keyLight.shadow.dispose();
       flakeNormalMap.dispose();
 
-      sphereGeo.dispose();
-      ringGeo.dispose();
-      ringMat.dispose();
+      shaderball.dispose();
+      sceneManager.dispose();
+      runtimeRef.current.sceneManager = null;
       macroGeo.dispose();
       floorAlphaTex.dispose();
       floorGeo.dispose();
@@ -815,12 +1059,13 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
       shadowPlaneMat.dispose();
 
       for (const mat of extraCarMaterials) mat.dispose();
+      plateFrameGeo.dispose();
+      plateFaceGeo.dispose();
+      plateTexture.dispose();
       releaseVehicles.forEach((release) => release());
       loadedVehicles.clear();
       runtimeRef.current.switchVehicle = null;
       scene.clear();
-      renderer.domElement.removeEventListener('webglcontextlost', contextLost);
-      renderer.domElement.removeEventListener('webglcontextrestored', contextRestored);
       renderer.forceContextLoss();
       renderer.dispose();
       if (renderer.domElement.parentNode === container) {
@@ -829,7 +1074,7 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
     };
   }, []);
 
-  // 2. 实时切换三档 HDR 影棚环境光
+  // 2. 实时切换三档 HDR 影棚环境光与 3D 实景背景
   useEffect(() => {
     const rt = runtimeRef.current;
     if (!rt.renderer || !rt.scene) return;
@@ -841,25 +1086,33 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
       prevEnv.renderTarget?.dispose();
     }
 
+    rt.sceneManager?.applyPreset(lightingPreset, viewMode);
+
     if (rt.hemiLight && rt.keyLight && rt.rimLight) {
       if (lightingPreset === 'gallery') {
-        rt.hemiLight.intensity = 0.22;
+        rt.hemiLight.color.set('#ffffff');
+        rt.hemiLight.groundColor.set('#d4dae4');
+        rt.hemiLight.intensity = 0.34;
         rt.keyLight.color.set('#ffffff');
-        rt.keyLight.intensity = 0.7;
+        rt.keyLight.intensity = 0.28;
         rt.rimLight.color.set('#e2edff');
       } else if (lightingPreset === 'sunset') {
-        rt.hemiLight.intensity = 0.1;
-        rt.keyLight.color.set('#ffcf98');
-        rt.keyLight.intensity = 0.85;
-        rt.rimLight.color.set('#93c5fd');
+        rt.hemiLight.color.set('#ffd8b2');
+        rt.hemiLight.groundColor.set('#281c22');
+        rt.hemiLight.intensity = 0.24;
+        rt.keyLight.color.set('#ffc58c');
+        rt.keyLight.intensity = 0.42;
+        rt.rimLight.color.set('#9bc2ff');
       } else {
-        rt.hemiLight.intensity = 0.12;
-        rt.keyLight.color.set('#fff8f0');
-        rt.keyLight.intensity = 0.75;
-        rt.rimLight.color.set('#dbe8ff');
+        rt.hemiLight.color.set('#edf1fa');
+        rt.hemiLight.groundColor.set('#14161e');
+        rt.hemiLight.intensity = 0.24;
+        rt.keyLight.color.set('#fffaf4');
+        rt.keyLight.intensity = 0.26;
+        rt.rimLight.color.set('#e2ecff');
       }
     }
-  }, [lightingPreset]);
+  }, [lightingPreset, viewMode]);
 
   // 3. 同步色号与材质
   useEffect(() => {
@@ -893,13 +1146,13 @@ export function ColorStudioCanvas(props: ColorStudioCanvasProps) {
     }
   }, [viewMode]);
 
-  // 5. 同步切换展车车型（Model 3 焕新版 / Model Y 焕新版）
+  // 5. 同步切换展车车型（Model 3 焕新版 / Model Y 焕新版）及失败重试
   const showVehicle = viewMode === 'car' || viewMode === 'closeup';
   useEffect(() => {
     if (!showVehicle) return;
     const start = window.setTimeout(() => runtimeRef.current.switchVehicle?.(vehicleId), 0);
     return () => window.clearTimeout(start);
-  }, [showVehicle, vehicleId]);
+  }, [showVehicle, vehicleId, retryToken]);
 
   // 6. 键盘左右键切色
   useEffect(() => {

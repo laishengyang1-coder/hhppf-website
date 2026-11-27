@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "pack:swatches": "node scripts/pack-swatches.mjs",
+    "prebuild": "npm run pack:swatches",
     "build": "tsc --noEmit && vite build"
   },
   "dependencies": {

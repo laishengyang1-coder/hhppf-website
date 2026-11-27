@@ -2,8 +2,6 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties, PointerEvent, WheelEvent } from 'react';
 import {
   COLOR_STUDIO_SWATCHES,
-  studioText,
-  type StudioLanguage,
   type ColorFilmItem,
   type StudioLightingPreset,
 } from '../../config/colorStudio';
@@ -14,14 +12,14 @@ interface SwatchFanProps {
   swatches: ColorFilmItem[];
   activeSwatch: ColorFilmItem;
   lightingPreset: StudioLightingPreset;
-  lang: StudioLanguage;
+  lang: 'zh' | 'en';
   pickedUp: boolean;
   paused: boolean;
   onSelect: (swatch: ColorFilmItem) => void;
   onPickedUpChange: (picked: boolean) => void;
 }
 
-type Variables = CSSProperties & Record<`--${string}`, string | number>;
+type Variables = CSSProperties & Record<`--_${string}`, string | number>;
 
 interface DragState {
   pointerId: number;
@@ -54,7 +52,6 @@ const numbers = new Map(
 const BASE_ANGLE = 13.5;
 const AUTO_TURN_MS = 3400;
 const VISIBLE_REACH = 5;
-const DOUBLE_TAP_MS = 320;
 
 function letteringColor(hex: string): string {
   const clean = hex.replace('#', '');
@@ -85,15 +82,14 @@ export function SwatchFan({
   const wheelAccumRef = useRef(0);
   const wheelTimerRef = useRef(0);
   const tiltRef = useRef({ x: 0, y: 0 });
-  const keyboardSlotRef = useRef<number | null>(null);
 
+  const keyboardSlotRef = useRef<number | null>(null);
   const n = swatches.length;
   const activeIdx = Math.max(
     0,
     swatches.findIndex((c) => c.code === activeSwatch.code),
   );
 
-  // 连续物理弹簧状态（pos / target / velocity 均以卡片槽位为单位，零 React 帧内重绘）
   const physicsRef = useRef({
     list: swatches,
     pos: activeIdx,
@@ -102,7 +98,6 @@ export function SwatchFan({
     dragging: false,
     renderCenter: activeIdx,
   });
-  // 物理循环静止即休眠（不空转 rAF、不耗电），任何输入或目标变化时唤醒
   const wakeRef = useRef<() => void>(() => {});
   const poseSlotRef = useRef<(slotIndex: number, el: HTMLDivElement) => void>(() => {});
 
@@ -116,7 +111,6 @@ export function SwatchFan({
     handlersRef.current = { onSelect, onPickedUpChange, pickedUp, swatches };
   });
 
-  // 外部切色（点击底栏色珠 / 抽屉选色 / 切换工艺）时，走最短弧线平滑弹簧滑过去
   useLayoutEffect(() => {
     const p = physicsRef.current;
     if (p.list !== swatches) {
@@ -158,7 +152,6 @@ export function SwatchFan({
     };
   }, []);
 
-  // 自动温和轮播（仅在用户开启播放且未交互、未拾起时生效）
   useEffect(() => {
     if (paused || pickedUp || interacting || !visible || n < 2) return;
     const delay = Math.max(AUTO_TURN_MS, holdUntilRef.current - performance.now());
@@ -183,10 +176,10 @@ export function SwatchFan({
     const el = stageRef.current;
     if (!el) return;
     tiltRef.current = { x: 0, y: 0 };
-    el.style.removeProperty('--tilt-x');
-    el.style.removeProperty('--tilt-y');
-    el.style.removeProperty('--inspection-reflection');
-    el.style.removeProperty('--flex');
+    el.style.removeProperty('--_tx');
+    el.style.removeProperty('--_ty');
+    el.style.removeProperty('--_ir');
+    el.style.removeProperty('--_fx');
   }, [pickedUp, activeSwatch.code, swatches]);
 
   useEffect(() => {
@@ -200,7 +193,6 @@ export function SwatchFan({
     return () => window.removeEventListener('keydown', onKey);
   }, [pickedUp]);
 
-  // 单一 60–120fps 物理弹簧循环：直接写 transform，静止后自动休眠
   useLayoutEffect(() => {
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let rafId = 0;
@@ -217,9 +209,9 @@ export function SwatchFan({
       const liftY = isPicked ? 0 : Math.min(28, absRel * absRel * 1.45);
       const scale = isPicked ? 1 : 1 - Math.min(0.08, absRel * 0.014);
       slotEl.style.transform = `translate3d(0, ${liftY.toFixed(2)}px, 0) rotate(${(-rel * spacing).toFixed(3)}deg) scale(${scale.toFixed(4)})`;
-      slotEl.style.zIndex = String(isPicked && slotEl.dataset.center === 'true' ? 50 : 30 - Math.round(absRel * 3));
+      slotEl.style.zIndex = String(isPicked && slotEl.dataset.c === '1' ? 50 : 30 - Math.round(absRel * 3));
       const refl = clamp(-rel * 13 + p.velocity * 1.8, -36, 36);
-      slotEl.style.setProperty('--fan-reflection', `var(--inspection-reflection, ${refl.toFixed(1)}%)`);
+      slotEl.style.setProperty('--_rf', `var(--_ir, ${refl.toFixed(1)}%)`);
     };
     poseSlotRef.current = poseSlot;
 
@@ -238,7 +230,6 @@ export function SwatchFan({
         p.velocity = 0;
         settled = true;
       } else if (!p.dragging) {
-        // 丝滑弹簧阻尼器（stiffness 165, damping 21 → 轻盈顺滑、自然收尾）
         const disp = p.target - p.pos;
         const accel = disp * 165 - p.velocity * 21;
         p.velocity += accel * dt;
@@ -288,21 +279,20 @@ export function SwatchFan({
     }
   }, [renderCenter]);
 
-  // 拿起 / 放回、舞台尺寸变化时重新摆位一次
   useEffect(() => {
     wakeRef.current();
   }, [pickedUp, box.w, box.h]);
 
-  const cardHeight = Math.min(box.h * 0.76, box.w * (box.w < box.h ? 0.82 : 0.53));
+  // 适配手机与微信小程序内嵌短视口：卡片高度自适应可用舞台空间
+  const cardHeight = Math.min(box.h * 0.78, box.w * (box.w < box.h ? 0.8 : 0.52));
   const cardWidth = cardHeight * 0.46;
-  const stepWidth = Math.max(58, Math.sin((BASE_ANGLE * Math.PI) / 180) * cardHeight * 1.85);
+  const stepWidth = Math.max(52, Math.sin((BASE_ANGLE * Math.PI) / 180) * cardHeight * 1.85);
 
   const variables: Variables = {
-    '--card-h': `${cardHeight}px`,
-    '--card-w': `${cardWidth}px`,
-    '--fan-top': `${Math.max(0, (box.h - cardHeight) * 0.36)}px`,
-    '--pivot': `${cardHeight * 2.38}px`,
-    '--ridge': `${cardHeight * 1.88}px`,
+    '--_ch': `${cardHeight}px`,
+    '--_cw': `${cardWidth}px`,
+    '--_ft': `${Math.max(4, (box.h - cardHeight) * 0.35)}px`,
+    '--_pv': `${cardHeight * 2.38}px`,
   };
 
   function sampleByCode(code: string) {
@@ -322,7 +312,7 @@ export function SwatchFan({
   function handleTap(code: string, x: number, y: number) {
     const last = pendingTapRef.current;
     const now = performance.now();
-    if (last && now - last.when < DOUBLE_TAP_MS && Math.hypot(last.x - x, last.y - y) < 28) {
+    if (last && now - last.when < 320 && Math.hypot(last.x - x, last.y - y) < 28) {
       lift(last.code);
       return;
     }
@@ -334,12 +324,12 @@ export function SwatchFan({
         handlersRef.current.onSelect(hit);
       }
       pendingTapRef.current = null;
-    }, DOUBLE_TAP_MS);
+    }, 320);
   }
 
   function onDown(e: PointerEvent<HTMLDivElement>) {
     if (!e.isPrimary || e.button !== 0 || dragRef.current) return;
-    const button = (e.target as Element).closest<HTMLButtonElement>('button[data-fan-code]');
+    const button = (e.target as Element).closest<HTMLButtonElement>('button[data-sc]');
     const p = physicsRef.current;
     dragRef.current = {
       pointerId: e.pointerId,
@@ -349,7 +339,7 @@ export function SwatchFan({
       lastTime: performance.now(),
       startPos: p.pos,
       moved: false,
-      code: button?.dataset.fanCode,
+      code: button?.dataset.sc,
       tiltX: tiltRef.current.x,
       tiltY: tiltRef.current.y,
     };
@@ -360,7 +350,7 @@ export function SwatchFan({
 
   function onMove(e: PointerEvent<HTMLDivElement>) {
     const drag = dragRef.current;
-    if (!drag || e.pointerId !== drag.pointerId || (!pickedUp && n < 2)) return;
+    if (!drag || e.pointerId !== drag.pointerId) return;
     const dx = e.clientX - drag.startX;
     const dy = e.clientY - drag.startY;
     if (!drag.moved && Math.hypot(dx, dy) < 6) return;
@@ -369,9 +359,8 @@ export function SwatchFan({
     if (!drag.moved) {
       clearTap();
       drag.moved = true;
-      el.dataset.dragging = 'true';
+      el.dataset.dg = '1';
       if (!pickedUp) {
-        drag.startPos = physicsRef.current.pos;
         physicsRef.current.dragging = true;
       }
     }
@@ -380,10 +369,10 @@ export function SwatchFan({
       const x = clamp(drag.tiltX - (dy / Math.max(1, cardHeight)) * 62, -24, 24);
       const y = clamp(drag.tiltY + (dx / Math.max(1, cardWidth)) * 58, -44, 44);
       tiltRef.current = { x, y };
-      el.style.setProperty('--tilt-x', `${x.toFixed(2)}deg`);
-      el.style.setProperty('--tilt-y', `${y.toFixed(2)}deg`);
+      el.style.setProperty('--_tx', `${x.toFixed(2)}deg`);
+      el.style.setProperty('--_ty', `${y.toFixed(2)}deg`);
       el.style.setProperty(
-        '--inspection-reflection',
+        '--_ir',
         `${clamp(y * 0.72 - x * 0.35, -36, 36).toFixed(1)}%`,
       );
       return;
@@ -395,17 +384,16 @@ export function SwatchFan({
     drag.lastX = e.clientX;
     drag.lastTime = now;
 
-    // 手指/鼠标 1:1 实时跟手推进扇面 + 平滑采样惯性速度
+    // 保留 ada5918 同向拖动与松手惯性方向
     const p = physicsRef.current;
     const nextPos = drag.startPos + dx / stepWidth;
-    const instantVel = (stepDx / stepWidth) / dt;
+    const instantVel = stepDx / stepWidth / dt;
     p.velocity = p.velocity * 0.45 + clamp(instantVel, -24, 24) * 0.55;
     p.pos = nextPos;
     p.target = nextPos;
     wakeRef.current();
 
-    // 垂直轻拉呈现微妙的 3D 俯仰角
-    el.style.setProperty('--flex', `${clamp((-dy / Math.max(1, cardHeight)) * 22, -9, 9).toFixed(2)}deg`);
+    el.style.setProperty('--_fx', `${clamp((-dy / Math.max(1, cardHeight)) * 22, -9, 9).toFixed(2)}deg`);
   }
 
   function onUp(e: PointerEvent<HTMLDivElement>, cancelled = false) {
@@ -415,8 +403,8 @@ export function SwatchFan({
     setInteracting(false);
 
     const el = e.currentTarget;
-    delete el.dataset.dragging;
-    el.style.removeProperty('--flex');
+    delete el.dataset.dg;
+    el.style.removeProperty('--_fx');
     if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
 
     const p = physicsRef.current;
@@ -425,7 +413,6 @@ export function SwatchFan({
 
     if (cancelled) {
       clearTap();
-      // Browser cancellation leaves the selected label and URL unchanged.
       if (n) {
         const nearest = Math.round(p.pos);
         const delta = wrap(activeIdx - wrap(nearest, n) + Math.floor(n / 2), n) - Math.floor(n / 2);
@@ -437,8 +424,6 @@ export function SwatchFan({
 
     if (drag.moved) {
       if (!pickedUp && n > 1) {
-        // 惯性滑行：根据脱手速度顺势滑过 1~5 张色卡并精准吸附中心槽位
-        // A finger that pauses before release should not fling at its previous speed.
         if (performance.now() - drag.lastTime > 100) p.velocity = 0;
         const projected = p.pos + clamp(p.velocity * 0.16, -5, 5);
         const snapped = Math.round(projected);
@@ -457,7 +442,7 @@ export function SwatchFan({
       const last = pendingTapRef.current;
       if (
         last &&
-        performance.now() - last.when < DOUBLE_TAP_MS &&
+        performance.now() - last.when < 320 &&
         Math.hypot(last.x - e.clientX, last.y - e.clientY) < 28
       ) {
         lift(last.code);
@@ -467,9 +452,7 @@ export function SwatchFan({
 
   function onWheel(e: WheelEvent<HTMLDivElement>) {
     if (pickedUp || n < 2) return;
-    const distance = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-    const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? box.h : 1;
-    const delta = distance * unit;
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
     if (Math.abs(delta) < 2) return;
     holdUntilRef.current = performance.now() + 4500;
     wheelAccumRef.current += delta;
@@ -497,12 +480,12 @@ export function SwatchFan({
     const slot = renderCenter + offset;
     const swatch = swatches[wrap(slot, n)];
     const isCurrent = offset === (pickedUp ? pickedOffset : 0);
-    const printedName = studioText(lang, swatch.name, swatch.nameEn);
+    const printedName = lang === 'zh' ? swatch.name : swatch.nameEn;
     const ink = letteringColor(swatch.hex);
 
     const style: Variables = {
-      '--ink-top': ink,
-      '--ink-bottom': ink,
+      '--_it': ink,
+      '--_ib': ink,
     };
 
     cards.push(
@@ -512,21 +495,20 @@ export function SwatchFan({
           if (node) {
             if (!slotRefs.current.has(slot)) {
               slotRefs.current.set(slot, node);
-              // 新挂载的卡片立即按当前物理位姿摆放，避免出现一帧跳位
               poseSlotRef.current(slot, node);
             }
           } else {
             slotRefs.current.delete(slot);
           }
         }}
-        className="swatch-fan__slot"
-        data-center={isCurrent}
+        className="_hfs_s"
+        data-c={isCurrent ? '1' : undefined}
         style={style}
       >
         <button
           type="button"
-          className="swatch-fan__card"
-          data-fan-code={swatch.code}
+          className="_hfs_b"
+          data-sc={swatch.code}
           aria-label={`${printedName} ${swatch.code}`}
           aria-pressed={isCurrent}
           tabIndex={isCurrent ? 0 : -1}
@@ -534,11 +516,23 @@ export function SwatchFan({
             if (e.detail === 0) lift(swatch.code);
           }}
         >
-          <span className="swatch-fan__surface" aria-hidden="true">
+          <span
+            className="_hfs_f"
+            data-k={
+              swatch.code.endsWith('FP') || swatch.code === 'TPU-CF'
+                ? 'c'
+                : swatch.material.roughness >= 0.44
+                  ? 'm'
+                  : swatch.material.roughness >= 0.24
+                    ? 's'
+                    : 'g'
+            }
+            aria-hidden="true"
+          >
             <SwatchFanMaterial swatch={swatch} lightingPreset={lightingPreset} />
-            <span className="swatch-fan__brand">H&amp;H</span>
-            <span className="swatch-fan__number">{numbers.get(swatch.code)}</span>
-            <span className="swatch-fan__caption">
+            <span className="_hfs_m">H&amp;H</span>
+            <span className="_hfs_n">{numbers.get(swatch.code)}</span>
+            <span className="_hfs_t">
               <strong>{printedName}</strong>
               <small>{swatch.code}</small>
             </span>
@@ -552,16 +546,16 @@ export function SwatchFan({
     <div
       ref={stageRef}
       style={variables}
-      className="swatch-fan"
-      data-swatch-fan=""
-      data-lighting={lightingPreset}
-      data-picked-up={pickedUp}
+      className="_hfs"
+      data-l={lightingPreset}
+      data-p={pickedUp ? '1' : undefined}
       role="region"
       tabIndex={-1}
-      aria-label={studioText(lang,
-        '流光色卡，左右滑动或方向键选色，双击或回车拿起、放回',
-        'Film samples. Drag or press the arrow keys to browse. Double-tap or press Enter to lift or return a sample.',
-      )}
+      aria-label={
+        lang === 'zh'
+          ? '流光色卡，左右滑动或方向键选色，双击拿起或放回'
+          : 'Film samples. Drag or arrow keys to browse, double-tap to lift.'
+      }
       onPointerDown={onDown}
       onPointerMove={onMove}
       onPointerUp={(e) => onUp(e)}
@@ -572,15 +566,15 @@ export function SwatchFan({
       onWheel={onWheel}
       onDoubleClick={(e) => {
         if (performance.now() - lastDoubleRef.current < 150) return;
-        const hit = (e.target as Element).closest<HTMLButtonElement>('button[data-fan-code]');
-        if (hit?.dataset.fanCode) lift(hit.dataset.fanCode);
+        const hit = (e.target as Element).closest<HTMLButtonElement>('button[data-sc]');
+        if (hit?.dataset.sc) lift(hit.dataset.sc);
       }}
       onKeyDown={(e) => {
         if (e.altKey || e.ctrlKey || e.metaKey) return;
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          const hit = (e.target as Element).closest<HTMLButtonElement>('button[data-fan-code]');
-          if (!e.repeat) lift(hit?.dataset.fanCode ?? activeSwatch.code);
+          const hit = (e.target as Element).closest<HTMLButtonElement>('button[data-sc]');
+          if (!e.repeat) lift(hit?.dataset.sc ?? activeSwatch.code);
           return;
         }
         if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
@@ -598,8 +592,8 @@ export function SwatchFan({
         }
       }}
     >
-      <div className="swatch-fan__room" aria-hidden="true" />
-      <div className="swatch-fan__cards">{cards}</div>
+      <div className="_hfs_bg" aria-hidden="true" />
+      <div className="_hfs_w">{cards}</div>
     </div>
   );
 }
